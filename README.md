@@ -5,23 +5,22 @@ Nome da Aplicação / Dashboard Web:
 Disciplina: Oficina de Multimédia T2
 Ano Letivo: 2026/2027
 Autor: João Alves
-Turma: 
+Turma: 12ºA3
 Link da Aplicação Web: 
 
-Descrição: 
-Proposta Escolhida: Proposta 
+Descrição: uma app desenhada para cativar a criação de motores e, possivelmente, passar a saber mais sobre cada componente. No final apresenta-se um quiz sobre diversos marcas de carros que levaram cada uma, uma diferente perspectiva sobre o seu design de motor.
+
+Proposta Escolhida: 1
 
 
 Estrutura do Código e Funcionalidades Integradas: 
 
 Registo de Utilização da IA
-Para demonstrares como trabalhaste em parceria com o Copilot, Gemini, Claude,
-Mistral, etc., regista:
-1. Prompt para conversão Web/HTML
-2. Prompt para ampliação e construção de funcionalidades
-3. Dificuldades e erros corrigidos com a IA
+1. Prompt para conversão Web/HTML:
+2. Prompt para ampliação e construção de funcionalidades:
+3. Dificuldades e erros corrigidos com a IA:
 4. Otimização de Layout: O que sugeriste à IA para alterar no design - cores,
-margens, fontes, botões?
+margens, fontes, botões?:
 
 Estrutura de Ficheiros do Repositório
 Listagem simples dos ficheiros presentes na pasta:
