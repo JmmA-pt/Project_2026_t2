@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Motor Inline</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Base do site: Fundo Preto e texto WhiteSmoke */
+        body {
+            background-color: #000000;
+            color: WhiteSmoke;
+            font-family: 'Consolas', 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        /* Grelha simples para os 3 widgets */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* Cartão de cada widget com contorno de 2pt em WhiteSmoke */
+        .widget-card {
+            background-color: #000000;
+            border: 2pt solid WhiteSmoke;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 360px;
+            gap: 16px;
+        }
+
+        .motor-svg {
+            width: 100%;
+            max-width: 320px;
+            height: auto;
+        }
+
+        /* Exibição exclusiva do número de cilindros (Widget 1) */
+        .cilindros-box {
+            border: 2pt solid WhiteSmoke;
+            padding: 10px 28px;
+            text-align: center;
+        }
+
+        .cilindros-numero {
+            display: block;
+            font-size: 2.6rem;
+            font-weight: bold;
+            color: WhiteSmoke;
+            line-height: 1.1;
+        }
+
+        .cilindros-texto {
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            color: WhiteSmoke;
+        }
+
+        /* Formulários e Tabelas (Widgets 2 e 3) */
+        .widget-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .grid-2-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .campo-grupo {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .campo-grupo label {
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            color: WhiteSmoke;
+        }
+
+        .input-cyber {
+            background-color: #000000;
+            color: WhiteSmoke;
+            border: 1.5pt solid WhiteSmoke;
+            padding: 7px 8px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .ficha-tecnica {
+            width: 100%;
+            border: 1.5pt solid WhiteSmoke;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .ficha-titulo {
+            font-size: 0.82rem;
+            font-weight: bold;
+            letter-spacing: 0.12em;
+            border-bottom: 1pt solid WhiteSmoke;
+            padding-bottom: 5px;
+            margin-bottom: 2px;
+        }
+
+        .ficha-linha {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            border-bottom: 1px dotted rgba(245, 245, 245, 0.3);
+            padding-bottom: 3px;
+        }
+
+        /* Paleta de Cores HEX (Widget 3) */
+        .paleta-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .swatch-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .swatch-cor {
+            width: 100%;
+            height: 16px;
+            border: 1px solid WhiteSmoke;
+            display: block;
+        }
+
+        .swatch-codigo {
+            font-size: 0.62rem;
+            color: WhiteSmoke;
+        }
+    </style>
+</head>
+<body>
+    <main class="dashboard-container">
+        
+    <section class="widget-card" id="widget-1">
+        <div id="motor-svg-container" style="width: 100%; display: flex; justify-content: center;">
+            
+    <svg class="motor-svg" viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg"
+         aria-label="Motor Inline 2D">
+        <!-- Tampa superior do motor em linha -->
+        <rect x="60" y="20" width="240" height="25" rx="4"
+              fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+
+        <!-- Bloco principal do motor em linha (Inline Block) -->
+        <rect x="40" y="45" width="280" height="100" rx="8"
+              fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+
+        <!-- Cilindros dispostos em linha (Inline) -->
+        <circle cx="82.5" cy="95" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="82.5" cy="95" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="147.5" cy="95" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="147.5" cy="95" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="212.5" cy="95" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="212.5" cy="95" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="277.5" cy="95" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="277.5" cy="95" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+
+
+        <!-- Base / Cárter inferior -->
+        <path d="M 70,145 L 290,145 L 270,172 L 90,172 Z"
+              fill="none" stroke="WhiteSmoke" stroke-width="2pt" stroke-linejoin="round" />
+    </svg>
+    
+        </div>
+
+        <!-- Exibição EXCLUSIVA do número de cilindros -->
+        <div class="cilindros-box">
+            <span class="cilindros-numero" id="motor-num-cilindros">4</span>
+            <span class="cilindros-texto">CILINDROS</span>
+        </div>
+    </section>
+    
+        
+    <section class="widget-card" id="widget-2">
+        <div class="widget-form">
+            <div class="campo-grupo">
+                <label for="select-cilindros">NÚMERO DE CILINDROS</label>
+                <select id="select-cilindros" class="input-cyber">
+                    <option value="3" >3 Cilindros</option>
+<option value="4" selected>4 Cilindros</option>
+<option value="5" >5 Cilindros</option>
+<option value="6" >6 Cilindros</option>
+<option value="8" >8 Cilindros</option>
+<option value="10" >10 Cilindros</option>
+<option value="12" >12 Cilindros</option>
+                </select>
+            </div>
+
+            <div class="campo-grupo">
+                <label for="select-admissao">TIPO DE ADMISSÃO</label>
+                <select id="select-admissao" class="input-cyber">
+                    <option value="NA" selected>NA</option>
+<option value="Turbo" >Turbo</option>
+<option value="Supercharger" >Supercharger</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="ficha-output" style="width: 100%;">
+            
+    <div class="ficha-tecnica">
+        <div class="ficha-titulo">FICHA TÉCNICA</div>
+        <div class="ficha-linha"><span>MOTOR</span><strong>Inline-4 (4 Cilindros)</strong></div>
+        <div class="ficha-linha"><span>ADMISSÃO</span><strong>NA (Naturalmente Aspirado)</strong></div>
+        <div class="ficha-linha"><span>PRESSÃO</span><strong>0.0 bar (Atmosférico)</strong></div>
+        <div class="ficha-linha"><span>POTÊNCIA EST.</span><strong>180 cv</strong></div>
+        <div class="ficha-linha"><span>BINÁRIO EST.</span><strong>220 Nm</strong></div>
+        <div class="ficha-linha"><span>ENTREGA</span><strong>Linear / Imediata</strong></div>
+        <div class="ficha-linha"><span>ROTAÇÃO MÁX.</span><strong>7400 RPM</strong></div>
+    </div>
+    
+        </div>
+    </section>
+    
+        
+    <section class="widget-card" id="widget-3">
+        <div class="widget-form">
+            <div class="grid-2-col">
+                <div class="campo-grupo">
+                    <label for="input-bore">BORE (mm)</label>
+                    <input type="number" id="input-bore" class="input-cyber" value="86.0" step="0.5" min="20" max="200">
+                </div>
+                <div class="campo-grupo">
+                    <label for="input-stroke">STROKE (mm)</label>
+                    <input type="number" id="input-stroke" class="input-cyber" value="86.0" step="0.5" min="20" max="200">
+                </div>
+                <div class="campo-grupo">
+                    <label for="input-cr">COMP. RATIO (:1)</label>
+                    <input type="number" id="input-cr" class="input-cyber" value="10.5" step="0.1" min="4" max="25">
+                </div>
+                <div class="campo-grupo">
+                    <label for="input-rpm">MAX RPM</label>
+                    <input type="number" id="input-rpm" class="input-cyber" value="7500" step="100" min="1000" max="20000">
+                </div>
+                <div class="campo-grupo">
+                    <label for="select-combustivel">COMBUSTÍVEL</label>
+                    <select id="select-combustivel" class="input-cyber">
+                        <option value="Gasolina" selected>Gasolina</option>
+                        <option value="Etanol (E85)">Etanol (E85)</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Metanol">Metanol</option>
+                    </select>
+                </div>
+                <div class="campo-grupo">
+                    <label for="select-ciclo">CICLO (2T / 4T)</label>
+                    <select id="select-ciclo" class="input-cyber">
+                        <option value="4T" selected>4T</option>
+                        <option value="2T">2T</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="combustao-output" style="width: 100%;">
+            
+    <div class="ficha-tecnica">
+        <div class="ficha-titulo">PARÂMETROS CALCULADOS</div>
+        <div class="ficha-linha"><span>CILINDRADA</span><strong>2.00 L</strong></div>
+        <div class="ficha-linha"><span>POTÊNCIA</span><strong>196 hp</strong></div>
+        <div class="ficha-linha"><span>BINÁRIO (TORQUE)</span><strong>212 Nm</strong></div>
+
+        <div class="ficha-titulo" style="margin-top: 6px;">PALETA DE CORES (HEX)</div>
+        <div class="paleta-grid">
+            
+        <div class="swatch-item">
+            <span class="swatch-cor" style="background-color: #000000;"></span>
+            <span class="swatch-codigo">#000000</span>
+        </div>
+        
+        <div class="swatch-item">
+            <span class="swatch-cor" style="background-color: #F5F5F5;"></span>
+            <span class="swatch-codigo">#F5F5F5</span>
+        </div>
+        
+        <div class="swatch-item">
+            <span class="swatch-cor" style="background-color: #00F0FF;"></span>
+            <span class="swatch-codigo">#00F0FF</span>
+        </div>
+        
+        <div class="swatch-item">
+            <span class="swatch-cor" style="background-color: #12161F;"></span>
+            <span class="swatch-codigo">#12161F</span>
+        </div>
+        
+        <div class="swatch-item">
+            <span class="swatch-cor" style="background-color: #FF2A4B;"></span>
+            <span class="swatch-codigo">#FF2A4B</span>
+        </div>
+        
+        </div>
+    </div>
+    
+        </div>
+    </section>
+    
+    </main>
+
+    <script>
+        const selectCilindros = document.getElementById('select-cilindros');
+        const selectAdmissao = document.getElementById('select-admissao');
+        const fichaOutput = document.getElementById('ficha-output');
+        const motorSvgContainer = document.getElementById('motor-svg-container');
+        const motorNumCilindros = document.getElementById('motor-num-cilindros');
+
+        const inputBore = document.getElementById('input-bore');
+        const inputStroke = document.getElementById('input-stroke');
+        const inputCr = document.getElementById('input-cr');
+        const inputRpm = document.getElementById('input-rpm');
+        const selectCombustivel = document.getElementById('select-combustivel');
+        const selectCiclo = document.getElementById('select-ciclo');
+        const combustaoOutput = document.getElementById('combustao-output');
+
+        async function atualizarWidget3() {
+            const payload = {
+                bore: parseFloat(inputBore.value) || 86.0,
+                stroke: parseFloat(inputStroke.value) || 86.0,
+                compression_ratio: parseFloat(inputCr.value) || 10.5,
+                max_rpm: parseInt(inputRpm.value, 10) || 7500,
+                combustivel: selectCombustivel.value || 'Gasolina',
+                ciclo: selectCiclo.value || '4T',
+                cilindros: parseInt(selectCilindros.value, 10) || 4
+            };
+
+            try {
+                const res = await fetch('/api/combustao', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    combustaoOutput.innerHTML = data.combustao_html;
+                    return;
+                }
+            } catch (_) {}
+
+            // Fallback local idêntico ao cálculo Python para abertura direta do index.html
+            const perfisComb = {
+                'Gasolina': { ftq: 1.00, hex: '#00F0FF' },
+                'Etanol (E85)': { ftq: 1.08, hex: '#39FF14' },
+                'Diesel': { ftq: 1.15, hex: '#FF9F1C' },
+                'Metanol': { ftq: 1.12, hex: '#C724FF' }
+            };
+            const pc = perfisComb[payload.combustivel] || perfisComb['Gasolina'];
+            const unitCc = (Math.PI / 4.0) * Math.pow(payload.bore / 10.0, 2) * (payload.stroke / 10.0);
+            const litros = (unitCc * payload.cilindros) / 1000.0;
+
+            const fatorCr = 1.0 + Math.max(-0.25, Math.min(0.35, (payload.compression_ratio - 10.0) * 0.025));
+            const fatorCicloTq = payload.ciclo === '2T' ? 1.25 : 1.00;
+            const torqueNm = Math.round(litros * 105.0 * fatorCr * pc.ftq * fatorCicloTq);
+            const fatorRpmHp = payload.ciclo === '4T' ? 0.88 : 0.94;
+            const potenciaHp = Math.round((torqueNm * payload.max_rpm * fatorRpmHp) / 7121.0);
+
+            const corAcento = (payload.ciclo === '2T' && payload.max_rpm >= 8500) ? '#FF007F' : pc.hex;
+            const paleta = ['#000000', '#F5F5F5', corAcento, '#12161F', '#FF2A4B'];
+
+            const caixasHex = paleta.map(hex => `
+                <div class="swatch-item">
+                    <span class="swatch-cor" style="background-color: ${hex};"></span>
+                    <span class="swatch-codigo">${hex}</span>
+                </div>
+            `).join('');
+
+            combustaoOutput.innerHTML = `
+                <div class="ficha-tecnica">
+                    <div class="ficha-titulo">PARÂMETROS CALCULADOS</div>
+                    <div class="ficha-linha"><span>CILINDRADA</span><strong>${litros.toFixed(2)} L</strong></div>
+                    <div class="ficha-linha"><span>POTÊNCIA</span><strong>${potenciaHp} hp</strong></div>
+                    <div class="ficha-linha"><span>BINÁRIO (TORQUE)</span><strong>${torqueNm} Nm</strong></div>
+
+                    <div class="ficha-titulo" style="margin-top: 6px;">PALETA DE CORES (HEX)</div>
+                    <div class="paleta-grid">${caixasHex}</div>
+                </div>
+            `;
+        }
+
+        async function atualizarDados() {
+            const cilindros = parseInt(selectCilindros.value, 10) || 4;
+            const admissao = selectAdmissao.value || 'NA';
+
+            try {
+                const res = await fetch('/api/ficha', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cilindros, admissao })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    fichaOutput.innerHTML = data.ficha_html;
+                    motorSvgContainer.innerHTML = data.motor_svg;
+                    motorNumCilindros.textContent = data.cilindros;
+                    atualizarWidget3();
+                    return;
+                }
+            } catch (_) {}
+
+            const perfis = {
+                'NA': { tipo: 'NA (Naturalmente Aspirado)', mp: 1.00, mb: 1.00, pressao: '0.0 bar (Atmosférico)', resp: 'Linear / Imediata', rpm: 7800 },
+                'Turbo': { tipo: 'Turbo (Turbocompressor)', mp: 1.55, mb: 1.60, pressao: '+1.3 bar', resp: 'Progressiva / Alta Pressão', rpm: 7000 },
+                'Supercharger': { tipo: 'Supercharger (Compressor Mecânico)', mp: 1.35, mb: 1.45, pressao: '+0.8 bar', resp: 'Instantânea / Baixa Rotação', rpm: 7300 }
+            };
+            const p = perfis[admissao] || perfis['NA'];
+            const cv = Math.round(cilindros * 45 * p.mp);
+            const nm = Math.round(cilindros * 55 * p.mb);
+            const rpmMax = p.rpm - (cilindros * 100);
+
+            fichaOutput.innerHTML = `
+                <div class="ficha-tecnica">
+                    <div class="ficha-titulo">FICHA TÉCNICA</div>
+                    <div class="ficha-linha"><span>MOTOR</span><strong>Inline-${cilindros} (${cilindros} Cilindros)</strong></div>
+                    <div class="ficha-linha"><span>ADMISSÃO</span><strong>${p.tipo}</strong></div>
+                    <div class="ficha-linha"><span>PRESSÃO</span><strong>${p.pressao}</strong></div>
+                    <div class="ficha-linha"><span>POTÊNCIA EST.</span><strong>${cv} cv</strong></div>
+                    <div class="ficha-linha"><span>BINÁRIO EST.</span><strong>${nm} Nm</strong></div>
+                    <div class="ficha-linha"><span>ENTREGA</span><strong>${p.resp}</strong></div>
+                    <div class="ficha-linha"><span>ROTAÇÃO MÁX.</span><strong>${rpmMax} RPM</strong></div>
+                </div>
+            `;
+
+            const espaco = 260 / cilindros;
+            const raio = Math.min(22, (espaco - 10) / 2);
+            let circulos = '';
+            for (let i = 0; i < cilindros; i++) {
+                const cx = 50 + (i * espaco) + (espaco / 2);
+                circulos += `<circle cx="${cx.toFixed(1)}" cy="95" r="${raio.toFixed(1)}" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />`;
+                circulos += `<circle cx="${cx.toFixed(1)}" cy="95" r="${Math.max(4, raio * 0.45).toFixed(1)}" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />`;
+            }
+            motorSvgContainer.innerHTML = `
+                <svg class="motor-svg" viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="60" y="20" width="240" height="25" rx="4" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    <rect x="40" y="45" width="280" height="100" rx="8" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    ${circulos}
+                    <path d="M 70,145 L 290,145 L 270,172 L 90,172 Z" fill="none" stroke="WhiteSmoke" stroke-width="2pt" stroke-linejoin="round" />
+                </svg>
+            `;
+            motorNumCilindros.textContent = cilindros;
+            atualizarWidget3();
+        }
+
+        selectCilindros.addEventListener('change', atualizarDados);
+        selectAdmissao.addEventListener('change', atualizarDados);
+
+        [inputBore, inputStroke, inputCr, inputRpm, selectCombustivel, selectCiclo].forEach(el => {
+            el.addEventListener('input', atualizarWidget3);
+            el.addEventListener('change', atualizarWidget3);
+        });
+    </script>
+</body>
+</html>
