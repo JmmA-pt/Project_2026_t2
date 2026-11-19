@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Motor Inline</title>
+    <title>Painel de Motor</title>
     <style>
         * {
             box-sizing: border-box;
@@ -93,6 +93,10 @@
             gap: 4px;
         }
 
+        .campo-largura-total {
+            grid-column: 1 / -1;
+        }
+
         .campo-grupo label {
             font-size: 0.72rem;
             letter-spacing: 0.08em;
@@ -108,6 +112,21 @@
             font-size: 0.85rem;
             outline: none;
             width: 100%;
+            transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .input-cyber.input-alerta {
+            border-color: #FF2A4B;
+            background-color: rgba(255, 42, 75, 0.22);
+            color: #FF5C77;
+            font-weight: bold;
+        }
+
+        .rpm-alerta-msg {
+            color: #FF2A4B;
+            font-size: 0.72rem;
+            min-height: 1em;
+            line-height: 1.3;
         }
 
         .ficha-tecnica {
@@ -128,72 +147,332 @@
             margin-bottom: 2px;
         }
 
-        .ficha-linha {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            border-bottom: 1px dotted rgba(245, 245, 245, 0.3);
-            padding-bottom: 3px;
+        /* Widget 2: Motores Predefinidos */
+        .widget-presets {
+            justify-content: flex-start;
+            gap: 12px;
         }
 
-        /* Paleta de Cores HEX (Widget 3) */
-        .paleta-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 6px;
-            margin-top: 4px;
-        }
-
-        .swatch-item {
+        .presets-lista {
+            width: 100%;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 3px;
+            gap: 8px;
         }
 
-        .swatch-cor {
-            width: 100%;
-            height: 16px;
-            border: 1px solid WhiteSmoke;
-            display: block;
-        }
-
-        .swatch-codigo {
-            font-size: 0.62rem;
+        .btn-preset-motor {
+            background-color: #000000;
             color: WhiteSmoke;
+            border: 1.5pt solid rgba(245, 245, 245, 0.55);
+            padding: 9px 11px;
+            text-align: left;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .btn-preset-motor:hover {
+            border-color: WhiteSmoke;
+            background-color: #141414;
+        }
+
+        .btn-preset-motor.ativo {
+            background-color: WhiteSmoke;
+            color: #000000;
+            border-color: WhiteSmoke;
+        }
+
+        .preset-nome {
+            font-size: 0.82rem;
+            font-weight: bold;
+        }
+
+        .preset-resumo {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+
+        /* Widget 3: Todas as Configurações */
+        .widget-configs {
+            justify-content: flex-start;
+            gap: 12px;
+        }
+
+        /* Painel Inferior: Ficha Técnica a ocupar toda a largura inferior */
+        .ficha-painel-inferior {
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 20px;
+            background-color: #000000;
+            border: 2pt solid WhiteSmoke;
+            padding: 18px 22px;
+        }
+
+        .ficha-tecnica-inferior {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ficha-itens-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 12px;
+        }
+
+        .ficha-item {
+            border: 1pt solid rgba(245, 245, 245, 0.4);
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .ficha-item span {
+            font-size: 0.7rem;
+            color: #b5b5b5;
+            letter-spacing: 0.08em;
+        }
+
+        .ficha-item strong {
+            font-size: 0.95rem;
+            color: WhiteSmoke;
+        }
+
+        /* Barra Superior & Botão de Acesso ao Quiz */
+        .dashboard-topbar {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2pt solid WhiteSmoke;
+        }
+
+        .topbar-titulo {
+            font-size: 1rem;
+            font-weight: bold;
+            letter-spacing: 0.12em;
+            color: WhiteSmoke;
+        }
+
+        .btn-cyber-acao {
+            background-color: #000000;
+            color: WhiteSmoke;
+            border: 2pt solid WhiteSmoke;
+            padding: 9px 16px;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: bold;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .btn-cyber-acao:hover,
+        .btn-destaque {
+            background-color: WhiteSmoke;
+            color: #000000;
+        }
+
+        .btn-destaque:hover {
+            background-color: #d9d9d9;
+        }
+
+        /* Modal do Quiz (10 Escolhas Múltiplas) */
+        .quiz-modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .quiz-modal.ativo {
+            display: flex;
+        }
+
+        .quiz-container {
+            background-color: #000000;
+            border: 2pt solid WhiteSmoke;
+            width: 100%;
+            max-width: 840px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .quiz-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1.5pt solid WhiteSmoke;
+        }
+
+        .quiz-header h2 {
+            font-size: 1.05rem;
+            letter-spacing: 0.1em;
+            color: WhiteSmoke;
+        }
+
+        .quiz-progresso {
+            display: inline-block;
+            margin-top: 4px;
+            font-size: 0.78rem;
+            color: #b5b5b5;
+        }
+
+        .quiz-resultado-banner {
+            border: 2pt solid WhiteSmoke;
+            background-color: #0a0a0a;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        .quiz-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .quiz-pergunta-box {
+            border: 1.5pt solid rgba(245, 245, 245, 0.45);
+            background-color: #050505;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-pergunta-texto {
+            font-size: 0.88rem;
+            line-height: 1.45;
+            color: WhiteSmoke;
+            font-weight: bold;
+        }
+
+        .quiz-opcoes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 8px;
+        }
+
+        .quiz-opcao {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1pt solid rgba(245, 245, 245, 0.45);
+            background-color: #000000;
+            color: WhiteSmoke;
+            padding: 9px 11px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .quiz-opcao input[type="radio"] {
+            display: none;
+        }
+
+        .quiz-opcao:hover {
+            border-color: WhiteSmoke;
+            background-color: #141414;
+        }
+
+        .quiz-opcao.selecionada {
+            background-color: WhiteSmoke;
+            color: #000000;
+            border-color: WhiteSmoke;
+            font-weight: bold;
+        }
+
+        .quiz-opcao.correta {
+            border-color: #39FF14;
+            color: #39FF14;
+            background-color: rgba(57, 255, 20, 0.1);
+            font-weight: bold;
+        }
+
+        .quiz-opcao.errada {
+            border-color: #FF2A4B;
+            color: #FF2A4B;
+            background-color: rgba(255, 42, 75, 0.12);
+            font-weight: bold;
+        }
+
+        .quiz-feedback {
+            font-size: 0.76rem;
+            min-height: 1em;
+        }
+
+        .quiz-feedback.ok {
+            color: #39FF14;
+        }
+
+        .quiz-feedback.erro {
+            color: #FF2A4B;
+        }
+
+        .quiz-acoes-footer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-top: 6px;
         }
     </style>
 </head>
 <body>
+    <header class="dashboard-topbar">
+        <span class="topbar-titulo">PAINEL DO MOTOR // CONTROLO AUTOMÓVEL</span>
+        <button type="button" class="btn-cyber-acao" id="btn-abrir-quiz">
+            QUIZ AUTOMÓVEL (10 PERGUNTAS)
+        </button>
+    </header>
+
     <main class="dashboard-container">
         
     <section class="widget-card" id="widget-1">
         <div id="motor-svg-container" style="width: 100%; display: flex; justify-content: center;">
             
     <svg class="motor-svg" viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg"
-         aria-label="Motor Inline 2D">
-        <!-- Tampa superior do motor em linha -->
-        <rect x="60" y="20" width="240" height="25" rx="4"
-              fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+         aria-label="Motor I 2D">
+        
+        <rect x="60" y="20" width="240" height="25" rx="4" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+        <rect x="40" y="45" width="280" height="100" rx="8" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+        <circle cx="82.5" cy="95.0" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="82.5" cy="95.0" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="147.5" cy="95.0" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="147.5" cy="95.0" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="212.5" cy="95.0" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="212.5" cy="95.0" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="277.5" cy="95.0" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+<circle cx="277.5" cy="95.0" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
 
-        <!-- Bloco principal do motor em linha (Inline Block) -->
-        <rect x="40" y="45" width="280" height="100" rx="8"
-              fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-
-        <!-- Cilindros dispostos em linha (Inline) -->
-        <circle cx="82.5" cy="95" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="82.5" cy="95" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="147.5" cy="95" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="147.5" cy="95" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="212.5" cy="95" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="212.5" cy="95" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="277.5" cy="95" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="277.5" cy="95" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-
-
-        <!-- Base / Cárter inferior -->
-        <path d="M 70,145 L 290,145 L 270,172 L 90,172 Z"
-              fill="none" stroke="WhiteSmoke" stroke-width="2pt" stroke-linejoin="round" />
+        <path d="M 70,145 L 290,145 L 270,172 L 90,172 Z" fill="none" stroke="WhiteSmoke" stroke-width="2pt" stroke-linejoin="round" />
+        
     </svg>
     
         </div>
@@ -206,74 +485,77 @@
     </section>
     
         
-    <section class="widget-card" id="widget-2">
+    <section class="widget-card widget-presets" id="widget-2">
+        <div class="ficha-titulo" style="width: 100%; text-align: center;">MOTORES PREDEFINIDOS</div>
+        <div class="presets-lista" id="presets-lista">
+            
+        <button type="button" class="btn-preset-motor" data-preset-id="koenigsegg_jesko">
+            <span class="preset-nome">Koenigsegg Jesko — Hot V8</span>
+            <span class="preset-resumo">V8 · 5.0L · Biturbo · Etanol (E85)</span>
+        </button>
+        
+
+        <button type="button" class="btn-preset-motor" data-preset-id="bugatti_bolide">
+            <span class="preset-nome">Bugatti Bolide — W16</span>
+            <span class="preset-resumo">W16 · 8.0L · Biturbo · Gasolina</span>
+        </button>
+        
+
+        <button type="button" class="btn-preset-motor" data-preset-id="vw_vr6">
+            <span class="preset-nome">Volkswagen R32 — VR6</span>
+            <span class="preset-resumo">VR6 · 3.2L · Atmosférico · Gasolina</span>
+        </button>
+        
+
+        <button type="button" class="btn-preset-motor" data-preset-id="dodge_hellcat">
+            <span class="preset-nome">Dodge Hellcat — V8</span>
+            <span class="preset-resumo">V8 · 6.2L · Supercompressor · Gasolina</span>
+        </button>
+        
+
+        <button type="button" class="btn-preset-motor" data-preset-id="audi_quattro">
+            <span class="preset-nome">Audi Sport Quattro — I5</span>
+            <span class="preset-resumo">I5 · 2.1L · Turbo · Gasolina</span>
+        </button>
+        
+        </div>
+    </section>
+    
+        
+    <section class="widget-card widget-configs" id="widget-3">
+        <div class="ficha-titulo" style="width: 100%; text-align: center;">CONFIGURAÇÕES DO MOTOR</div>
         <div class="widget-form">
-            <div class="campo-grupo">
-                <label for="select-cilindros">NÚMERO DE CILINDROS</label>
-                <select id="select-cilindros" class="input-cyber">
-                    <option value="3" >3 Cilindros</option>
+            <div class="grid-2-col">
+                <div class="campo-grupo">
+                    <label for="select-formato">FORMATO DO MOTOR</label>
+                    <select id="select-formato" class="input-cyber">
+                        <option value="I" selected>I (Em Linha)</option>
+<option value="V" >V (Em V)</option>
+<option value="VR" >VR (V Estreito)</option>
+<option value="W" >W (Em W)</option>
+                    </select>
+                </div>
+                <div class="campo-grupo">
+                    <label for="select-cilindros">NÚMERO DE CILINDROS</label>
+                    <select id="select-cilindros" class="input-cyber">
+                        <option value="3" >3 Cilindros</option>
 <option value="4" selected>4 Cilindros</option>
 <option value="5" >5 Cilindros</option>
 <option value="6" >6 Cilindros</option>
 <option value="8" >8 Cilindros</option>
 <option value="10" >10 Cilindros</option>
 <option value="12" >12 Cilindros</option>
-                </select>
-            </div>
-
-            <div class="campo-grupo">
-                <label for="select-admissao">TIPO DE ADMISSÃO</label>
-                <select id="select-admissao" class="input-cyber">
-                    <option value="NA" selected>NA</option>
+<option value="16" >16 Cilindros</option>
+                    </select>
+                </div>
+                <div class="campo-grupo">
+                    <label for="select-admissao">TIPO DE ADMISSÃO</label>
+                    <select id="select-admissao" class="input-cyber">
+                        <option value="Atmosférico" selected>Atmosférico</option>
 <option value="Turbo" >Turbo</option>
-<option value="Supercharger" >Supercharger</option>
-                </select>
-            </div>
-        </div>
-
-        <div id="ficha-output" style="width: 100%;">
-            
-    <div class="ficha-tecnica">
-        <div class="ficha-titulo">FICHA TÉCNICA</div>
-        <div class="ficha-linha"><span>MOTOR</span><strong>Inline-4 (4 Cilindros)</strong></div>
-        <div class="ficha-linha"><span>ADMISSÃO</span><strong>NA (Naturalmente Aspirado)</strong></div>
-        <div class="ficha-linha"><span>PRESSÃO</span><strong>0.0 bar (Atmosférico)</strong></div>
-        <div class="ficha-linha"><span>POTÊNCIA EST.</span><strong>180 cv</strong></div>
-        <div class="ficha-linha"><span>BINÁRIO EST.</span><strong>220 Nm</strong></div>
-        <div class="ficha-linha"><span>ENTREGA</span><strong>Linear / Imediata</strong></div>
-        <div class="ficha-linha"><span>ROTAÇÃO MÁX.</span><strong>7400 RPM</strong></div>
-    </div>
-    
-        </div>
-    </section>
-    
-        
-    <section class="widget-card" id="widget-3">
-        <div class="widget-form">
-            <div class="grid-2-col">
-                <div class="campo-grupo">
-                    <label for="input-bore">BORE (mm)</label>
-                    <input type="number" id="input-bore" class="input-cyber" value="86.0" step="0.5" min="20" max="200">
-                </div>
-                <div class="campo-grupo">
-                    <label for="input-stroke">STROKE (mm)</label>
-                    <input type="number" id="input-stroke" class="input-cyber" value="86.0" step="0.5" min="20" max="200">
-                </div>
-                <div class="campo-grupo">
-                    <label for="input-cr">COMP. RATIO (:1)</label>
-                    <input type="number" id="input-cr" class="input-cyber" value="10.5" step="0.1" min="4" max="25">
-                </div>
-                <div class="campo-grupo">
-                    <label for="input-rpm">MAX RPM</label>
-                    <input type="number" id="input-rpm" class="input-cyber" value="7500" step="100" min="1000" max="20000">
-                </div>
-                <div class="campo-grupo">
-                    <label for="select-combustivel">COMBUSTÍVEL</label>
-                    <select id="select-combustivel" class="input-cyber">
-                        <option value="Gasolina" selected>Gasolina</option>
-                        <option value="Etanol (E85)">Etanol (E85)</option>
-                        <option value="Diesel">Diesel</option>
-                        <option value="Metanol">Metanol</option>
+<option value="Supercompressor" >Supercompressor</option>
+<option value="Biturbo" >Biturbo</option>
+<option value="Bicarregado" >Bicarregado</option>
                     </select>
                 </div>
                 <div class="campo-grupo">
@@ -283,57 +565,417 @@
                         <option value="2T">2T</option>
                     </select>
                 </div>
+                <div class="campo-grupo">
+                    <label for="input-bore">DIÂMETRO (mm)</label>
+                    <input type="number" id="input-bore" class="input-cyber" value="86.0" step="0.5" min="20" max="200">
+                </div>
+                <div class="campo-grupo">
+                    <label for="input-stroke">CURSO (mm)</label>
+                    <input type="number" id="input-stroke" class="input-cyber" value="86.0" step="0.5" min="20" max="200">
+                </div>
+                <div class="campo-grupo">
+                    <label for="input-cr">TAXA DE COMPRESSÃO (:1)</label>
+                    <input type="number" id="input-cr" class="input-cyber" value="10.5" step="0.1" min="4" max="25">
+                </div>
+                <div class="campo-grupo">
+                    <label for="input-rpm">ROTAÇÃO MÁX. (RPM)</label>
+                    <input type="number" id="input-rpm" class="input-cyber" value="7500" step="100" min="1000" max="25000">
+                </div>
+                <div class="campo-grupo campo-largura-total">
+                    <label for="select-combustivel">COMBUSTÍVEL</label>
+                    <select id="select-combustivel" class="input-cyber">
+                        <option value="Gasolina" selected>Gasolina</option>
+                        <option value="Etanol (E85)">Etanol (E85)</option>
+                        <option value="Metanol">Metanol</option>
+                    </select>
+                </div>
             </div>
-        </div>
-
-        <div id="combustao-output" style="width: 100%;">
-            
-    <div class="ficha-tecnica">
-        <div class="ficha-titulo">PARÂMETROS CALCULADOS</div>
-        <div class="ficha-linha"><span>CILINDRADA</span><strong>2.00 L</strong></div>
-        <div class="ficha-linha"><span>POTÊNCIA</span><strong>196 hp</strong></div>
-        <div class="ficha-linha"><span>BINÁRIO (TORQUE)</span><strong>212 Nm</strong></div>
-
-        <div class="ficha-titulo" style="margin-top: 6px;">PALETA DE CORES (HEX)</div>
-        <div class="paleta-grid">
-            
-        <div class="swatch-item">
-            <span class="swatch-cor" style="background-color: #000000;"></span>
-            <span class="swatch-codigo">#000000</span>
-        </div>
-        
-        <div class="swatch-item">
-            <span class="swatch-cor" style="background-color: #F5F5F5;"></span>
-            <span class="swatch-codigo">#F5F5F5</span>
-        </div>
-        
-        <div class="swatch-item">
-            <span class="swatch-cor" style="background-color: #00F0FF;"></span>
-            <span class="swatch-codigo">#00F0FF</span>
-        </div>
-        
-        <div class="swatch-item">
-            <span class="swatch-cor" style="background-color: #12161F;"></span>
-            <span class="swatch-codigo">#12161F</span>
-        </div>
-        
-        <div class="swatch-item">
-            <span class="swatch-cor" style="background-color: #FF2A4B;"></span>
-            <span class="swatch-codigo">#FF2A4B</span>
-        </div>
-        
-        </div>
-    </div>
-    
+            <div id="rpm-alerta-msg" class="rpm-alerta-msg"></div>
         </div>
     </section>
     
     </main>
 
+    <!-- Ficha Técnica ocupando toda a largura inferior do ecrã -->
+    <section class="ficha-painel-inferior" id="combustao-output">
+        
+    <div class="ficha-tecnica-inferior">
+        <div class="ficha-titulo">FICHA TÉCNICA</div>
+        <div class="ficha-itens-grid">
+            <div class="ficha-item"><span>TIPO DE MOTOR</span><strong>I4 · Atmosférico (4T)</strong></div>
+            <div class="ficha-item"><span>CILINDRADA</span><strong>2.00 L</strong></div>
+            <div class="ficha-item"><span>PRESSÃO</span><strong>0.0 bar (Atmosférico)</strong></div>
+            <div class="ficha-item"><span>BINÁRIO EST.</span><strong>212 Nm</strong></div>
+            <div class="ficha-item"><span>POTÊNCIA EST.</span><strong>199 cv</strong></div>
+        </div>
+    </div>
+    
+    </section>
+
+    
+    <div class="quiz-modal" id="quiz-modal" aria-hidden="true">
+        <div class="quiz-container" role="dialog" aria-modal="true" aria-labelledby="quiz-titulo">
+            <header class="quiz-header">
+                <div>
+                    <h2 id="quiz-titulo">QUIZ AUTOMÓVEL // 10 ESCOLHAS MÚLTIPLAS</h2>
+                    <span class="quiz-progresso" id="quiz-progresso">Respondidas: 0 / 10</span>
+                </div>
+                <button type="button" class="btn-cyber-acao" id="btn-fechar-quiz">VOLTAR AO PAINEL</button>
+            </header>
+
+            <div class="quiz-resultado-banner" id="quiz-resultado-banner" style="display: none;"></div>
+
+            <form id="quiz-form" class="quiz-lista" onsubmit="return false;">
+                
+        <div class="quiz-pergunta-box" id="quiz-q-1">
+            <p class="quiz-pergunta-texto">1. De que país é a marca Bugatti?</p>
+            <div class="quiz-opcoes-grid">
+                
+            <label class="quiz-opcao" data-qid="1" data-idx="0">
+                <input type="radio" name="q_1" value="0">
+                <span class="quiz-letra">A)</span>
+                <span class="quiz-texto">França</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="1" data-idx="1">
+                <input type="radio" name="q_1" value="1">
+                <span class="quiz-letra">B)</span>
+                <span class="quiz-texto">Itália</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="1" data-idx="2">
+                <input type="radio" name="q_1" value="2">
+                <span class="quiz-letra">C)</span>
+                <span class="quiz-texto">Alemanha</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="1" data-idx="3">
+                <input type="radio" name="q_1" value="3">
+                <span class="quiz-letra">D)</span>
+                <span class="quiz-texto">EUA</span>
+            </label>
+            
+            </div>
+            <div class="quiz-feedback" id="quiz-fb-1"></div>
+        </div>
+        
+
+        <div class="quiz-pergunta-box" id="quiz-q-2">
+            <p class="quiz-pergunta-texto">2. Qual destas marcas é sueca?</p>
+            <div class="quiz-opcoes-grid">
+                
+            <label class="quiz-opcao" data-qid="2" data-idx="0">
+                <input type="radio" name="q_2" value="0">
+                <span class="quiz-letra">A)</span>
+                <span class="quiz-texto">Pagani</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="2" data-idx="1">
+                <input type="radio" name="q_2" value="1">
+                <span class="quiz-letra">B)</span>
+                <span class="quiz-texto">Koenigsegg</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="2" data-idx="2">
+                <input type="radio" name="q_2" value="2">
+                <span class="quiz-letra">C)</span>
+                <span class="quiz-texto">Ferrari</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="2" data-idx="3">
+                <input type="radio" name="q_2" value="3">
+                <span class="quiz-letra">D)</span>
+                <span class="quiz-texto">McLaren</span>
+            </label>
+            
+            </div>
+            <div class="quiz-feedback" id="quiz-fb-2"></div>
+        </div>
+        
+
+        <div class="quiz-pergunta-box" id="quiz-q-3">
+            <p class="quiz-pergunta-texto">3. Qual destas marcas produz o hipercarro Chiron?</p>
+            <div class="quiz-opcoes-grid">
+                
+            <label class="quiz-opcao" data-qid="3" data-idx="0">
+                <input type="radio" name="q_3" value="0">
+                <span class="quiz-letra">A)</span>
+                <span class="quiz-texto">Bugatti</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="3" data-idx="1">
+                <input type="radio" name="q_3" value="1">
+                <span class="quiz-letra">B)</span>
+                <span class="quiz-texto">Rimac</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="3" data-idx="2">
+                <input type="radio" name="q_3" value="2">
+                <span class="quiz-letra">C)</span>
+                <span class="quiz-texto">Aston Martin</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="3" data-idx="3">
+                <input type="radio" name="q_3" value="3">
+                <span class="quiz-letra">D)</span>
+                <span class="quiz-texto">Hennessey</span>
+            </label>
+            
+            </div>
+            <div class="quiz-feedback" id="quiz-fb-3"></div>
+        </div>
+        
+
+        <div class="quiz-pergunta-box" id="quiz-q-4">
+            <p class="quiz-pergunta-texto">4. Qual destas marcas é britânica?</p>
+            <div class="quiz-opcoes-grid">
+                
+            <label class="quiz-opcao" data-qid="4" data-idx="0">
+                <input type="radio" name="q_4" value="0">
+                <span class="quiz-letra">A)</span>
+                <span class="quiz-texto">Corvette</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="4" data-idx="1">
+                <input type="radio" name="q_4" value="1">
+                <span class="quiz-letra">B)</span>
+                <span class="quiz-texto">Volvo</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="4" data-idx="2">
+                <input type="radio" name="q_4" value="2">
+                <span class="quiz-letra">C)</span>
+                <span class="quiz-texto">Lotus</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="4" data-idx="3">
+                <input type="radio" name="q_4" value="3">
+                <span class="quiz-letra">D)</span>
+                <span class="quiz-texto">Cupra</span>
+            </label>
+            
+            </div>
+            <div class="quiz-feedback" id="quiz-fb-4"></div>
+        </div>
+        
+
+        <div class="quiz-pergunta-box" id="quiz-q-5">
+            <p class="quiz-pergunta-texto">5. Qual destes carros bateu o recorde mundial de velocidade numa estrada pública ao atingir 447,19 km/h em 2017?</p>
+            <div class="quiz-opcoes-grid">
+                
+            <label class="quiz-opcao" data-qid="5" data-idx="0">
+                <input type="radio" name="q_5" value="0">
+                <span class="quiz-letra">A)</span>
+                <span class="quiz-texto">Rimac Nevera</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="5" data-idx="1">
+                <input type="radio" name="q_5" value="1">
+                <span class="quiz-letra">B)</span>
+                <span class="quiz-texto">Mazda RX-7</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="5" data-idx="2">
+                <input type="radio" name="q_5" value="2">
+                <span class="quiz-letra">C)</span>
+                <span class="quiz-texto">Pagani Huayra</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="5" data-idx="3">
+                <input type="radio" name="q_5" value="3">
+                <span class="quiz-letra">D)</span>
+                <span class="quiz-texto">Koenigsegg Agera RS</span>
+            </label>
+            
+            </div>
+            <div class="quiz-feedback" id="quiz-fb-5"></div>
+        </div>
+        
+
+        <div class="quiz-pergunta-box" id="quiz-q-6">
+            <p class="quiz-pergunta-texto">6. Qual destas marcas fabrica o Valkyrie?</p>
+            <div class="quiz-opcoes-grid">
+                
+            <label class="quiz-opcao" data-qid="6" data-idx="0">
+                <input type="radio" name="q_6" value="0">
+                <span class="quiz-letra">A)</span>
+                <span class="quiz-texto">Aston Martin</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="6" data-idx="1">
+                <input type="radio" name="q_6" value="1">
+                <span class="quiz-letra">B)</span>
+                <span class="quiz-texto">Lamborghini</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="6" data-idx="2">
+                <input type="radio" name="q_6" value="2">
+                <span class="quiz-letra">C)</span>
+                <span class="quiz-texto">Pagani</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="6" data-idx="3">
+                <input type="radio" name="q_6" value="3">
+                <span class="quiz-letra">D)</span>
+                <span class="quiz-texto">Honda</span>
+            </label>
+            
+            </div>
+            <div class="quiz-feedback" id="quiz-fb-6"></div>
+        </div>
+        
+
+        <div class="quiz-pergunta-box" id="quiz-q-7">
+            <p class="quiz-pergunta-texto">7. Qual destas marcas nasceu numa garagem em 2009 a partir da conversão elétrica de um BMW Série 3 (E30)?</p>
+            <div class="quiz-opcoes-grid">
+                
+            <label class="quiz-opcao" data-qid="7" data-idx="0">
+                <input type="radio" name="q_7" value="0">
+                <span class="quiz-letra">A)</span>
+                <span class="quiz-texto">Lada</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="7" data-idx="1">
+                <input type="radio" name="q_7" value="1">
+                <span class="quiz-letra">B)</span>
+                <span class="quiz-texto">Lancia</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="7" data-idx="2">
+                <input type="radio" name="q_7" value="2">
+                <span class="quiz-letra">C)</span>
+                <span class="quiz-texto">Lincoln</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="7" data-idx="3">
+                <input type="radio" name="q_7" value="3">
+                <span class="quiz-letra">D)</span>
+                <span class="quiz-texto">Rimac</span>
+            </label>
+            
+            </div>
+            <div class="quiz-feedback" id="quiz-fb-7"></div>
+        </div>
+        
+
+        <div class="quiz-pergunta-box" id="quiz-q-8">
+            <p class="quiz-pergunta-texto">8. Qual foi o primeiro automóvel de produção em série a combinar tração integral permanente e motor turbo?</p>
+            <div class="quiz-opcoes-grid">
+                
+            <label class="quiz-opcao" data-qid="8" data-idx="0">
+                <input type="radio" name="q_8" value="0">
+                <span class="quiz-letra">A)</span>
+                <span class="quiz-texto">Lancia Delta HF integrale</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="8" data-idx="1">
+                <input type="radio" name="q_8" value="1">
+                <span class="quiz-letra">B)</span>
+                <span class="quiz-texto">Audi Quattro (Ur-Quattro)</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="8" data-idx="2">
+                <input type="radio" name="q_8" value="2">
+                <span class="quiz-letra">C)</span>
+                <span class="quiz-texto">Subaru Impreza WRX STI</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="8" data-idx="3">
+                <input type="radio" name="q_8" value="3">
+                <span class="quiz-letra">D)</span>
+                <span class="quiz-texto">Porsche 959</span>
+            </label>
+            
+            </div>
+            <div class="quiz-feedback" id="quiz-fb-8"></div>
+        </div>
+        
+
+        <div class="quiz-pergunta-box" id="quiz-q-9">
+            <p class="quiz-pergunta-texto">9. O que significa "twin-turbo" num motor?</p>
+            <div class="quiz-opcoes-grid">
+                
+            <label class="quiz-opcao" data-qid="9" data-idx="0">
+                <input type="radio" name="q_9" value="0">
+                <span class="quiz-letra">A)</span>
+                <span class="quiz-texto">Dois motores elétricos</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="9" data-idx="1">
+                <input type="radio" name="q_9" value="1">
+                <span class="quiz-letra">B)</span>
+                <span class="quiz-texto">Dois turbocompressores</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="9" data-idx="2">
+                <input type="radio" name="q_9" value="2">
+                <span class="quiz-letra">C)</span>
+                <span class="quiz-texto">Dois intercoolers</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="9" data-idx="3">
+                <input type="radio" name="q_9" value="3">
+                <span class="quiz-letra">D)</span>
+                <span class="quiz-texto">Duas caixas de velocidades</span>
+            </label>
+            
+            </div>
+            <div class="quiz-feedback" id="quiz-fb-9"></div>
+        </div>
+        
+
+        <div class="quiz-pergunta-box" id="quiz-q-10">
+            <p class="quiz-pergunta-texto">10. Num motor 4 tempos, quantas vezes ocorre a combustão por cilindro a cada 2 rotações da cambota?</p>
+            <div class="quiz-opcoes-grid">
+                
+            <label class="quiz-opcao" data-qid="10" data-idx="0">
+                <input type="radio" name="q_10" value="0">
+                <span class="quiz-letra">A)</span>
+                <span class="quiz-texto">1 vez</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="10" data-idx="1">
+                <input type="radio" name="q_10" value="1">
+                <span class="quiz-letra">B)</span>
+                <span class="quiz-texto">2 vezes</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="10" data-idx="2">
+                <input type="radio" name="q_10" value="2">
+                <span class="quiz-letra">C)</span>
+                <span class="quiz-texto">4 vezes</span>
+            </label>
+            
+            <label class="quiz-opcao" data-qid="10" data-idx="3">
+                <input type="radio" name="q_10" value="3">
+                <span class="quiz-letra">D)</span>
+                <span class="quiz-texto">Depende do combustível</span>
+            </label>
+            
+            </div>
+            <div class="quiz-feedback" id="quiz-fb-10"></div>
+        </div>
+        
+
+                <div class="quiz-acoes-footer">
+                    <button type="submit" class="btn-cyber-acao btn-destaque" id="btn-submeter-quiz">
+                        VERIFICAR RESPOSTAS
+                    </button>
+                    <button type="button" class="btn-cyber-acao" id="btn-reiniciar-quiz">
+                        REINICIAR QUIZ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+
     <script>
+        const PRESETS_DATA = [{"id": "koenigsegg_jesko", "nome": "Koenigsegg Jesko — Hot V8", "resumo": "V8 · 5.0L · Biturbo · Etanol (E85)", "formato": "V", "cilindros": 8, "admissao": "Biturbo", "bore": 92.0, "stroke": 95.25, "compression_ratio": 8.6, "max_rpm": 7800, "combustivel": "Etanol (E85)", "ciclo": "4T"}, {"id": "bugatti_bolide", "nome": "Bugatti Bolide — W16", "resumo": "W16 · 8.0L · Biturbo · Gasolina", "formato": "W", "cilindros": 16, "admissao": "Biturbo", "bore": 86.0, "stroke": 86.0, "compression_ratio": 9.0, "max_rpm": 7000, "combustivel": "Gasolina", "ciclo": "4T"}, {"id": "vw_vr6", "nome": "Volkswagen R32 — VR6", "resumo": "VR6 · 3.2L · Atmosférico · Gasolina", "formato": "VR", "cilindros": 6, "admissao": "Atmosférico", "bore": 84.0, "stroke": 95.9, "compression_ratio": 10.9, "max_rpm": 6800, "combustivel": "Gasolina", "ciclo": "4T"}, {"id": "dodge_hellcat", "nome": "Dodge Hellcat — V8", "resumo": "V8 · 6.2L · Supercompressor · Gasolina", "formato": "V", "cilindros": 8, "admissao": "Supercompressor", "bore": 103.9, "stroke": 90.9, "compression_ratio": 9.5, "max_rpm": 6200, "combustivel": "Gasolina", "ciclo": "4T"}, {"id": "audi_quattro", "nome": "Audi Sport Quattro — I5", "resumo": "I5 · 2.1L · Turbo · Gasolina", "formato": "I", "cilindros": 5, "admissao": "Turbo", "bore": 79.5, "stroke": 86.4, "compression_ratio": 7.5, "max_rpm": 7500, "combustivel": "Gasolina", "ciclo": "4T"}];
+        const presetButtons = document.querySelectorAll('.btn-preset-motor');
+        const selectFormato = document.getElementById('select-formato');
         const selectCilindros = document.getElementById('select-cilindros');
         const selectAdmissao = document.getElementById('select-admissao');
-        const fichaOutput = document.getElementById('ficha-output');
         const motorSvgContainer = document.getElementById('motor-svg-container');
         const motorNumCilindros = document.getElementById('motor-num-cilindros');
 
@@ -344,6 +986,100 @@
         const selectCombustivel = document.getElementById('select-combustivel');
         const selectCiclo = document.getElementById('select-ciclo');
         const combustaoOutput = document.getElementById('combustao-output');
+        const rpmAlertaMsg = document.getElementById('rpm-alerta-msg');
+
+        function limparPresetAtivo() {
+            presetButtons.forEach(b => b.classList.remove('ativo'));
+        }
+
+        function aplicarAlertaRpm(alerta, motivos) {
+            if (alerta) {
+                inputRpm.classList.add('input-alerta');
+                if (rpmAlertaMsg) rpmAlertaMsg.textContent = (motivos || []).join(' | ');
+            } else {
+                inputRpm.classList.remove('input-alerta');
+                if (rpmAlertaMsg) rpmAlertaMsg.textContent = '';
+            }
+        }
+
+        function desenharCilindroSvg(cx, cy, r) {
+            const rPistao = Math.max(2.8, r * 0.45);
+            return `
+                <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${rPistao.toFixed(1)}" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+            `;
+        }
+
+        function gerarSvgMotorLocal(cilindros, formato) {
+            const n = Math.max(1, Math.min(16, cilindros));
+            const fmt = ['I', 'V', 'VR', 'W'].includes(formato) ? formato : 'I';
+            let corpo = '';
+
+            if (fmt === 'I') {
+                const espaco = 260.0 / n;
+                const raio = Math.min(22.0, Math.max(5.2, (espaco - 5.0) / 2.0));
+                let circs = '';
+                for (let i = 0; i < n; i++) {
+                    circs += desenharCilindroSvg(50.0 + i * espaco + espaco / 2.0, 95.0, raio);
+                }
+                corpo = `
+                    <rect x="60" y="20" width="240" height="25" rx="4" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    <rect x="40" y="45" width="280" height="100" rx="8" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    ${circs}
+                    <path d="M 70,145 L 290,145 L 270,172 L 90,172 Z" fill="none" stroke="WhiteSmoke" stroke-width="2pt" stroke-linejoin="round" />
+                `;
+            } else if (fmt === 'V') {
+                const nSup = Math.floor((n + 1) / 2);
+                const nInf = Math.floor(n / 2);
+                const cols = Math.max(1, nSup, nInf);
+                const espaco = 240.0 / cols;
+                const raio = Math.min(17.0, Math.max(6.0, (espaco - 6.0) / 2.0));
+                let circs = '';
+                for (let i = 0; i < nSup; i++) circs += desenharCilindroSvg(60.0 + i * espaco + espaco / 2.0, 57.0, raio);
+                for (let i = 0; i < nInf; i++) circs += desenharCilindroSvg(60.0 + i * espaco + espaco / 2.0, 133.0, raio);
+                corpo = `
+                    <rect x="50" y="28" width="260" height="58" rx="6" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    <rect x="50" y="104" width="260" height="58" rx="6" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    <rect x="28" y="76" width="16" height="38" rx="2" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    <line x1="44" y1="95" x2="322" y2="95" stroke="WhiteSmoke" stroke-width="2pt" stroke-dasharray="6,4" />
+                    ${circs}
+                `;
+            } else if (fmt === 'VR') {
+                const espaco = 244.0 / n;
+                let raio = Math.min(17.0, Math.max(7.5, (espaco * 1.15 - 4.0) / 2.0));
+                if (n >= 10) raio = Math.min(raio, 10.5);
+                let circs = '';
+                for (let i = 0; i < n; i++) {
+                    const cx = 58.0 + i * espaco + espaco / 2.0;
+                    const cy = i % 2 === 0 ? 80.0 : 110.0;
+                    circs += desenharCilindroSvg(cx, cy, raio);
+                }
+                corpo = `
+                    <rect x="65" y="22" width="230" height="20" rx="4" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    <rect x="44" y="42" width="272" height="106" rx="8" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    ${circs}
+                    <path d="M 75,148 L 285,148 L 268,172 L 92,172 Z" fill="none" stroke="WhiteSmoke" stroke-width="2pt" stroke-linejoin="round" />
+                `;
+            } else {
+                const nSup = Math.floor((n + 1) / 2);
+                const nInf = Math.floor(n / 2);
+                const cols = Math.max(1, nSup, nInf);
+                const espacoSup = 244.0 / Math.max(1, nSup);
+                const espacoInf = 244.0 / Math.max(1, nInf);
+                const raio = Math.min(12.0, Math.max(7.0, (244.0 / cols) * 0.35));
+                let circs = '';
+                for (let i = 0; i < nSup; i++) circs += desenharCilindroSvg(58.0 + i * espacoSup + espacoSup / 2.0, i % 2 === 0 ? 43.0 : 63.0, raio);
+                for (let i = 0; i < nInf; i++) circs += desenharCilindroSvg(58.0 + i * espacoInf + espacoInf / 2.0, i % 2 === 0 ? 127.0 : 147.0, raio);
+                corpo = `
+                    <rect x="44" y="20" width="272" height="66" rx="6" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    <rect x="44" y="104" width="272" height="66" rx="6" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    <rect x="24" y="78" width="14" height="34" rx="2" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    <line x1="38" y1="95" x2="326" y2="95" stroke="WhiteSmoke" stroke-width="2pt" stroke-dasharray="6,4" />
+                    ${circs}
+                `;
+            }
+            return `<svg class="motor-svg" viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg">${corpo}</svg>`;
+        }
 
         async function atualizarWidget3() {
             const payload = {
@@ -353,7 +1089,9 @@
                 max_rpm: parseInt(inputRpm.value, 10) || 7500,
                 combustivel: selectCombustivel.value || 'Gasolina',
                 ciclo: selectCiclo.value || '4T',
-                cilindros: parseInt(selectCilindros.value, 10) || 4
+                cilindros: parseInt(selectCilindros.value, 10) || 4,
+                admissao: selectAdmissao.value || 'Atmosférico',
+                formato: selectFormato.value || 'I'
             };
 
             try {
@@ -365,63 +1103,74 @@
                 if (res.ok) {
                     const data = await res.json();
                     combustaoOutput.innerHTML = data.combustao_html;
+                    aplicarAlertaRpm(data.alerta_rpm, data.motivos_alerta);
                     return;
                 }
             } catch (_) {}
 
             // Fallback local idêntico ao cálculo Python para abertura direta do index.html
-            const perfisComb = {
-                'Gasolina': { ftq: 1.00, hex: '#00F0FF' },
-                'Etanol (E85)': { ftq: 1.08, hex: '#39FF14' },
-                'Diesel': { ftq: 1.15, hex: '#FF9F1C' },
-                'Metanol': { ftq: 1.12, hex: '#C724FF' }
+            const fatoresComb = {
+                'Gasolina': 1.00,
+                'Etanol (E85)': 1.08,
+                'Metanol': 1.12
             };
-            const pc = perfisComb[payload.combustivel] || perfisComb['Gasolina'];
+            const perfisAdm = {
+                'Atmosférico': { pressao: '0.0 bar (Atmosférico)', mp: 1.00, mb: 1.00 },
+                'Turbo': { pressao: '+1.5 bar', mp: 1.55, mb: 1.60 },
+                'Supercompressor': { pressao: '+0.8 bar', mp: 1.35, mb: 1.45 },
+                'Biturbo': { pressao: '+2.0 bar', mp: 1.80, mb: 1.85 },
+                'Bicarregado': { pressao: '+2.0 bar', mp: 1.90, mb: 1.95 }
+            };
+            const fatorComb = fatoresComb[payload.combustivel] || 1.00;
+            const admKey = perfisAdm[payload.admissao] ? payload.admissao : 'Atmosférico';
+            const fmtKey = ['I', 'V', 'VR', 'W'].includes(payload.formato) ? payload.formato : 'I';
+            const pAdm = perfisAdm[admKey];
+
             const unitCc = (Math.PI / 4.0) * Math.pow(payload.bore / 10.0, 2) * (payload.stroke / 10.0);
             const litros = (unitCc * payload.cilindros) / 1000.0;
 
             const fatorCr = 1.0 + Math.max(-0.25, Math.min(0.35, (payload.compression_ratio - 10.0) * 0.025));
             const fatorCicloTq = payload.ciclo === '2T' ? 1.25 : 1.00;
-            const torqueNm = Math.round(litros * 105.0 * fatorCr * pc.ftq * fatorCicloTq);
+            const torqueNm = Math.round(litros * 105.0 * fatorCr * fatorComb * fatorCicloTq * pAdm.mb);
             const fatorRpmHp = payload.ciclo === '4T' ? 0.88 : 0.94;
-            const potenciaHp = Math.round((torqueNm * payload.max_rpm * fatorRpmHp) / 7121.0);
+            const potenciaCv = Math.round(((torqueNm * payload.max_rpm * fatorRpmHp) / 7121.0) * (pAdm.mp / pAdm.mb) * 1.01387);
 
-            const corAcento = (payload.ciclo === '2T' && payload.max_rpm >= 8500) ? '#FF007F' : pc.hex;
-            const paleta = ['#000000', '#F5F5F5', corAcento, '#12161F', '#FF2A4B'];
-
-            const caixasHex = paleta.map(hex => `
-                <div class="swatch-item">
-                    <span class="swatch-cor" style="background-color: ${hex};"></span>
-                    <span class="swatch-codigo">${hex}</span>
-                </div>
-            `).join('');
+            const velMediaPistao = (2.0 * (payload.stroke / 1000.0) * payload.max_rpm) / 60.0;
+            const motivosAlerta = [];
+            if (velMediaPistao > 25.0) {
+                motivosAlerta.push(`Vel. média do pistão elevada (${velMediaPistao.toFixed(1)} m/s > 25.0 m/s)`);
+            }
+            if (payload.compression_ratio > 15.0) {
+                motivosAlerta.push('Taxa de compressão > 15:1');
+            }
+            aplicarAlertaRpm(motivosAlerta.length > 0, motivosAlerta);
 
             combustaoOutput.innerHTML = `
-                <div class="ficha-tecnica">
-                    <div class="ficha-titulo">PARÂMETROS CALCULADOS</div>
-                    <div class="ficha-linha"><span>CILINDRADA</span><strong>${litros.toFixed(2)} L</strong></div>
-                    <div class="ficha-linha"><span>POTÊNCIA</span><strong>${potenciaHp} hp</strong></div>
-                    <div class="ficha-linha"><span>BINÁRIO (TORQUE)</span><strong>${torqueNm} Nm</strong></div>
-
-                    <div class="ficha-titulo" style="margin-top: 6px;">PALETA DE CORES (HEX)</div>
-                    <div class="paleta-grid">${caixasHex}</div>
+                <div class="ficha-tecnica-inferior">
+                    <div class="ficha-titulo">FICHA TÉCNICA</div>
+                    <div class="ficha-itens-grid">
+                        <div class="ficha-item"><span>TIPO DE MOTOR</span><strong>${fmtKey}${payload.cilindros} · ${admKey} (${payload.ciclo})</strong></div>
+                        <div class="ficha-item"><span>CILINDRADA</span><strong>${litros.toFixed(2)} L</strong></div>
+                        <div class="ficha-item"><span>PRESSÃO</span><strong>${pAdm.pressao}</strong></div>
+                        <div class="ficha-item"><span>BINÁRIO EST.</span><strong>${torqueNm} Nm</strong></div>
+                        <div class="ficha-item"><span>POTÊNCIA EST.</span><strong>${potenciaCv} cv</strong></div>
+                    </div>
                 </div>
             `;
         }
 
         async function atualizarDados() {
             const cilindros = parseInt(selectCilindros.value, 10) || 4;
-            const admissao = selectAdmissao.value || 'NA';
+            const formato = selectFormato.value || 'I';
 
             try {
                 const res = await fetch('/api/ficha', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ cilindros, admissao })
+                    body: JSON.stringify({ cilindros, formato })
                 });
                 if (res.ok) {
                     const data = await res.json();
-                    fichaOutput.innerHTML = data.ficha_html;
                     motorSvgContainer.innerHTML = data.motor_svg;
                     motorNumCilindros.textContent = data.cilindros;
                     atualizarWidget3();
@@ -429,56 +1178,229 @@
                 }
             } catch (_) {}
 
-            const perfis = {
-                'NA': { tipo: 'NA (Naturalmente Aspirado)', mp: 1.00, mb: 1.00, pressao: '0.0 bar (Atmosférico)', resp: 'Linear / Imediata', rpm: 7800 },
-                'Turbo': { tipo: 'Turbo (Turbocompressor)', mp: 1.55, mb: 1.60, pressao: '+1.3 bar', resp: 'Progressiva / Alta Pressão', rpm: 7000 },
-                'Supercharger': { tipo: 'Supercharger (Compressor Mecânico)', mp: 1.35, mb: 1.45, pressao: '+0.8 bar', resp: 'Instantânea / Baixa Rotação', rpm: 7300 }
-            };
-            const p = perfis[admissao] || perfis['NA'];
-            const cv = Math.round(cilindros * 45 * p.mp);
-            const nm = Math.round(cilindros * 55 * p.mb);
-            const rpmMax = p.rpm - (cilindros * 100);
-
-            fichaOutput.innerHTML = `
-                <div class="ficha-tecnica">
-                    <div class="ficha-titulo">FICHA TÉCNICA</div>
-                    <div class="ficha-linha"><span>MOTOR</span><strong>Inline-${cilindros} (${cilindros} Cilindros)</strong></div>
-                    <div class="ficha-linha"><span>ADMISSÃO</span><strong>${p.tipo}</strong></div>
-                    <div class="ficha-linha"><span>PRESSÃO</span><strong>${p.pressao}</strong></div>
-                    <div class="ficha-linha"><span>POTÊNCIA EST.</span><strong>${cv} cv</strong></div>
-                    <div class="ficha-linha"><span>BINÁRIO EST.</span><strong>${nm} Nm</strong></div>
-                    <div class="ficha-linha"><span>ENTREGA</span><strong>${p.resp}</strong></div>
-                    <div class="ficha-linha"><span>ROTAÇÃO MÁX.</span><strong>${rpmMax} RPM</strong></div>
-                </div>
-            `;
-
-            const espaco = 260 / cilindros;
-            const raio = Math.min(22, (espaco - 10) / 2);
-            let circulos = '';
-            for (let i = 0; i < cilindros; i++) {
-                const cx = 50 + (i * espaco) + (espaco / 2);
-                circulos += `<circle cx="${cx.toFixed(1)}" cy="95" r="${raio.toFixed(1)}" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />`;
-                circulos += `<circle cx="${cx.toFixed(1)}" cy="95" r="${Math.max(4, raio * 0.45).toFixed(1)}" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />`;
-            }
-            motorSvgContainer.innerHTML = `
-                <svg class="motor-svg" viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="60" y="20" width="240" height="25" rx="4" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-                    <rect x="40" y="45" width="280" height="100" rx="8" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-                    ${circulos}
-                    <path d="M 70,145 L 290,145 L 270,172 L 90,172 Z" fill="none" stroke="WhiteSmoke" stroke-width="2pt" stroke-linejoin="round" />
-                </svg>
-            `;
+            motorSvgContainer.innerHTML = gerarSvgMotorLocal(cilindros, formato);
             motorNumCilindros.textContent = cilindros;
             atualizarWidget3();
         }
 
-        selectCilindros.addEventListener('change', atualizarDados);
-        selectAdmissao.addEventListener('change', atualizarDados);
+        presetButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const preset = PRESETS_DATA.find(p => p.id === btn.dataset.presetId);
+                if (!preset) return;
+
+                presetButtons.forEach(b => b.classList.remove('ativo'));
+                btn.classList.add('ativo');
+
+                selectFormato.value = preset.formato;
+                selectCilindros.value = String(preset.cilindros);
+                selectAdmissao.value = preset.admissao;
+                inputBore.value = preset.bore;
+                inputStroke.value = preset.stroke;
+                inputCr.value = preset.compression_ratio;
+                inputRpm.value = preset.max_rpm;
+                selectCombustivel.value = preset.combustivel;
+                selectCiclo.value = preset.ciclo;
+
+                atualizarDados();
+            });
+        });
+
+        [selectFormato, selectCilindros, selectAdmissao].forEach(el => {
+            el.addEventListener('change', () => {
+                limparPresetAtivo();
+                atualizarDados();
+            });
+        });
 
         [inputBore, inputStroke, inputCr, inputRpm, selectCombustivel, selectCiclo].forEach(el => {
-            el.addEventListener('input', atualizarWidget3);
-            el.addEventListener('change', atualizarWidget3);
+            el.addEventListener('input', () => {
+                limparPresetAtivo();
+                atualizarWidget3();
+            });
+            el.addEventListener('change', () => {
+                limparPresetAtivo();
+                atualizarWidget3();
+            });
         });
+
+        /* ----------------------------------------------------------------------
+           MÓDULO QUIZ AUTOMÓVEL (10 Escolhas Múltiplas)
+           ---------------------------------------------------------------------- */
+        const QUIZ_DATA = [{"id": 1, "opcoes": ["França", "Itália", "Alemanha", "EUA"], "correta": 0}, {"id": 2, "opcoes": ["Pagani", "Koenigsegg", "Ferrari", "McLaren"], "correta": 1}, {"id": 3, "opcoes": ["Bugatti", "Rimac", "Aston Martin", "Hennessey"], "correta": 0}, {"id": 4, "opcoes": ["Corvette", "Volvo", "Lotus", "Cupra"], "correta": 2}, {"id": 5, "opcoes": ["Rimac Nevera", "Mazda RX-7", "Pagani Huayra", "Koenigsegg Agera RS"], "correta": 3}, {"id": 6, "opcoes": ["Aston Martin", "Lamborghini", "Pagani", "Honda"], "correta": 0}, {"id": 7, "opcoes": ["Lada", "Lancia", "Lincoln", "Rimac"], "correta": 3}, {"id": 8, "opcoes": ["Lancia Delta HF integrale", "Audi Quattro (Ur-Quattro)", "Subaru Impreza WRX STI", "Porsche 959"], "correta": 1}, {"id": 9, "opcoes": ["Dois motores elétricos", "Dois turbocompressores", "Dois intercoolers", "Duas caixas de velocidades"], "correta": 1}, {"id": 10, "opcoes": ["1 vez", "2 vezes", "4 vezes", "Depende do combustível"], "correta": 0}];
+        const quizModal = document.getElementById('quiz-modal');
+        const btnAbrirQuiz = document.getElementById('btn-abrir-quiz');
+        const btnFecharQuiz = document.getElementById('btn-fechar-quiz');
+        const btnReiniciarQuiz = document.getElementById('btn-reiniciar-quiz');
+        const quizForm = document.getElementById('quiz-form');
+        const quizProgresso = document.getElementById('quiz-progresso');
+        const quizBanner = document.getElementById('quiz-resultado-banner');
+        const quizContainer = quizModal ? quizModal.querySelector('.quiz-container') : null;
+
+        function abrirQuiz() {
+            quizModal.classList.add('ativo');
+            quizModal.setAttribute('aria-hidden', 'false');
+        }
+
+        function fecharQuiz() {
+            quizModal.classList.remove('ativo');
+            quizModal.setAttribute('aria-hidden', 'true');
+        }
+
+        function atualizarProgressoQuiz() {
+            let respondidas = 0;
+            QUIZ_DATA.forEach(q => {
+                if (quizForm.querySelector(`input[name="q_${q.id}"]:checked`)) {
+                    respondidas += 1;
+                }
+            });
+            quizProgresso.textContent = `Respondidas: ${respondidas} / ${QUIZ_DATA.length}`;
+        }
+
+        function obterClassificacaoQuiz(percentagem) {
+            if (percentagem >= 70) return 'Verdadeiro purista!';
+            if (percentagem >= 50) return 'Purista emergente';
+            return 'Condutor diário';
+        }
+
+        function aplicarResultadoQuiz(resultado) {
+            let corBanner = '#FF2A4B';
+            let fundoBanner = 'rgba(255, 42, 75, 0.16)';
+            if (resultado.percentagem >= 70) {
+                corBanner = '#39FF14';
+                fundoBanner = 'rgba(57, 255, 20, 0.14)';
+            } else if (resultado.percentagem >= 50) {
+                corBanner = '#FFBE0B';
+                fundoBanner = 'rgba(255, 190, 11, 0.16)';
+            }
+            const classificacao = resultado.classificacao || obterClassificacaoQuiz(resultado.percentagem);
+
+            quizBanner.style.display = 'flex';
+            quizBanner.style.borderColor = corBanner;
+            quizBanner.style.backgroundColor = fundoBanner;
+            quizBanner.innerHTML = `
+                <span>RESULTADO FINAL: <strong style="color:${corBanner}">${resultado.pontuacao} / ${resultado.total} (${resultado.percentagem}%)</strong></span>
+                <span style="color:${corBanner}; letter-spacing: 0.06em;">CLASSIFICAÇÃO: ${classificacao}</span>
+            `;
+
+            resultado.detalhes.forEach(item => {
+                const opcoes = quizForm.querySelectorAll(`.quiz-opcao[data-qid="${item.id}"]`);
+                const fb = document.getElementById(`quiz-fb-${item.id}`);
+
+                opcoes.forEach(op => {
+                    op.classList.remove('selecionada', 'correta', 'errada');
+                    const idx = parseInt(op.dataset.idx, 10);
+                    if (idx === item.correta) {
+                        op.classList.add('correta');
+                    } else if (idx === item.escolha && !item.acertou) {
+                        op.classList.add('errada');
+                    }
+                });
+
+                if (item.acertou) {
+                    fb.className = 'quiz-feedback ok';
+                    fb.textContent = '[CORRETA] Resposta certa!';
+                } else if (!item.respondida) {
+                    fb.className = 'quiz-feedback erro';
+                    fb.textContent = `[SEM RESPOSTA] Correta: ${item.texto_correto}`;
+                } else {
+                    fb.className = 'quiz-feedback erro';
+                    fb.textContent = `[INCORRETA] Resposta correta: ${item.texto_correto}`;
+                }
+            });
+
+            if (quizContainer) quizContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function submeterQuiz() {
+            const respostas = {};
+            QUIZ_DATA.forEach(q => {
+                const checked = quizForm.querySelector(`input[name="q_${q.id}"]:checked`);
+                if (checked) {
+                    respostas[String(q.id)] = parseInt(checked.value, 10);
+                }
+            });
+
+            try {
+                const res = await fetch('/api/quiz', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ respostas })
+                });
+                if (res.ok) {
+                    const resultado = await res.json();
+                    aplicarResultadoQuiz(resultado);
+                    return;
+                }
+            } catch (_) {}
+
+            // Fallback local idêntico à função avaliar_quiz() do Python
+            let pontuacao = 0;
+            const detalhes = QUIZ_DATA.map(q => {
+                const raw = respostas[String(q.id)];
+                const escolha = raw !== undefined ? raw : -1;
+                const acertou = escolha === q.correta;
+                if (acertou) pontuacao += 1;
+                return {
+                    id: q.id,
+                    acertou,
+                    respondida: escolha >= 0,
+                    escolha,
+                    correta: q.correta,
+                    texto_correto: q.opcoes[q.correta]
+                };
+            });
+            const percentagem = Math.round((pontuacao / QUIZ_DATA.length) * 100);
+            aplicarResultadoQuiz({
+                pontuacao,
+                total: QUIZ_DATA.length,
+                percentagem,
+                classificacao: obterClassificacaoQuiz(percentagem),
+                detalhes
+            });
+        }
+
+        function reiniciarQuiz() {
+            quizForm.reset();
+            quizForm.querySelectorAll('.quiz-opcao').forEach(op => {
+                op.classList.remove('selecionada', 'correta', 'errada');
+            });
+            quizForm.querySelectorAll('.quiz-feedback').forEach(fb => {
+                fb.className = 'quiz-feedback';
+                fb.textContent = '';
+            });
+            quizBanner.style.display = 'none';
+            quizBanner.style.borderColor = '';
+            quizBanner.style.backgroundColor = '';
+            quizBanner.innerHTML = '';
+            atualizarProgressoQuiz();
+            if (quizContainer) quizContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        if (btnAbrirQuiz && quizModal) {
+            btnAbrirQuiz.addEventListener('click', abrirQuiz);
+            btnFecharQuiz.addEventListener('click', fecharQuiz);
+            btnReiniciarQuiz.addEventListener('click', reiniciarQuiz);
+            quizForm.addEventListener('submit', submeterQuiz);
+
+            quizModal.addEventListener('click', (e) => {
+                if (e.target === quizModal) fecharQuiz();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && quizModal.classList.contains('ativo')) fecharQuiz();
+            });
+
+            quizForm.querySelectorAll('.quiz-opcao input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    const qid = radio.name.replace('q_', '');
+                    quizForm.querySelectorAll(`.quiz-opcao[data-qid="${qid}"]`).forEach(op => {
+                        op.classList.remove('selecionada', 'correta', 'errada');
+                    });
+                    radio.closest('.quiz-opcao').classList.add('selecionada');
+                    atualizarProgressoQuiz();
+                });
+            });
+        }
     </script>
 </body>
 </html>
