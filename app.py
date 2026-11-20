@@ -6,143 +6,405 @@ import webbrowser
 
 
 # ==============================================================================
-# WIDGET 1: BASE DO MOTOR (Figura 2D + Número de Cilindros Exclusivo)
+# WIDGET 1: BASE DO MOTOR (Figura 2D Realista + Admissão + Cilindros Exclusivo)
 # ==============================================================================
-def gerar_svg_motor_inline(num_cilindros: int = 4, formato: str = "I") -> str:
+SVG_MOTOR_DEFS = """
+<defs>
+    <linearGradient id="eng-block" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#2c313d" />
+        <stop offset="45%" stop-color="#191c24" />
+        <stop offset="100%" stop-color="#232732" />
+    </linearGradient>
+    <linearGradient id="eng-head" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#3c4252" />
+        <stop offset="50%" stop-color="#20242e" />
+        <stop offset="100%" stop-color="#13161c" />
+    </linearGradient>
+    <linearGradient id="eng-redcam" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#991b1b" />
+        <stop offset="50%" stop-color="#ff1e38" />
+        <stop offset="100%" stop-color="#991b1b" />
+    </linearGradient>
+    <linearGradient id="eng-metal" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#64748b" />
+        <stop offset="45%" stop-color="#cbd5e1" />
+        <stop offset="100%" stop-color="#334155" />
+    </linearGradient>
+    <linearGradient id="eng-exhaust" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#94a3b8" />
+        <stop offset="55%" stop-color="#c2410c" />
+        <stop offset="100%" stop-color="#451a03" />
+    </linearGradient>
+    <linearGradient id="eng-liner" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#f1f5f9" />
+        <stop offset="50%" stop-color="#475569" />
+        <stop offset="100%" stop-color="#cbd5e1" />
+    </linearGradient>
+    <radialGradient id="eng-bore" cx="50%" cy="50%" r="50%">
+        <stop offset="50%" stop-color="#040507" />
+        <stop offset="100%" stop-color="#181b24" />
+    </radialGradient>
+    <radialGradient id="eng-piston" cx="38%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="#f8fafc" />
+        <stop offset="55%" stop-color="#94a3b8" />
+        <stop offset="100%" stop-color="#334155" />
+    </radialGradient>
+    <radialGradient id="eng-turbo-cold" cx="42%" cy="38%" r="60%">
+        <stop offset="0%" stop-color="#f1f5f9" />
+        <stop offset="55%" stop-color="#94a3b8" />
+        <stop offset="100%" stop-color="#475569" />
+    </radialGradient>
+    <radialGradient id="eng-turbo-hot" cx="45%" cy="45%" r="60%">
+        <stop offset="0%" stop-color="#ea580c" />
+        <stop offset="50%" stop-color="#7c2d12" />
+        <stop offset="100%" stop-color="#27130d" />
+    </radialGradient>
+    <linearGradient id="eng-filter" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#7f1d1d" />
+        <stop offset="50%" stop-color="#dc2626" />
+        <stop offset="100%" stop-color="#450a0a" />
+    </linearGradient>
+    <linearGradient id="eng-blower" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#e2e8f0" />
+        <stop offset="40%" stop-color="#94a3b8" />
+        <stop offset="100%" stop-color="#334155" />
+    </linearGradient>
+</defs>
+"""
+
+
+def gerar_svg_motor_inline(
+    num_cilindros: int = 4,
+    formato: str = "I",
+    admissao: str = "Atmosférico",
+) -> str:
     """
-    Desenha o SVG 2D técnico do motor de acordo com o formato escolhido
-    (I, V, VR ou W), suportando até 16 cilindros.
+    Desenha o SVG 2D realista e mecânico do motor de acordo com o formato escolhido
+    (I, V, VR ou W) e tipo de admissão (Atmosférico, Turbo, Supercompressor,
+    Biturbo ou Twincharge), suportando até 16 cilindros.
     """
     num_cilindros = max(1, min(16, int(num_cilindros)))
     formato = str(formato).upper()
     if formato not in ("I", "V", "VR", "W"):
         formato = "I"
 
+    adm = str(admissao) if str(admissao) in (
+        "Atmosférico", "Turbo", "Supercompressor", "Biturbo", "Twincharge"
+    ) else "Atmosférico"
+
     def desenhar_cilindro(cx: float, cy: float, r: float) -> str:
-        r_pistao = max(2.8, r * 0.48)
-        r_pino = max(1.4, r * 0.16)
+        r_pistao = max(3.6, r * 0.72)
+        sw_camisa = max(1.4, min(2.4, r * 0.14))
+        r_centro = max(1.1, r * 0.17)
         return (
-            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" '
-            f'fill="rgba(34, 211, 238, 0.08)" stroke="#22D3EE" stroke-width="2" />\n'
-            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r_pistao:.1f}" '
-            f'fill="rgba(129, 140, 248, 0.18)" stroke="#F8FAFC" stroke-width="1.7" />\n'
-            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r_pino:.1f}" '
-            f'fill="#22D3EE" />\n'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" fill="url(#eng-bore)" stroke="url(#eng-liner)" stroke-width="{sw_camisa:.1f}" />\n'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r_pistao:.1f}" fill="url(#eng-piston)" stroke="#0f172a" stroke-width="0.9" />\n'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r_centro:.1f}" fill="#0b0d12" stroke="#ff1e38" stroke-width="0.8" />\n'
+        )
+
+    def desenhar_polia(cx: float, cy: float, r: float, cor_centro: str = "#ff1e38") -> str:
+        r_in = max(2.2, r * 0.42)
+        return (
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />\n'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r_in:.1f}" fill="#0b0d12" stroke="{cor_centro}" stroke-width="1" />\n'
+        )
+
+    def desenhar_turbo(cx: float, cy: float, escala: float = 1.0) -> str:
+        # Turbo simplificado mantendo o tamanho grande (Caracol Frio + Centro + Caracol Quente + Wastegate)
+        return (
+            f'<g transform="translate({cx:.1f},{cy:.1f}) scale({escala:.2f})">\n'
+            f'  <rect x="-4" y="-15" width="8" height="5.5" rx="1.5" fill="url(#eng-metal)" stroke="#1e293b" stroke-width="0.8" />\n'
+            f'  <line x1="0" y1="-9.5" x2="7" y2="-4.5" stroke="#cbd5e1" stroke-width="1.1" />\n'
+            f'  <rect x="-5" y="-5" width="10" height="10" rx="2" fill="#334155" stroke="#94a3b8" stroke-width="0.9" />\n'
+            f'  <line x1="-1" y1="-5" x2="-1" y2="5" stroke="#ff1e38" stroke-width="1.5" />\n'
+            f'  <circle cx="-12" cy="0" r="11.5" fill="url(#eng-turbo-cold)" stroke="#e2e8f0" stroke-width="1.1" />\n'
+            f'  <rect x="-17" y="-13.5" width="8" height="6" rx="1.5" fill="url(#eng-metal)" stroke="#475569" stroke-width="0.8" />\n'
+            f'  <circle cx="-12" cy="0" r="5.5" fill="#07090d" stroke="#475569" stroke-width="0.85" />\n'
+            f'  <path d="M -12,-4.6 L -12,4.6 M -16.6,0 L -7.4,0" stroke="#e2e8f0" stroke-width="1" />\n'
+            f'  <circle cx="-12" cy="0" r="1.7" fill="#ff1e38" />\n'
+            f'  <circle cx="12" cy="0" r="10.5" fill="url(#eng-turbo-hot)" stroke="#fb923c" stroke-width="1.1" />\n'
+            f'  <circle cx="12" cy="0" r="4.4" fill="#1a0905" stroke="#fb923c" stroke-width="0.9" />\n'
+            f'</g>\n'
+        )
+
+    def desenhar_intercooler(x: float, y: float, w: float, h: float, vertical: bool = False) -> str:
+        linhas = ""
+        if vertical:
+            for k in range(1, 5):
+                ly = y + k * (h / 5.0)
+                linhas += f'<line x1="{x + 3:.1f}" y1="{ly:.1f}" x2="{x + w - 3:.1f}" y2="{ly:.1f}" stroke="#475569" stroke-width="1" />\n'
+        else:
+            for k in range(1, 5):
+                lx = x + k * (w / 5.0)
+                linhas += f'<line x1="{lx:.1f}" y1="{y + 3:.1f}" x2="{lx:.1f}" y2="{y + h - 3:.1f}" stroke="#475569" stroke-width="1" />\n'
+        return (
+            f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="3" fill="#080a0f" stroke="#94a3b8" stroke-width="1.3" />\n'
+            f'{linhas}'
+        )
+
+    def desenhar_filtro_conico(x: float, y: float, w: float, h: float) -> str:
+        return (
+            f'<polygon points="{x:.1f},{y + 2:.1f} {x + w:.1f},{y:.1f} {x + w:.1f},{y + h:.1f} {x:.1f},{y + h - 2:.1f}" '
+            f'fill="url(#eng-filter)" stroke="#ef4444" stroke-width="1.1" />\n'
+            f'<rect x="{x - 3:.1f}" y="{y + 2:.1f}" width="3.5" height="{h - 4:.1f}" rx="1" fill="#334155" stroke="#94a3b8" stroke-width="0.7" />\n'
+        )
+
+    def desenhar_supercharger(
+        x: float, y: float, w: float, h: float,
+        pulley_x: float, pulley_y: float, crank_x: float, crank_y: float
+    ) -> str:
+        snout_y = y + h / 2.0
+        return (
+            f'<!-- Correia do Supercompressor -->\n'
+            f'<line x1="{pulley_x:.1f}" y1="{pulley_y:.1f}" x2="{crank_x:.1f}" y2="{crank_y:.1f}" stroke="#334155" stroke-width="4.2" />\n'
+            f'<line x1="{pulley_x:.1f}" y1="{pulley_y:.1f}" x2="{crank_x:.1f}" y2="{crank_y:.1f}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3" />\n'
+            f'<!-- Snout e Carcaça Twin-Screw -->\n'
+            f'<rect x="{pulley_x:.1f}" y="{snout_y - 4.5:.1f}" width="{max(6.0, x - pulley_x + 2):.1f}" height="9" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />\n'
+            f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="5" fill="url(#eng-blower)" stroke="#e2e8f0" stroke-width="1.3" />\n'
+            f'<line x1="{x + 8:.1f}" y1="{y + h * 0.28:.1f}" x2="{x + w - 8:.1f}" y2="{y + h * 0.28:.1f}" stroke="#334155" stroke-width="1.1" />\n'
+            f'<line x1="{x + 8:.1f}" y1="{y + h * 0.72:.1f}" x2="{x + w - 8:.1f}" y2="{y + h * 0.72:.1f}" stroke="#334155" stroke-width="1.1" />\n'
+            f'<rect x="{x + w * 0.22:.1f}" y="{snout_y - 3:.1f}" width="{w * 0.56:.1f}" height="6" rx="2" fill="url(#eng-redcam)" />\n'
+            f'{desenhar_polia(pulley_x, pulley_y, 7.5, "#ff9f1c")}'
         )
 
     corpo_svg = ""
-    guia_cad = (
-        '<path d="M 14,24 L 14,12 L 26,12 M 346,24 L 346,12 L 334,12 '
-        'M 14,166 L 14,178 L 26,178 M 346,166 L 346,178 L 334,178" '
-        'fill="none" stroke="rgba(34, 211, 238, 0.28)" stroke-width="1.2" stroke-linecap="round" />\n'
-    )
 
-    if formato == "I":
-        largura_bloco = 260.0
-        inicio_x = 50.0
+    if formato in ("I", "VR"):
+        largura_bloco = 260.0 if formato == "I" else 248.0
+        inicio_x = 72.0 if formato == "I" else 78.0
         espaco = largura_bloco / num_cilindros
-        raio = min(22.0, max(5.2, (espaco - 5.0) / 2.0))
-        cilindros = "".join(
-            desenhar_cilindro(inicio_x + i * espaco + espaco / 2.0, 95.0, raio)
-            for i in range(num_cilindros)
-        )
-        corpo_svg = f"""
-        <rect x="60" y="20" width="240" height="25" rx="6" fill="rgba(15, 23, 42, 0.72)" stroke="#CBD5E1" stroke-width="1.8" />
-        <rect x="40" y="45" width="280" height="100" rx="12" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
-        {cilindros}
-        <path d="M 70,145 L 290,145 L 270,172 L 90,172 Z" fill="rgba(15, 23, 42, 0.65)" stroke="#94A3B8" stroke-width="1.8" stroke-linejoin="round" />
-        """
-
-    elif formato == "V":
-        n_sup = (num_cilindros + 1) // 2
-        n_inf = num_cilindros // 2
-        cols = max(1, n_sup, n_inf)
-        largura = 240.0
-        inicio_x = 60.0
-        espaco = largura / cols
-        raio = min(17.0, max(6.0, (espaco - 6.0) / 2.0))
+        if formato == "I":
+            raio = min(21.0, max(5.2, (espaco - 4.5) / 2.0))
+        else:
+            raio = min(16.0, max(7.0, (espaco * 1.15 - 4.0) / 2.0))
+            if num_cilindros >= 10:
+                raio = min(raio, 10.2)
+        w_runner = max(3.6, min(12.0, raio * 0.65))
 
         cilindros = ""
-        for i in range(n_sup):
-            cilindros += desenhar_cilindro(inicio_x + i * espaco + espaco / 2.0, 57.0, raio)
-        for i in range(n_inf):
-            cilindros += desenhar_cilindro(inicio_x + i * espaco + espaco / 2.0, 133.0, raio)
-
-        corpo_svg = f"""
-        <rect x="50" y="28" width="260" height="58" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
-        <rect x="50" y="104" width="260" height="58" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
-        <rect x="28" y="76" width="16" height="38" rx="4" fill="rgba(129, 140, 248, 0.22)" stroke="#818CF8" stroke-width="1.8" />
-        <line x1="44" y1="95" x2="322" y2="95" stroke="#818CF8" stroke-width="2" stroke-dasharray="6,4" />
-        {cilindros}
-        """
-
-    elif formato == "VR":
-        largura = 244.0
-        inicio_x = 58.0
-        espaco = largura / num_cilindros
-        raio = min(17.0, max(7.5, (espaco * 1.15 - 4.0) / 2.0))
-        if num_cilindros >= 10:
-            raio = min(raio, 10.5)
-
-        cilindros = ""
+        coletores = ""
         for i in range(num_cilindros):
             cx = inicio_x + i * espaco + espaco / 2.0
-            cy = 80.0 if i % 2 == 0 else 110.0
+            cy = 123.0 if formato == "I" else (104.0 if i % 2 == 0 else 142.0)
             cilindros += desenhar_cilindro(cx, cy, raio)
+            coletores += (
+                f'<rect x="{cx - w_runner / 2:.1f}" y="54" width="{w_runner:.1f}" height="18" rx="1.5" '
+                f'fill="url(#eng-metal)" stroke="#1e293b" stroke-width="0.8" />\n'
+                f'<rect x="{cx - w_runner / 2:.1f}" y="174" width="{w_runner:.1f}" height="19" rx="1.5" '
+                f'fill="url(#eng-exhaust)" stroke="#1e293b" stroke-width="0.8" />\n'
+            )
+
+        # Admissão específica na zona superior / esquerda / inferior
+        admissao_svg = ""
+        if adm == "Atmosférico":
+            admissao_svg = (
+                f'<rect x="78" y="38" width="248" height="17" rx="5" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />\n'
+                f'<rect x="86" y="40" width="232" height="3" rx="1" fill="url(#eng-redcam)" />\n'
+                f'<rect x="54" y="42" width="25" height="9" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />\n'
+                f'{desenhar_filtro_conico(20.0, 37.0, 34.0, 19.0)}'
+                f'<rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />\n'
+            )
+        elif adm == "Turbo":
+            admissao_svg = (
+                f'<!-- Tubo de Pressão + Intercooler + Turbo Único Grande -->\n'
+                f'<path d="M 30,190 L 30,46 L 78,46" fill="none" stroke="url(#eng-metal)" stroke-width="7" stroke-linejoin="round" />\n'
+                f'<path d="M 68,210 L 184,210" fill="none" stroke="url(#eng-metal)" stroke-width="7" />\n'
+                f'{desenhar_intercooler(16.0, 192.0, 50.0, 30.0)}'
+                f'<rect x="78" y="38" width="248" height="17" rx="5" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />\n'
+                f'<rect x="86" y="40" width="232" height="3" rx="1" fill="url(#eng-redcam)" />\n'
+                f'<rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />\n'
+                f'{desenhar_turbo(216.0, 211.0, 1.42)}'
+            )
+        elif adm == "Supercompressor":
+            admissao_svg = (
+                f'<rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />\n'
+                f'<rect x="304" y="39" width="24" height="11" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />\n'
+                f'{desenhar_filtro_conico(328.0, 35.0, 32.0, 19.0)}'
+                f'{desenhar_supercharger(92.0, 28.0, 212.0, 28.0, 48.0, 42.0, 48.0, 123.0)}'
+            )
+        elif adm == "Biturbo":
+            admissao_svg = (
+                f'<!-- Biturbo Sequencial + Intercooler Frontal -->\n'
+                f'<path d="M 30,190 L 30,46 L 78,46" fill="none" stroke="url(#eng-metal)" stroke-width="7" stroke-linejoin="round" />\n'
+                f'<path d="M 68,210 L 266,210" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" />\n'
+                f'{desenhar_intercooler(16.0, 192.0, 50.0, 30.0)}'
+                f'<rect x="78" y="38" width="248" height="17" rx="5" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />\n'
+                f'<rect x="86" y="40" width="232" height="3" rx="1" fill="url(#eng-redcam)" />\n'
+                f'<rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />\n'
+                f'{desenhar_turbo(146.0, 211.0, 1.32)}'
+                f'{desenhar_turbo(282.0, 211.0, 1.32)}'
+            )
+        else:  # Twincharge (Supercompressor + Turbo + Intercooler)
+            admissao_svg = (
+                f'<!-- Twincharge: Turbo + Intercooler + Supercompressor com Correia -->\n'
+                f'<path d="M 24,190 L 24,37 L 84,37" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />\n'
+                f'<path d="M 68,210 L 194,210" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" />\n'
+                f'{desenhar_intercooler(14.0, 192.0, 50.0, 30.0)}'
+                f'<rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />\n'
+                f'{desenhar_turbo(224.0, 211.0, 1.38)}'
+                f'{desenhar_supercharger(92.0, 28.0, 212.0, 28.0, 48.0, 42.0, 48.0, 123.0)}'
+            )
 
         corpo_svg = f"""
-        <rect x="65" y="22" width="230" height="20" rx="6" fill="rgba(15, 23, 42, 0.72)" stroke="#CBD5E1" stroke-width="1.8" />
-        <rect x="44" y="42" width="272" height="106" rx="12" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
+        {coletores}
+        {admissao_svg}
+        <!-- Distribuição Frontal (Polias) e Volante Traseiro -->
+        <rect x="40" y="83" width="18" height="54" rx="6" fill="#0f1218" stroke="#475569" stroke-width="1.3" />
+        {desenhar_polia(48.0, 93.0, 6.8)}
+        {desenhar_polia(48.0, 123.0, 12.2)}
+        <rect x="340" y="91" width="14" height="64" rx="3" fill="url(#eng-metal)" stroke="#475569" stroke-width="1.3" />
+        <!-- Bloco Maquinado -->
+        <rect x="64" y="70" width="276" height="106" rx="9" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.6" />
         {cilindros}
-        <path d="M 75,148 L 285,148 L 268,172 L 92,172 Z" fill="rgba(15, 23, 42, 0.65)" stroke="#94A3B8" stroke-width="1.8" stroke-linejoin="round" />
         """
 
-    else:  # formato == "W"
+    else:  # formato == "V" ou "W"
         n_sup = (num_cilindros + 1) // 2
         n_inf = num_cilindros // 2
         cols = max(1, n_sup, n_inf)
         largura = 244.0
-        inicio_x = 58.0
+        inicio_x = 80.0
         espaco_sup = largura / max(1, n_sup)
         espaco_inf = largura / max(1, n_inf)
-        raio = min(12.0, max(7.0, (largura / cols) * 0.35))
 
+        if formato == "V":
+            raio = min(15.5, max(5.8, (largura / cols - 6.0) / 2.0))
+            bank_sup_y, bank_sup_h = 55.0, 50.0
+            bank_inf_y, bank_inf_h = 141.0, 50.0
+            y_exh_sup, y_exh_inf = 38.0, 193.0
+            y_col_sup, y_col_inf = 38.0, 200.0
+        else:
+            raio = min(10.8, max(6.6, (largura / cols) * 0.34))
+            bank_sup_y, bank_sup_h = 47.0, 58.0
+            bank_inf_y, bank_inf_h = 141.0, 58.0
+            y_exh_sup, y_exh_inf = 31.0, 200.0
+            y_col_sup, y_col_inf = 31.0, 207.0
+
+        w_runner = max(3.5, min(10.5, raio * 0.65))
         cilindros = ""
+        escapes = ""
+        trombetas = ""
+
         for i in range(n_sup):
             cx = inicio_x + i * espaco_sup + espaco_sup / 2.0
-            cy = 43.0 if i % 2 == 0 else 63.0
+            cy = 80.0 if formato == "V" else (64.0 if i % 2 == 0 else 87.0)
             cilindros += desenhar_cilindro(cx, cy, raio)
+            escapes += (
+                f'<rect x="{cx - w_runner / 2:.1f}" y="{y_exh_sup:.1f}" width="{w_runner:.1f}" height="17" rx="1.5" '
+                f'fill="url(#eng-exhaust)" stroke="#1e293b" stroke-width="0.8" />\n'
+            )
+            trombetas += (
+                f'<circle cx="{cx:.1f}" cy="115" r="{max(2.6, min(4.2, w_runner * 0.42)):.1f}" '
+                f'fill="#090b10" stroke="#cbd5e1" stroke-width="1" />\n'
+            )
         for i in range(n_inf):
             cx = inicio_x + i * espaco_inf + espaco_inf / 2.0
-            cy = 127.0 if i % 2 == 0 else 147.0
+            cy = 166.0 if formato == "V" else (159.0 if i % 2 == 0 else 182.0)
             cilindros += desenhar_cilindro(cx, cy, raio)
+            escapes += (
+                f'<rect x="{cx - w_runner / 2:.1f}" y="{y_exh_inf:.1f}" width="{w_runner:.1f}" height="17" rx="1.5" '
+                f'fill="url(#eng-exhaust)" stroke="#1e293b" stroke-width="0.8" />\n'
+            )
+            trombetas += (
+                f'<circle cx="{cx:.1f}" cy="131" r="{max(2.6, min(4.2, w_runner * 0.42)):.1f}" '
+                f'fill="#090b10" stroke="#cbd5e1" stroke-width="1" />\n'
+            )
+
+        # Admissão específica para motores V / W
+        admissao_vw = ""
+        if adm == "Atmosférico":
+            admissao_vw = (
+                f'<!-- Admissão Atmosférica: Plenum Central com Cornetas Individuais (ITBs) -->\n'
+                f'<rect x="78" y="108" width="250" height="30" rx="6" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.3" />\n'
+                f'{trombetas}'
+                f'<rect x="328" y="117" width="24" height="12" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />\n'
+                f'{desenhar_filtro_conico(352.0, 112.0, 32.0, 22.0)}'
+            )
+        elif adm == "Turbo":
+            admissao_vw = (
+                f'<!-- Turbo Único + Intercooler Frontal + Tubo Boost para o Vale -->\n'
+                f'<path d="M 185,24 L 24,24 L 24,87" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />\n'
+                f'<path d="M 24,159 L 24,123 L 82,123" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />\n'
+                f'{desenhar_intercooler(12.0, 85.0, 24.0, 76.0, True)}'
+                f'<rect x="78" y="108" width="250" height="30" rx="6" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.3" />\n'
+                f'<rect x="92" y="120.5" width="222" height="5" rx="2" fill="url(#eng-redcam)" />\n'
+                f'{desenhar_turbo(212.0, 24.0, 1.34)}'
+            )
+        elif adm == "Supercompressor":
+            admissao_vw = (
+                f'<!-- Supercompressor Twin-Screw no Vale Central + Correia à Cambota -->\n'
+                f'<rect x="318" y="117" width="24" height="12" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />\n'
+                f'{desenhar_filtro_conico(342.0, 112.0, 32.0, 22.0)}'
+                f'{desenhar_supercharger(84.0, 106.0, 236.0, 34.0, 48.0, 123.0, 48.0, 123.0)}'
+                f'<line x1="48" y1="80" x2="48" y2="166" stroke="#334155" stroke-width="3.6" />\n'
+            )
+        elif adm == "Biturbo":
+            admissao_vw = (
+                f'<!-- Biturbo Simétrico (Bancada Sup + Inf) + Intercooler Frontal -->\n'
+                f'<path d="M 185,24 L 24,24 L 24,83" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />\n'
+                f'<path d="M 185,222 L 24,222 L 24,163" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />\n'
+                f'<path d="M 36,123 L 82,123" fill="none" stroke="url(#eng-metal)" stroke-width="7" />\n'
+                f'{desenhar_intercooler(12.0, 85.0, 24.0, 76.0, True)}'
+                f'<rect x="78" y="108" width="250" height="30" rx="6" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.3" />\n'
+                f'<rect x="92" y="120.5" width="222" height="5" rx="2" fill="url(#eng-redcam)" />\n'
+                f'{desenhar_turbo(212.0, 24.0, 1.32)}'
+                f'{desenhar_turbo(212.0, 222.0, 1.32)}'
+            )
+        else:  # Twincharge
+            admissao_vw = (
+                f'<!-- Twincharge: Turbo Superior + Intercooler + Supercompressor no Vale -->\n'
+                f'<path d="M 185,24 L 24,24 L 24,83" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />\n'
+                f'<path d="M 24,161 L 24,226 L 348,226 L 348,123 L 318,123" fill="none" stroke="url(#eng-metal)" stroke-width="6" stroke-linejoin="round" />\n'
+                f'{desenhar_intercooler(12.0, 85.0, 24.0, 76.0, True)}'
+                f'{desenhar_turbo(212.0, 24.0, 1.32)}'
+                f'{desenhar_supercharger(84.0, 106.0, 236.0, 34.0, 48.0, 123.0, 48.0, 123.0)}'
+            )
 
         corpo_svg = f"""
-        <rect x="44" y="20" width="272" height="66" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
-        <rect x="44" y="104" width="272" height="66" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
-        <rect x="24" y="78" width="14" height="34" rx="4" fill="rgba(129, 140, 248, 0.22)" stroke="#818CF8" stroke-width="1.8" />
-        <line x1="38" y1="95" x2="326" y2="95" stroke="#818CF8" stroke-width="2" stroke-dasharray="6,4" />
+        {escapes}
+        <!-- Colectores de Escape Exteriores -->
+        <rect x="82" y="{y_col_sup:.1f}" width="240" height="8" rx="3" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1" />
+        <rect x="82" y="{y_col_inf:.1f}" width="240" height="8" rx="3" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1" />
+        <!-- Distribuição Dupla e Volante -->
+        <path d="M 38,75 L 64,59 L 64,187 L 38,171 Z" fill="#0f1218" stroke="#475569" stroke-width="1.3" />
+        {desenhar_polia(48.0, 80.0, 9.0)}
+        {desenhar_polia(48.0, 166.0, 9.0)}
+        <rect x="340" y="89" width="14" height="68" rx="3" fill="url(#eng-metal)" stroke="#475569" stroke-width="1.3" />
+        <!-- Bancadas Superior e Inferior -->
+        <rect x="64" y="{bank_sup_y:.1f}" width="276" height="{bank_sup_h:.1f}" rx="8" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.6" />
+        <rect x="64" y="{bank_inf_y:.1f}" width="276" height="{bank_inf_h:.1f}" rx="8" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.6" />
+        <rect x="72" y="{bank_sup_y - 4:.1f}" width="260" height="5" rx="2" fill="url(#eng-redcam)" />
+        <rect x="72" y="{bank_inf_y + bank_inf_h - 1:.1f}" width="260" height="5" rx="2" fill="url(#eng-redcam)" />
+        <!-- Vale Central e Cambota -->
+        <rect x="64" y="105" width="276" height="36" fill="#090b10" stroke="rgba(255,255,255,0.08)" stroke-width="0.9" />
+        <rect x="54" y="119.5" width="288" height="7" rx="2" fill="url(#eng-metal)" stroke="#334155" stroke-width="0.9" />
         {cilindros}
+        {admissao_vw}
+        {desenhar_polia(48.0, 123.0, 10.5, "#ff9f1c" if adm in ("Supercompressor", "Twincharge") else "#ff1e38")}
         """
 
     return f"""
-    <svg class="motor-svg" viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg"
-         aria-label="Motor {formato} 2D">
-        {guia_cad}
+    <svg class="motor-svg" viewBox="0 0 400 246" xmlns="http://www.w3.org/2000/svg"
+         aria-label="Motor {formato} {adm} 2D">
+        {SVG_MOTOR_DEFS}
         {corpo_svg}
     </svg>
     """
 
 
-def widget_motor_inline(num_cilindros: int = 4, formato: str = "I") -> str:
+def widget_motor_inline(
+    num_cilindros: int = 4,
+    formato: str = "I",
+    admissao: str = "Atmosférico",
+) -> str:
     """
-    Gera o Widget 1 com a figura 2D do motor
+    Gera o Widget 1 com a figura 2D realista do motor (incluindo admissão)
     e exibe exclusivamente o número de cilindros.
     """
     return f"""
     <section class="widget-card widget-visual" id="widget-1">
         <div id="motor-svg-container" class="motor-stage">
-            {gerar_svg_motor_inline(num_cilindros, formato)}
+            {gerar_svg_motor_inline(num_cilindros, formato, admissao)}
         </div>
 
         <!-- Exibição EXCLUSIVA do número de cilindros -->
@@ -155,7 +417,7 @@ def widget_motor_inline(num_cilindros: int = 4, formato: str = "I") -> str:
 
 
 # ==============================================================================
-# WIDGET 2: 5 MOTORES PREDEFINIDOS FAMOSOS (DedSec Minimalista: Preto & WhiteSmoke)
+# WIDGET 2: 5 MOTORES PREDEFINIDOS FAMOSOS
 # ==============================================================================
 FORMATOS_MOTOR = {
     "I": "I (Em Linha)",
@@ -185,7 +447,7 @@ PERFIS_ADMISSAO = {
         "mult_potencia": 1.80,
         "mult_binario": 1.85,
     },
-    "Bicarregado": {
+    "Twincharge": {
         "pressao": "+2.0 bar",
         "mult_potencia": 1.90,
         "mult_binario": 1.95,
@@ -688,16 +950,27 @@ def widget_quiz_modular() -> str:
     <div class="quiz-modal" id="quiz-modal" aria-hidden="true">
         <div class="quiz-container" role="dialog" aria-modal="true" aria-labelledby="quiz-titulo">
             <header class="quiz-header">
-                <div class="quiz-header-info">
-                    <h2 id="quiz-titulo">QUIZ AUTOMÓVEL · {QUIZ_NUM_PERGUNTAS} PERGUNTAS ALEATÓRIAS</h2>
-                    <div class="quiz-progresso-wrap">
-                        <span class="quiz-progresso" id="quiz-progresso">Respondidas: 0 / {QUIZ_NUM_PERGUNTAS}</span>
-                        <div class="quiz-progresso-barra">
-                            <div class="quiz-progresso-fill" id="quiz-progresso-fill"></div>
+                <div class="quiz-header-brand">
+                    <div class="topbar-icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                            <line x1="4" y1="22" x2="4" y2="15" />
+                        </svg>
+                    </div>
+                    <div class="quiz-header-info">
+                        <div class="quiz-titulo-linha">
+                            <h2 id="quiz-titulo">QUIZ AUTOMÓVEL</h2>
+                            <span class="widget-badge badge-live">TRACK CHALLENGE // {QUIZ_NUM_PERGUNTAS} PERGUNTAS</span>
+                        </div>
+                        <div class="quiz-progresso-wrap">
+                            <span class="quiz-progresso" id="quiz-progresso">Respondidas: 0 / {QUIZ_NUM_PERGUNTAS}</span>
+                            <div class="quiz-progresso-barra">
+                                <div class="quiz-progresso-fill" id="quiz-progresso-fill"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn-cyber-acao" id="btn-fechar-quiz">VOLTAR AO PAINEL</button>
+                <button type="button" class="btn-cyber-acao btn-quiz-sec" id="btn-fechar-quiz">VOLTAR AO PAINEL</button>
             </header>
 
             <div class="quiz-resultado-banner" id="quiz-resultado-banner" style="display: none;"></div>
@@ -709,7 +982,7 @@ def widget_quiz_modular() -> str:
                     <button type="submit" class="btn-cyber-acao btn-destaque" id="btn-submeter-quiz">
                         VERIFICAR RESPOSTAS
                     </button>
-                    <button type="button" class="btn-cyber-acao" id="btn-reiniciar-quiz">
+                    <button type="button" class="btn-cyber-acao btn-quiz-sec" id="btn-reiniciar-quiz">
                         REINICIAR QUIZ
                     </button>
                 </div>
@@ -731,7 +1004,7 @@ def gerar_dashboard_html(
     Junta os 3 widgets superiores, a Ficha Técnica inferior de largura total
     e o botão/modal de acesso ao Quiz numa página HTML em português.
     """
-    w1 = widget_motor_inline(num_cilindros, formato)
+    w1 = widget_motor_inline(num_cilindros, formato, admissao)
     w2 = widget_2_modular()
     w3 = widget_3_modular(num_cilindros, admissao, formato)
     ficha_inicial = render_resultado_combustao(
@@ -760,30 +1033,28 @@ def gerar_dashboard_html(
     <title>Painel de Motor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {{
             color-scheme: dark;
-            --bg-base: #070a12;
-            --bg-elevated: rgba(15, 22, 38, 0.78);
-            --bg-surface: rgba(11, 16, 29, 0.9);
-            --bg-surface-hover: rgba(25, 36, 60, 0.92);
-            --border-subtle: rgba(148, 163, 184, 0.16);
-            --border-cyan: rgba(34, 211, 238, 0.45);
+            --bg-base: #050608;
+            --bg-elevated: rgba(12, 13, 18, 0.92);
+            --bg-surface: rgba(16, 18, 25, 0.95);
+            --bg-surface-hover: rgba(28, 30, 40, 0.96);
+            --border-subtle: rgba(255, 255, 255, 0.1);
+            --border-red: rgba(255, 30, 56, 0.55);
             --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --accent-cyan: #22d3ee;
-            --accent-indigo: #818cf8;
-            --accent-lime: #a3e635;
-            --accent-emerald: #34d399;
-            --accent-amber: #fbbf24;
-            --accent-danger: #ff3b5c;
-            --radius-xl: 20px;
-            --radius-lg: 14px;
-            --radius-md: 10px;
-            --shadow-card: 0 22px 48px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-            --font-sans: 'Space Grotesk', 'Segoe UI Variable', 'Inter', system-ui, -apple-system, sans-serif;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --accent-red: #ff1e38;
+            --accent-red-bright: #ff4d63;
+            --accent-amber: #ff9f1c;
+            --accent-emerald: #00e676;
+            --accent-warn: #ffb800;
+            --radius-lg: 8px;
+            --radius-md: 5px;
+            --shadow-card: 0 24px 50px -18px rgba(0, 0, 0, 0.92), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            --font-sans: 'Chakra Petch', 'Segoe UI Variable', system-ui, -apple-system, sans-serif;
             --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
         }}
 
@@ -793,13 +1064,20 @@ def gerar_dashboard_html(
             padding: 0;
         }}
 
-        /* Base do site: Dark Motorsport Glass */
+        /* Base do site: Dark Motorsport / Carbon Aggressive */
         body {{
             background-color: var(--bg-base);
             background-image:
-                radial-gradient(circle at 12% 10%, rgba(34, 211, 238, 0.14), transparent 36%),
-                radial-gradient(circle at 88% 12%, rgba(99, 102, 241, 0.15), transparent 38%),
-                radial-gradient(circle at 50% 95%, rgba(163, 230, 53, 0.07), transparent 42%);
+                radial-gradient(circle at 12% 8%, rgba(255, 30, 56, 0.18), transparent 36%),
+                radial-gradient(circle at 88% 12%, rgba(255, 107, 0, 0.13), transparent 38%),
+                radial-gradient(circle at 50% 96%, rgba(255, 30, 56, 0.09), transparent 44%),
+                repeating-linear-gradient(
+                    -45deg,
+                    rgba(255, 255, 255, 0.014) 0px,
+                    rgba(255, 255, 255, 0.014) 2px,
+                    transparent 2px,
+                    transparent 7px
+                );
             color: var(--text-primary);
             font-family: var(--font-sans);
             min-height: 100vh;
@@ -807,23 +1085,9 @@ def gerar_dashboard_html(
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 28px 24px;
+            padding: 24px;
             position: relative;
             overflow-x: hidden;
-        }}
-
-        body::before {{
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
-            background-size: 38px 38px;
-            mask-image: radial-gradient(ellipse at center, black 35%, transparent 85%);
-            -webkit-mask-image: radial-gradient(ellipse at center, black 35%, transparent 85%);
-            pointer-events: none;
-            z-index: 0;
         }}
 
         body > * {{
@@ -840,33 +1104,33 @@ def gerar_dashboard_html(
             justify-content: space-between;
             align-items: center;
             gap: 14px;
-            margin-bottom: 20px;
-            padding: 14px 20px;
+            margin-bottom: 18px;
+            padding: 13px 20px;
             background: var(--bg-elevated);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
             border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-xl);
+            border-left: 4px solid var(--accent-red);
+            border-radius: var(--radius-lg);
             box-shadow: var(--shadow-card);
         }}
 
         .topbar-brand {{
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 13px;
         }}
 
         .topbar-icon {{
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, rgba(34, 211, 238, 0.22), rgba(129, 140, 248, 0.24));
-            border: 1px solid rgba(34, 211, 238, 0.4);
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, rgba(255, 30, 56, 0.25), rgba(255, 107, 0, 0.18));
+            border: 1px solid rgba(255, 30, 56, 0.55);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent-cyan);
+            color: var(--accent-red-bright);
             flex-shrink: 0;
+            box-shadow: 0 0 18px -4px rgba(255, 30, 56, 0.55);
         }}
 
         .topbar-textos {{
@@ -876,44 +1140,47 @@ def gerar_dashboard_html(
         }}
 
         .topbar-titulo {{
-            font-size: 1.05rem;
+            font-size: 1.15rem;
             font-weight: 700;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.08em;
             color: var(--text-primary);
-            line-height: 1.2;
+            line-height: 1.15;
+            text-transform: uppercase;
         }}
 
         .topbar-subtitulo {{
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.14em;
-            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-size: 0.67rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            color: var(--accent-red-bright);
             text-transform: uppercase;
         }}
 
         .btn-cyber-acao {{
-            background: rgba(15, 23, 42, 0.85);
+            background: #11131a;
             color: var(--text-primary);
-            border: 1px solid rgba(148, 163, 184, 0.28);
-            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: var(--radius-md);
             padding: 10px 18px;
             font-family: var(--font-sans);
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 0.04em;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
         }}
 
         .btn-cyber-acao:hover {{
-            border-color: var(--accent-cyan);
-            background: rgba(30, 41, 59, 0.95);
+            border-color: var(--accent-red);
+            background: #1b1e28;
             transform: translateY(-1px);
-            box-shadow: 0 8px 20px -8px rgba(34, 211, 238, 0.45);
+            box-shadow: 0 8px 22px -8px rgba(255, 30, 56, 0.65);
         }}
 
         .btn-cyber-acao:active {{
@@ -922,49 +1189,53 @@ def gerar_dashboard_html(
 
         .btn-quiz-cta,
         .btn-destaque {{
-            background: linear-gradient(135deg, #22d3ee 0%, #6366f1 100%);
-            color: #060911;
+            background: linear-gradient(135deg, #ff1e38 0%, #ff6b00 100%);
+            color: #ffffff;
             border: none;
-            font-weight: 700;
-            box-shadow: 0 10px 26px -10px rgba(34, 211, 238, 0.65);
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            border-radius: 0;
+            padding: 11px 22px;
+            box-shadow: 0 10px 28px -8px rgba(255, 30, 56, 0.72);
         }}
 
         .btn-quiz-cta:hover,
         .btn-destaque:hover {{
-            background: linear-gradient(135deg, #67e8f9 0%, #818cf8 100%);
-            color: #060911;
-            box-shadow: 0 12px 30px -8px rgba(34, 211, 238, 0.8);
+            background: linear-gradient(135deg, #ff3850 0%, #ff851b 100%);
+            color: #ffffff;
+            box-shadow: 0 14px 32px -6px rgba(255, 30, 56, 0.9);
         }}
 
         /* Grelha principal para os 3 widgets */
         .dashboard-container {{
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 20px;
+            gap: 18px;
             width: 100%;
             max-width: 1240px;
         }}
 
-        /* Cartão de cada widget com estilo glassmorphism moderno */
+        /* Cartão de cada widget com estilo agressivo de pista */
         .widget-card {{
+            position: relative;
             background: var(--bg-elevated);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
             border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-xl);
-            padding: 22px;
+            border-top: 2px solid rgba(255, 30, 56, 0.75);
+            border-radius: var(--radius-lg);
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            min-height: 390px;
-            gap: 16px;
+            min-height: 400px;
+            gap: 15px;
             box-shadow: var(--shadow-card);
-            transition: border-color 0.2s ease, transform 0.2s ease;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease;
         }}
 
         .widget-card:hover {{
-            border-color: rgba(148, 163, 184, 0.28);
+            border-color: rgba(255, 255, 255, 0.22);
+            border-top-color: var(--accent-red);
+            box-shadow: 0 24px 52px -18px rgba(0, 0, 0, 0.95), 0 0 24px -14px rgba(255, 30, 56, 0.55);
         }}
 
         .widget-header {{
@@ -973,38 +1244,68 @@ def gerar_dashboard_html(
             align-items: center;
             justify-content: space-between;
             gap: 10px;
-            padding-bottom: 12px;
+            padding-bottom: 11px;
             border-bottom: 1px solid var(--border-subtle);
         }}
 
         .ficha-titulo {{
-            font-size: 0.84rem;
+            font-size: 0.9rem;
             font-weight: 700;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.12em;
             color: var(--text-primary);
             text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }}
+
+        .widget-header .ficha-titulo::before {{
+            content: '';
+            width: 4px;
+            height: 14px;
+            background: var(--accent-red);
+            transform: skewX(-18deg);
+            display: inline-block;
         }}
 
         .widget-badge {{
             font-family: var(--font-mono);
-            font-size: 0.66rem;
+            font-size: 0.64rem;
             font-weight: 700;
-            letter-spacing: 0.08em;
-            padding: 4px 9px;
-            border-radius: 999px;
-            background: rgba(148, 163, 184, 0.12);
+            letter-spacing: 0.1em;
+            padding: 4px 8px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.06);
             color: var(--text-secondary);
-            border: 1px solid rgba(148, 163, 184, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.14);
             white-space: nowrap;
         }}
 
         .widget-badge.badge-live {{
-            color: var(--accent-lime);
-            background: rgba(163, 230, 53, 0.1);
-            border-color: rgba(163, 230, 53, 0.3);
+            color: var(--accent-red-bright);
+            background: rgba(255, 30, 56, 0.14);
+            border-color: rgba(255, 30, 56, 0.45);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }}
 
-        /* Widget 1: Stage Blueprint + Contador Exclusivo de Cilindros */
+        .widget-badge.badge-live::before {{
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 99px;
+            background: var(--accent-red);
+            box-shadow: 0 0 8px var(--accent-red);
+            animation: pulseRed 1.4s infinite ease-in-out;
+        }}
+
+        @keyframes pulseRed {{
+            0%, 100% {{ opacity: 1; transform: scale(1); }}
+            50% {{ opacity: 0.4; transform: scale(0.8); }}
+        }}
+
+        /* Widget 1: Banco de Ensaio + Contador Exclusivo de Cilindros */
         .widget-visual {{
             justify-content: space-between;
         }}
@@ -1015,53 +1316,57 @@ def gerar_dashboard_html(
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 16px 12px;
-            border-radius: 16px;
-            background-color: rgba(6, 9, 17, 0.86);
-            background-image: radial-gradient(rgba(34, 211, 238, 0.14) 1px, transparent 1px);
-            background-size: 16px 16px;
-            border: 1px solid rgba(34, 211, 238, 0.18);
-            box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.65);
+            padding: 14px 10px;
+            border-radius: 6px;
+            background-color: #06070a;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 18px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 0 36px rgba(0, 0, 0, 0.85);
         }}
 
         .motor-svg {{
             width: 100%;
-            max-width: 320px;
+            max-width: 360px;
             height: auto;
-            filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.16));
-            transition: transform 0.25s ease;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.75));
+            transition: transform 0.22s ease;
         }}
 
         /* Exibição exclusiva do número de cilindros (Widget 1) */
         .cilindros-box {{
             width: 100%;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.65));
-            border: 1px solid rgba(34, 211, 238, 0.28);
-            border-radius: 14px;
-            padding: 12px 24px;
+            background: linear-gradient(135deg, #101219 0%, #19131a 100%);
+            border: 1px solid rgba(255, 30, 56, 0.42);
+            border-left: 4px solid var(--accent-red);
+            border-radius: 6px;
+            padding: 11px 22px;
             text-align: center;
             display: flex;
             align-items: baseline;
             justify-content: center;
             gap: 12px;
+            box-shadow: inset 0 0 22px rgba(255, 30, 56, 0.08);
         }}
 
         .cilindros-numero {{
             font-family: var(--font-mono);
-            font-size: 2.5rem;
+            font-size: 2.6rem;
             font-weight: 700;
             line-height: 1;
             font-variant-numeric: tabular-nums;
-            background: linear-gradient(135deg, #f8fafc 25%, #22d3ee 100%);
+            background: linear-gradient(180deg, #ffffff 30%, #ff4d63 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }}
 
         .cilindros-texto {{
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             font-weight: 700;
-            letter-spacing: 0.18em;
+            letter-spacing: 0.22em;
             color: var(--text-secondary);
         }}
 
@@ -1076,13 +1381,13 @@ def gerar_dashboard_html(
         .grid-2-col {{
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 9px;
         }}
 
         .campo-grupo {{
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
         }}
 
         .campo-largura-total {{
@@ -1090,66 +1395,66 @@ def gerar_dashboard_html(
         }}
 
         .campo-grupo label {{
-            font-size: 0.68rem;
-            font-weight: 600;
-            letter-spacing: 0.08em;
+            font-size: 0.67rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
             color: var(--text-secondary);
             text-transform: uppercase;
         }}
 
         .input-cyber {{
-            background-color: rgba(7, 10, 18, 0.85);
+            background-color: #06070b;
             color: var(--text-primary);
-            border: 1px solid rgba(148, 163, 184, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.16);
             border-radius: var(--radius-md);
-            padding: 9px 11px;
+            padding: 9px 10px;
             font-family: var(--font-mono);
             font-size: 0.82rem;
             outline: none;
             width: 100%;
-            transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
         }}
 
         select.input-cyber {{
             font-family: var(--font-sans);
-            font-weight: 500;
+            font-weight: 600;
             appearance: none;
             -webkit-appearance: none;
             padding-right: 30px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ff4d63' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 10px center;
             cursor: pointer;
         }}
 
         select.input-cyber option {{
-            background-color: #0b101d;
+            background-color: #090b10;
             color: #f8fafc;
         }}
 
         .btn-cyber-acao:focus-visible,
         .btn-preset-motor:focus-visible,
         .quiz-opcao:focus-within {{
-            outline: 2px solid var(--accent-cyan);
+            outline: 2px solid var(--accent-red);
             outline-offset: 2px;
         }}
 
         .input-cyber:hover {{
-            border-color: rgba(148, 163, 184, 0.42);
+            border-color: rgba(255, 255, 255, 0.34);
         }}
 
         .input-cyber:focus {{
-            border-color: var(--accent-cyan);
-            background-color: rgba(11, 16, 29, 0.98);
-            box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.16);
+            border-color: var(--accent-red);
+            background-color: #0b0d14;
+            box-shadow: 0 0 0 3px rgba(255, 30, 56, 0.22);
         }}
 
         .input-cyber.input-alerta {{
-            border-color: var(--accent-danger);
-            background-color: rgba(255, 59, 92, 0.14);
-            color: #ff99ab;
+            border-color: var(--accent-red);
+            background-color: rgba(255, 30, 56, 0.18);
+            color: #ff8fa3;
             font-weight: 700;
-            box-shadow: 0 0 0 3px rgba(255, 59, 92, 0.16);
+            box-shadow: 0 0 0 3px rgba(255, 30, 56, 0.25);
         }}
 
         .rpm-alerta-msg {{
@@ -1162,10 +1467,11 @@ def gerar_dashboard_html(
             margin-top: 2px;
             padding: 8px 11px;
             border-radius: var(--radius-md);
-            background: rgba(255, 59, 92, 0.12);
-            border: 1px solid rgba(255, 59, 92, 0.38);
-            color: #ff99ab;
-            font-weight: 500;
+            background: rgba(255, 30, 56, 0.15);
+            border: 1px solid rgba(255, 30, 56, 0.55);
+            border-left: 3px solid var(--accent-red);
+            color: #ffb3c0;
+            font-weight: 600;
         }}
 
         /* Widget 2: Motores Predefinidos */
@@ -1178,16 +1484,16 @@ def gerar_dashboard_html(
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 9px;
+            gap: 8px;
         }}
 
         .btn-preset-motor {{
             position: relative;
-            background: rgba(7, 10, 18, 0.65);
+            background: #08090e;
             color: var(--text-primary);
-            border: 1px solid rgba(148, 163, 184, 0.16);
-            border-radius: 12px;
-            padding: 11px 14px 11px 17px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 6px;
+            padding: 11px 14px 11px 18px;
             text-align: left;
             font-family: var(--font-sans);
             cursor: pointer;
@@ -1195,56 +1501,56 @@ def gerar_dashboard_html(
             flex-direction: column;
             gap: 3px;
             overflow: hidden;
-            transition: transform 0.16s ease, border-color 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
+            transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
         }}
 
         .btn-preset-motor::before {{
             content: '';
             position: absolute;
             left: 0;
-            top: 8px;
-            bottom: 8px;
+            top: 0;
+            bottom: 0;
             width: 3px;
-            border-radius: 99px;
-            background: rgba(148, 163, 184, 0.25);
-            transition: background-color 0.16s ease, box-shadow 0.16s ease;
+            background: rgba(255, 255, 255, 0.18);
+            transition: background-color 0.15s ease, box-shadow 0.15s ease;
         }}
 
         .btn-preset-motor:hover {{
-            border-color: rgba(34, 211, 238, 0.45);
-            background: var(--bg-surface-hover);
-            transform: translateY(-1px);
+            border-color: rgba(255, 30, 56, 0.6);
+            background: #14161f;
+            transform: translateX(2px);
         }}
 
         .btn-preset-motor:hover::before {{
-            background: var(--accent-cyan);
+            background: var(--accent-red);
         }}
 
         .btn-preset-motor.ativo {{
-            background: linear-gradient(135deg, rgba(34, 211, 238, 0.18), rgba(99, 102, 241, 0.2));
-            border-color: var(--accent-cyan);
-            box-shadow: 0 10px 24px -14px rgba(34, 211, 238, 0.75);
+            background: linear-gradient(135deg, rgba(255, 30, 56, 0.24), rgba(255, 107, 0, 0.15));
+            border-color: var(--accent-red);
+            box-shadow: 0 8px 24px -12px rgba(255, 30, 56, 0.85);
         }}
 
         .btn-preset-motor.ativo::before {{
-            background: var(--accent-lime);
-            box-shadow: 0 0 10px rgba(163, 230, 53, 0.8);
+            background: var(--accent-amber);
+            box-shadow: 0 0 12px rgba(255, 159, 28, 0.9);
         }}
 
         .preset-nome {{
-            font-size: 0.86rem;
+            font-size: 0.88rem;
             font-weight: 700;
+            letter-spacing: 0.02em;
             color: var(--text-primary);
         }}
 
         .preset-resumo {{
             font-family: var(--font-mono);
-            font-size: 0.69rem;
+            font-size: 0.68rem;
             color: var(--text-secondary);
         }}
 
         .btn-preset-motor.ativo .preset-resumo {{
-            color: #bae6fd;
+            color: #fed7aa;
         }}
 
         /* Widget 3: Todas as Configurações */
@@ -1257,13 +1563,12 @@ def gerar_dashboard_html(
         .ficha-painel-inferior {{
             width: 100%;
             max-width: 1240px;
-            margin-top: 20px;
+            margin-top: 18px;
             background: var(--bg-elevated);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
             border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-xl);
-            padding: 20px 24px;
+            border-top: 2px solid var(--accent-red);
+            border-radius: var(--radius-lg);
+            padding: 18px 22px;
             box-shadow: var(--shadow-card);
         }}
 
@@ -1271,75 +1576,85 @@ def gerar_dashboard_html(
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 13px;
         }}
 
         .ficha-tecnica-inferior .ficha-titulo {{
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 9px;
         }}
 
         .ficha-tecnica-inferior .ficha-titulo::before {{
             content: '';
             width: 8px;
             height: 8px;
-            border-radius: 99px;
-            background: var(--accent-cyan);
-            box-shadow: 0 0 10px var(--accent-cyan);
+            background: var(--accent-red);
+            transform: rotate(45deg);
+            box-shadow: 0 0 12px var(--accent-red);
         }}
 
         .ficha-itens-grid {{
             display: grid;
             grid-template-columns: repeat(5, minmax(0, 1fr));
-            gap: 12px;
+            gap: 11px;
         }}
 
         .ficha-item {{
-            background: rgba(7, 10, 18, 0.72);
-            border: 1px solid rgba(148, 163, 184, 0.14);
-            border-radius: var(--radius-lg);
-            padding: 13px 15px;
+            background: #07080d;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.14);
+            border-radius: 6px;
+            padding: 12px 14px;
             display: flex;
             flex-direction: column;
             gap: 5px;
-            transition: border-color 0.18s ease, transform 0.18s ease;
+            transition: border-color 0.16s ease, transform 0.16s ease;
         }}
 
         .ficha-item:hover {{
-            border-color: rgba(34, 211, 238, 0.35);
+            border-color: rgba(255, 30, 56, 0.45);
             transform: translateY(-1px);
         }}
 
         .ficha-item span {{
-            font-size: 0.67rem;
-            font-weight: 600;
+            font-size: 0.66rem;
+            font-weight: 700;
             color: var(--text-secondary);
-            letter-spacing: 0.1em;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
         }}
 
         .ficha-item strong {{
             font-family: var(--font-mono);
-            font-size: 1rem;
+            font-size: 1.02rem;
             font-weight: 700;
             color: var(--text-primary);
             font-variant-numeric: tabular-nums;
         }}
 
+        .ficha-item:nth-child(4) {{
+            border-bottom-color: var(--accent-amber);
+        }}
+
         .ficha-item:nth-child(4) strong {{
-            color: var(--accent-cyan);
+            color: var(--accent-amber);
+        }}
+
+        .ficha-item:nth-child(5) {{
+            border-bottom-color: var(--accent-red);
         }}
 
         .ficha-item:nth-child(5) strong {{
-            color: var(--accent-lime);
+            color: var(--accent-red-bright);
+            text-shadow: 0 0 14px rgba(255, 30, 56, 0.4);
         }}
 
-        /* Modal do Quiz (5 Perguntas Aleatórias) */
+        /* Modal do Quiz (5 Perguntas Aleatórias - Estilo Pista / Carbon) */
         .quiz-modal {{
             position: fixed;
             inset: 0;
-            background-color: rgba(4, 6, 12, 0.82);
+            background-color: rgba(3, 4, 6, 0.88);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             display: none;
@@ -1354,19 +1669,31 @@ def gerar_dashboard_html(
         }}
 
         .quiz-container {{
-            background: #0c1220;
-            border: 1px solid rgba(148, 163, 184, 0.22);
-            border-radius: 22px;
+            background-color: #07080d;
+            background-image:
+                radial-gradient(circle at 8% 4%, rgba(255, 30, 56, 0.16), transparent 36%),
+                radial-gradient(circle at 92% 8%, rgba(255, 107, 0, 0.12), transparent 36%),
+                repeating-linear-gradient(
+                    -45deg,
+                    rgba(255, 255, 255, 0.014) 0px,
+                    rgba(255, 255, 255, 0.014) 2px,
+                    transparent 2px,
+                    transparent 7px
+                );
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-top: 3px solid var(--accent-red);
+            border-left: 4px solid var(--accent-red);
+            border-radius: var(--radius-lg);
             width: 100%;
-            max-width: 860px;
+            max-width: 880px;
             max-height: 90vh;
             overflow-y: auto;
-            padding: 26px;
+            padding: 22px 24px;
             display: flex;
             flex-direction: column;
             gap: 18px;
-            box-shadow: 0 32px 70px -15px rgba(0, 0, 0, 0.9);
-            animation: modalEntrar 0.22s ease-out;
+            box-shadow: 0 32px 72px -15px rgba(0, 0, 0, 0.96), 0 0 42px -16px rgba(255, 30, 56, 0.52);
+            animation: modalEntrar 0.2s ease-out;
         }}
 
         @keyframes modalEntrar {{
@@ -1385,13 +1712,12 @@ def gerar_dashboard_html(
         }}
 
         .quiz-container::-webkit-scrollbar-track {{
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 99px;
+            background: #050608;
         }}
 
         .quiz-container::-webkit-scrollbar-thumb {{
-            background: rgba(148, 163, 184, 0.3);
-            border-radius: 99px;
+            background: rgba(255, 30, 56, 0.5);
+            border-radius: 3px;
         }}
 
         .quiz-header {{
@@ -1400,23 +1726,50 @@ def gerar_dashboard_html(
             justify-content: space-between;
             align-items: center;
             gap: 14px;
-            padding-bottom: 16px;
+            padding-bottom: 14px;
             border-bottom: 1px solid var(--border-subtle);
+        }}
+
+        .quiz-header-brand {{
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            flex: 1;
+            min-width: 260px;
         }}
 
         .quiz-header-info {{
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 7px;
             flex: 1;
-            min-width: 240px;
+        }}
+
+        .quiz-titulo-linha {{
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
         }}
 
         .quiz-header h2 {{
-            font-size: 1.05rem;
+            font-size: 1.08rem;
             font-weight: 700;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
             color: var(--text-primary);
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }}
+
+        .quiz-header h2::before {{
+            content: '';
+            width: 4px;
+            height: 15px;
+            background: var(--accent-red);
+            transform: skewX(-18deg);
+            display: inline-block;
         }}
 
         .quiz-progresso-wrap {{
@@ -1427,32 +1780,50 @@ def gerar_dashboard_html(
 
         .quiz-progresso {{
             font-family: var(--font-mono);
-            font-size: 0.74rem;
+            font-size: 0.72rem;
+            font-weight: 700;
             color: var(--text-secondary);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
             white-space: nowrap;
         }}
 
         .quiz-progresso-barra {{
             flex: 1;
-            max-width: 200px;
-            height: 6px;
-            border-radius: 999px;
-            background: rgba(148, 163, 184, 0.16);
+            max-width: 220px;
+            height: 7px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             overflow: hidden;
         }}
 
         .quiz-progresso-fill {{
             width: 0%;
             height: 100%;
-            border-radius: 999px;
-            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-lime));
+            background: linear-gradient(90deg, var(--accent-red), var(--accent-amber));
+            box-shadow: 0 0 12px rgba(255, 30, 56, 0.65);
             transition: width 0.25s ease;
         }}
 
+        .btn-quiz-sec {{
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+            border-radius: 0;
+            background: #141720;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 18px;
+        }}
+
+        .btn-quiz-sec:hover {{
+            background: #1d212e;
+            border-color: var(--accent-red);
+        }}
+
         .quiz-resultado-banner {{
-            border: 1px solid var(--border-cyan);
-            border-radius: var(--radius-lg);
-            background-color: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--border-red);
+            border-left: 4px solid var(--accent-red);
+            border-radius: 6px;
+            background-color: #0d0f16;
             padding: 14px 18px;
             display: flex;
             justify-content: space-between;
@@ -1461,50 +1832,95 @@ def gerar_dashboard_html(
             gap: 10px;
             font-size: 0.92rem;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }}
 
         .quiz-lista {{
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }}
 
         .quiz-pergunta-box {{
             border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            background: rgba(7, 10, 18, 0.65);
+            border-top: 2px solid rgba(255, 30, 56, 0.6);
+            border-radius: var(--radius-lg);
+            background: rgba(12, 13, 19, 0.94);
             padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 12px;
+            box-shadow: 0 12px 28px -16px rgba(0, 0, 0, 0.85);
+            transition: border-color 0.16s ease;
+        }}
+
+        .quiz-pergunta-box:hover {{
+            border-color: rgba(255, 255, 255, 0.2);
+            border-top-color: var(--accent-red);
+        }}
+
+        .quiz-pergunta-topo {{
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }}
+
+        .quiz-num-badge {{
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--accent-red-bright);
+            background: rgba(255, 30, 56, 0.14);
+            border: 1px solid rgba(255, 30, 56, 0.45);
+            border-left: 3px solid var(--accent-red);
+            padding: 3px 8px;
+            border-radius: 3px;
+            flex-shrink: 0;
+            margin-top: 1px;
         }}
 
         .quiz-pergunta-texto {{
-            font-size: 0.92rem;
-            line-height: 1.5;
+            font-size: 0.95rem;
+            line-height: 1.45;
             color: var(--text-primary);
-            font-weight: 600;
+            font-weight: 700;
+            letter-spacing: 0.01em;
         }}
 
         .quiz-opcoes-grid {{
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
+            gap: 9px;
         }}
 
         .quiz-opcao {{
+            position: relative;
             display: flex;
             align-items: center;
             gap: 10px;
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 12px;
-            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 6px;
+            background: #08090e;
             color: var(--text-primary);
-            padding: 10px 12px;
-            font-size: 0.82rem;
+            padding: 10px 12px 10px 15px;
+            font-size: 0.83rem;
             line-height: 1.35;
             cursor: pointer;
-            transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+            overflow: hidden;
+            transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+        }}
+
+        .quiz-opcao::before {{
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: rgba(255, 255, 255, 0.16);
+            transition: background-color 0.15s ease, box-shadow 0.15s ease;
         }}
 
         .quiz-opcao input[type="radio"] {{
@@ -1514,8 +1930,9 @@ def gerar_dashboard_html(
         .quiz-letra {{
             width: 24px;
             height: 24px;
-            border-radius: 8px;
-            background: rgba(148, 163, 184, 0.14);
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.14);
             color: var(--text-secondary);
             font-family: var(--font-mono);
             font-size: 0.74rem;
@@ -1524,54 +1941,76 @@ def gerar_dashboard_html(
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            transition: background-color 0.16s ease, color 0.16s ease;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
         }}
 
         .quiz-opcao:hover {{
-            border-color: rgba(34, 211, 238, 0.5);
-            background: rgba(30, 41, 59, 0.85);
-            transform: translateY(-1px);
+            border-color: rgba(255, 30, 56, 0.6);
+            background: #14161f;
+            transform: translateX(2px);
+        }}
+
+        .quiz-opcao:hover::before {{
+            background: var(--accent-red);
         }}
 
         .quiz-opcao.selecionada {{
-            background: rgba(34, 211, 238, 0.16);
-            border-color: var(--accent-cyan);
+            background: linear-gradient(135deg, rgba(255, 30, 56, 0.24), rgba(255, 107, 0, 0.14));
+            border-color: var(--accent-red);
             color: var(--text-primary);
-            font-weight: 600;
+            font-weight: 700;
+            box-shadow: 0 8px 22px -12px rgba(255, 30, 56, 0.8);
+        }}
+
+        .quiz-opcao.selecionada::before {{
+            background: var(--accent-amber);
+            box-shadow: 0 0 10px rgba(255, 159, 28, 0.85);
         }}
 
         .quiz-opcao.selecionada .quiz-letra {{
-            background: var(--accent-cyan);
-            color: #060911;
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: #ffffff;
         }}
 
         .quiz-opcao.correta {{
             border-color: var(--accent-emerald);
             color: var(--accent-emerald);
-            background: rgba(52, 211, 153, 0.14);
-            font-weight: 600;
+            background: rgba(0, 230, 118, 0.13);
+            font-weight: 700;
+        }}
+
+        .quiz-opcao.correta::before {{
+            background: var(--accent-emerald);
         }}
 
         .quiz-opcao.correta .quiz-letra {{
             background: var(--accent-emerald);
-            color: #060911;
+            border-color: var(--accent-emerald);
+            color: #050608;
         }}
 
         .quiz-opcao.errada {{
-            border-color: var(--accent-danger);
-            color: #ff99ab;
-            background: rgba(255, 59, 92, 0.14);
-            font-weight: 600;
+            border-color: var(--accent-red);
+            color: #ff8fa3;
+            background: rgba(255, 30, 56, 0.16);
+            font-weight: 700;
+        }}
+
+        .quiz-opcao.errada::before {{
+            background: var(--accent-red);
         }}
 
         .quiz-opcao.errada .quiz-letra {{
-            background: var(--accent-danger);
+            background: var(--accent-red);
+            border-color: var(--accent-red);
             color: #ffffff;
         }}
 
         .quiz-feedback {{
-            font-size: 0.78rem;
-            font-weight: 500;
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            font-weight: 700;
             min-height: 1em;
         }}
 
@@ -1580,7 +2019,7 @@ def gerar_dashboard_html(
         }}
 
         .quiz-feedback.erro {{
-            color: #ff99ab;
+            color: #ff8fa3;
         }}
 
         .quiz-acoes-footer {{
@@ -1605,17 +2044,17 @@ def gerar_dashboard_html(
 
         @media (max-width: 680px) {{
             body {{
-                padding: 16px 14px;
+                padding: 14px 12px;
             }}
             .dashboard-container {{
                 grid-template-columns: 1fr;
             }}
             .widget-card {{
                 min-height: auto;
-                padding: 18px;
+                padding: 16px;
             }}
             .quiz-container {{
-                padding: 18px;
+                padding: 16px;
             }}
             .quiz-opcoes-grid {{
                 grid-template-columns: 1fr;
@@ -1627,14 +2066,15 @@ def gerar_dashboard_html(
     <header class="dashboard-topbar">
         <div class="topbar-brand">
             <div class="topbar-icon" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2v4M5 6l2.5 2.5M19 6l-2.5 2.5M4 14h3M17 14h3M6 19h12a2 2 0 0 0 2-2v-3a8 8 0 1 0-16 0v3a2 2 0 0 0 2 2Z" />
-                    <path d="M12 14l3-3" />
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2v4M4.9 6.2l2.6 2.6M19.1 6.2l-2.6 2.6M3 13h3M18 13h3" />
+                    <path d="M5 19h14a2 2 0 0 0 2-2v-2a9 9 0 1 0-18 0v2a2 2 0 0 0 2 2Z" />
+                    <path d="M12 14l4-4" />
                 </svg>
             </div>
             <div class="topbar-textos">
                 <span class="topbar-titulo">PAINEL DO MOTOR</span>
-                <span class="topbar-subtitulo">CONTROLO AUTOMÓVEL · CUSTOM ENGINE</span>
+                <span class="topbar-subtitulo">TRACK TELEMETRY // CUSTOM ENGINE</span>
             </div>
         </div>
         <button type="button" class="btn-cyber-acao btn-quiz-cta" id="btn-abrir-quiz">
@@ -1698,86 +2138,336 @@ def gerar_dashboard_html(
             }}
         }}
 
+        const SVG_MOTOR_DEFS = `
+        <defs>
+            <linearGradient id="eng-block" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2c313d" />
+                <stop offset="45%" stop-color="#191c24" />
+                <stop offset="100%" stop-color="#232732" />
+            </linearGradient>
+            <linearGradient id="eng-head" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3c4252" />
+                <stop offset="50%" stop-color="#20242e" />
+                <stop offset="100%" stop-color="#13161c" />
+            </linearGradient>
+            <linearGradient id="eng-redcam" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#991b1b" />
+                <stop offset="50%" stop-color="#ff1e38" />
+                <stop offset="100%" stop-color="#991b1b" />
+            </linearGradient>
+            <linearGradient id="eng-metal" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#64748b" />
+                <stop offset="45%" stop-color="#cbd5e1" />
+                <stop offset="100%" stop-color="#334155" />
+            </linearGradient>
+            <linearGradient id="eng-exhaust" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#94a3b8" />
+                <stop offset="55%" stop-color="#c2410c" />
+                <stop offset="100%" stop-color="#451a03" />
+            </linearGradient>
+            <linearGradient id="eng-liner" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#f1f5f9" />
+                <stop offset="50%" stop-color="#475569" />
+                <stop offset="100%" stop-color="#cbd5e1" />
+            </linearGradient>
+            <radialGradient id="eng-bore" cx="50%" cy="50%" r="50%">
+                <stop offset="50%" stop-color="#040507" />
+                <stop offset="100%" stop-color="#181b24" />
+            </radialGradient>
+            <radialGradient id="eng-piston" cx="38%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#f8fafc" />
+                <stop offset="55%" stop-color="#94a3b8" />
+                <stop offset="100%" stop-color="#334155" />
+            </radialGradient>
+            <radialGradient id="eng-turbo-cold" cx="42%" cy="38%" r="60%">
+                <stop offset="0%" stop-color="#f1f5f9" />
+                <stop offset="55%" stop-color="#94a3b8" />
+                <stop offset="100%" stop-color="#475569" />
+            </radialGradient>
+            <radialGradient id="eng-turbo-hot" cx="45%" cy="45%" r="60%">
+                <stop offset="0%" stop-color="#ea580c" />
+                <stop offset="50%" stop-color="#7c2d12" />
+                <stop offset="100%" stop-color="#27130d" />
+            </radialGradient>
+            <linearGradient id="eng-filter" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#7f1d1d" />
+                <stop offset="50%" stop-color="#dc2626" />
+                <stop offset="100%" stop-color="#450a0a" />
+            </linearGradient>
+            <linearGradient id="eng-blower" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#e2e8f0" />
+                <stop offset="40%" stop-color="#94a3b8" />
+                <stop offset="100%" stop-color="#334155" />
+            </linearGradient>
+        </defs>`;
+
         function desenharCilindroSvg(cx, cy, r) {{
-            const rPistao = Math.max(2.8, r * 0.48);
-            const rPino = Math.max(1.4, r * 0.16);
+            const rPistao = Math.max(3.6, r * 0.72);
+            const swCamisa = Math.max(1.4, Math.min(2.4, r * 0.14));
+            const rCentro = Math.max(1.1, r * 0.17);
             return `
-                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{r.toFixed(1)}}" fill="rgba(34, 211, 238, 0.08)" stroke="#22D3EE" stroke-width="2" />
-                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{rPistao.toFixed(1)}}" fill="rgba(129, 140, 248, 0.18)" stroke="#F8FAFC" stroke-width="1.7" />
-                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{rPino.toFixed(1)}}" fill="#22D3EE" />
+                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{r.toFixed(1)}}" fill="url(#eng-bore)" stroke="url(#eng-liner)" stroke-width="${{swCamisa.toFixed(1)}}" />
+                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{rPistao.toFixed(1)}}" fill="url(#eng-piston)" stroke="#0f172a" stroke-width="0.9" />
+                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{rCentro.toFixed(1)}}" fill="#0b0d12" stroke="#ff1e38" stroke-width="0.8" />
             `;
         }}
 
-        function gerarSvgMotorLocal(cilindros, formato) {{
+        function desenharPoliaSvg(cx, cy, r, corCentro = '#ff1e38') {{
+            const rIn = Math.max(2.2, r * 0.42);
+            return `
+                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{r.toFixed(1)}}" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />
+                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{rIn.toFixed(1)}}" fill="#0b0d12" stroke="${{corCentro}}" stroke-width="1" />
+            `;
+        }}
+
+        function desenharTurboSvg(cx, cy, escala = 1.0) {{
+            return `
+                <g transform="translate(${{cx.toFixed(1)}},${{cy.toFixed(1)}}) scale(${{escala.toFixed(2)}})">
+                    <rect x="-4" y="-15" width="8" height="5.5" rx="1.5" fill="url(#eng-metal)" stroke="#1e293b" stroke-width="0.8" />
+                    <line x1="0" y1="-9.5" x2="7" y2="-4.5" stroke="#cbd5e1" stroke-width="1.1" />
+                    <rect x="-5" y="-5" width="10" height="10" rx="2" fill="#334155" stroke="#94a3b8" stroke-width="0.9" />
+                    <line x1="-1" y1="-5" x2="-1" y2="5" stroke="#ff1e38" stroke-width="1.5" />
+                    <circle cx="-12" cy="0" r="11.5" fill="url(#eng-turbo-cold)" stroke="#e2e8f0" stroke-width="1.1" />
+                    <rect x="-17" y="-13.5" width="8" height="6" rx="1.5" fill="url(#eng-metal)" stroke="#475569" stroke-width="0.8" />
+                    <circle cx="-12" cy="0" r="5.5" fill="#07090d" stroke="#475569" stroke-width="0.85" />
+                    <path d="M -12,-4.6 L -12,4.6 M -16.6,0 L -7.4,0" stroke="#e2e8f0" stroke-width="1" />
+                    <circle cx="-12" cy="0" r="1.7" fill="#ff1e38" />
+                    <circle cx="12" cy="0" r="10.5" fill="url(#eng-turbo-hot)" stroke="#fb923c" stroke-width="1.1" />
+                    <circle cx="12" cy="0" r="4.4" fill="#1a0905" stroke="#fb923c" stroke-width="0.9" />
+                </g>
+            `;
+        }}
+
+        function desenharIntercoolerSvg(x, y, w, h, vertical = false) {{
+            let linhas = '';
+            if (vertical) {{
+                for (let k = 1; k < 5; k++) {{
+                    const ly = y + k * (h / 5.0);
+                    linhas += `<line x1="${{(x + 3).toFixed(1)}}" y1="${{ly.toFixed(1)}}" x2="${{(x + w - 3).toFixed(1)}}" y2="${{ly.toFixed(1)}}" stroke="#475569" stroke-width="1" />`;
+                }}
+            }} else {{
+                for (let k = 1; k < 5; k++) {{
+                    const lx = x + k * (w / 5.0);
+                    linhas += `<line x1="${{lx.toFixed(1)}}" y1="${{(y + 3).toFixed(1)}}" x2="${{lx.toFixed(1)}}" y2="${{(y + h - 3).toFixed(1)}}" stroke="#475569" stroke-width="1" />`;
+                }}
+            }}
+            return `
+                <rect x="${{x.toFixed(1)}}" y="${{y.toFixed(1)}}" width="${{w.toFixed(1)}}" height="${{h.toFixed(1)}}" rx="3" fill="#080a0f" stroke="#94a3b8" stroke-width="1.3" />
+                ${{linhas}}
+            `;
+        }}
+
+        function desenharFiltroConicoSvg(x, y, w, h) {{
+            return `
+                <polygon points="${{x.toFixed(1)}},${{(y + 2).toFixed(1)}} ${{(x + w).toFixed(1)}},${{y.toFixed(1)}} ${{(x + w).toFixed(1)}},${{(y + h).toFixed(1)}} ${{x.toFixed(1)}},${{(y + h - 2).toFixed(1)}}" fill="url(#eng-filter)" stroke="#ef4444" stroke-width="1.1" />
+                <rect x="${{(x - 3).toFixed(1)}}" y="${{(y + 2).toFixed(1)}}" width="3.5" height="${{(h - 4).toFixed(1)}}" rx="1" fill="#334155" stroke="#94a3b8" stroke-width="0.7" />
+            `;
+        }}
+
+        function desenharSuperchargerSvg(x, y, w, h, pulleyX, pulleyY, crankX, crankY) {{
+            const snoutY = y + h / 2.0;
+            const snoutW = Math.max(6.0, x - pulleyX + 2);
+            return `
+                <line x1="${{pulleyX.toFixed(1)}}" y1="${{pulleyY.toFixed(1)}}" x2="${{crankX.toFixed(1)}}" y2="${{crankY.toFixed(1)}}" stroke="#334155" stroke-width="4.2" />
+                <line x1="${{pulleyX.toFixed(1)}}" y1="${{pulleyY.toFixed(1)}}" x2="${{crankX.toFixed(1)}}" y2="${{crankY.toFixed(1)}}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3" />
+                <rect x="${{pulleyX.toFixed(1)}}" y="${{(snoutY - 4.5).toFixed(1)}}" width="${{snoutW.toFixed(1)}}" height="9" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />
+                <rect x="${{x.toFixed(1)}}" y="${{y.toFixed(1)}}" width="${{w.toFixed(1)}}" height="${{h.toFixed(1)}}" rx="5" fill="url(#eng-blower)" stroke="#e2e8f0" stroke-width="1.3" />
+                <line x1="${{(x + 8).toFixed(1)}}" y1="${{(y + h * 0.28).toFixed(1)}}" x2="${{(x + w - 8).toFixed(1)}}" y2="${{(y + h * 0.28).toFixed(1)}}" stroke="#334155" stroke-width="1.1" />
+                <line x1="${{(x + 8).toFixed(1)}}" y1="${{(y + h * 0.72).toFixed(1)}}" x2="${{(x + w - 8).toFixed(1)}}" y2="${{(y + h * 0.72).toFixed(1)}}" stroke="#334155" stroke-width="1.1" />
+                <rect x="${{(x + w * 0.22).toFixed(1)}}" y="${{(snoutY - 3).toFixed(1)}}" width="${{(w * 0.56).toFixed(1)}}" height="6" rx="2" fill="url(#eng-redcam)" />
+                ${{desenharPoliaSvg(pulleyX, pulleyY, 7.5, '#ff9f1c')}}
+            `;
+        }}
+
+        function gerarSvgMotorLocal(cilindros, formato, admissao = 'Atmosférico') {{
             const n = Math.max(1, Math.min(16, cilindros));
             const fmt = ['I', 'V', 'VR', 'W'].includes(formato) ? formato : 'I';
+            const adm = ['Atmosférico', 'Turbo', 'Supercompressor', 'Biturbo', 'Twincharge'].includes(admissao) ? admissao : 'Atmosférico';
             let corpo = '';
-            const guiaCad = '<path d="M 14,24 L 14,12 L 26,12 M 346,24 L 346,12 L 334,12 M 14,166 L 14,178 L 26,178 M 346,166 L 346,178 L 334,178" fill="none" stroke="rgba(34, 211, 238, 0.28)" stroke-width="1.2" stroke-linecap="round" />';
 
-            if (fmt === 'I') {{
-                const espaco = 260.0 / n;
-                const raio = Math.min(22.0, Math.max(5.2, (espaco - 5.0) / 2.0));
+            if (fmt === 'I' || fmt === 'VR') {{
+                const larguraBloco = fmt === 'I' ? 260.0 : 248.0;
+                const inicioX = fmt === 'I' ? 72.0 : 78.0;
+                const espaco = larguraBloco / n;
+                let raio = fmt === 'I'
+                    ? Math.min(21.0, Math.max(5.2, (espaco - 4.5) / 2.0))
+                    : Math.min(16.0, Math.max(7.0, (espaco * 1.15 - 4.0) / 2.0));
+                if (fmt === 'VR' && n >= 10) raio = Math.min(raio, 10.2);
+                const wRunner = Math.max(3.6, Math.min(12.0, raio * 0.65));
                 let circs = '';
+                let coletores = '';
                 for (let i = 0; i < n; i++) {{
-                    circs += desenharCilindroSvg(50.0 + i * espaco + espaco / 2.0, 95.0, raio);
-                }}
-                corpo = `
-                    <rect x="60" y="20" width="240" height="25" rx="6" fill="rgba(15, 23, 42, 0.72)" stroke="#CBD5E1" stroke-width="1.8" />
-                    <rect x="40" y="45" width="280" height="100" rx="12" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
-                    ${{circs}}
-                    <path d="M 70,145 L 290,145 L 270,172 L 90,172 Z" fill="rgba(15, 23, 42, 0.65)" stroke="#94A3B8" stroke-width="1.8" stroke-linejoin="round" />
-                `;
-            }} else if (fmt === 'V') {{
-                const nSup = Math.floor((n + 1) / 2);
-                const nInf = Math.floor(n / 2);
-                const cols = Math.max(1, nSup, nInf);
-                const espaco = 240.0 / cols;
-                const raio = Math.min(17.0, Math.max(6.0, (espaco - 6.0) / 2.0));
-                let circs = '';
-                for (let i = 0; i < nSup; i++) circs += desenharCilindroSvg(60.0 + i * espaco + espaco / 2.0, 57.0, raio);
-                for (let i = 0; i < nInf; i++) circs += desenharCilindroSvg(60.0 + i * espaco + espaco / 2.0, 133.0, raio);
-                corpo = `
-                    <rect x="50" y="28" width="260" height="58" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
-                    <rect x="50" y="104" width="260" height="58" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
-                    <rect x="28" y="76" width="16" height="38" rx="4" fill="rgba(129, 140, 248, 0.22)" stroke="#818CF8" stroke-width="1.8" />
-                    <line x1="44" y1="95" x2="322" y2="95" stroke="#818CF8" stroke-width="2" stroke-dasharray="6,4" />
-                    ${{circs}}
-                `;
-            }} else if (fmt === 'VR') {{
-                const espaco = 244.0 / n;
-                let raio = Math.min(17.0, Math.max(7.5, (espaco * 1.15 - 4.0) / 2.0));
-                if (n >= 10) raio = Math.min(raio, 10.5);
-                let circs = '';
-                for (let i = 0; i < n; i++) {{
-                    const cx = 58.0 + i * espaco + espaco / 2.0;
-                    const cy = i % 2 === 0 ? 80.0 : 110.0;
+                    const cx = inicioX + i * espaco + espaco / 2.0;
+                    const cy = fmt === 'I' ? 123.0 : (i % 2 === 0 ? 104.0 : 142.0);
                     circs += desenharCilindroSvg(cx, cy, raio);
+                    coletores += `<rect x="${{(cx - wRunner / 2).toFixed(1)}}" y="54" width="${{wRunner.toFixed(1)}}" height="18" rx="1.5" fill="url(#eng-metal)" stroke="#1e293b" stroke-width="0.8" />`;
+                    coletores += `<rect x="${{(cx - wRunner / 2).toFixed(1)}}" y="174" width="${{wRunner.toFixed(1)}}" height="19" rx="1.5" fill="url(#eng-exhaust)" stroke="#1e293b" stroke-width="0.8" />`;
                 }}
+
+                let admissaoSvg = '';
+                if (adm === 'Atmosférico') {{
+                    admissaoSvg = `
+                        <rect x="78" y="38" width="248" height="17" rx="5" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />
+                        <rect x="86" y="40" width="232" height="3" rx="1" fill="url(#eng-redcam)" />
+                        <rect x="54" y="42" width="25" height="9" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />
+                        ${{desenharFiltroConicoSvg(20.0, 37.0, 34.0, 19.0)}}
+                        <rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />
+                    `;
+                }} else if (adm === 'Turbo') {{
+                    admissaoSvg = `
+                        <path d="M 30,190 L 30,46 L 78,46" fill="none" stroke="url(#eng-metal)" stroke-width="7" stroke-linejoin="round" />
+                        <path d="M 68,210 L 184,210" fill="none" stroke="url(#eng-metal)" stroke-width="7" />
+                        ${{desenharIntercoolerSvg(16.0, 192.0, 50.0, 30.0)}}
+                        <rect x="78" y="38" width="248" height="17" rx="5" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />
+                        <rect x="86" y="40" width="232" height="3" rx="1" fill="url(#eng-redcam)" />
+                        <rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />
+                        ${{desenharTurboSvg(216.0, 211.0, 1.42)}}
+                    `;
+                }} else if (adm === 'Supercompressor') {{
+                    admissaoSvg = `
+                        <rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />
+                        <rect x="304" y="39" width="24" height="11" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />
+                        ${{desenharFiltroConicoSvg(328.0, 35.0, 32.0, 19.0)}}
+                        ${{desenharSuperchargerSvg(92.0, 28.0, 212.0, 28.0, 48.0, 42.0, 48.0, 123.0)}}
+                    `;
+                }} else if (adm === 'Biturbo') {{
+                    admissaoSvg = `
+                        <path d="M 30,190 L 30,46 L 78,46" fill="none" stroke="url(#eng-metal)" stroke-width="7" stroke-linejoin="round" />
+                        <path d="M 68,210 L 266,210" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" />
+                        ${{desenharIntercoolerSvg(16.0, 192.0, 50.0, 30.0)}}
+                        <rect x="78" y="38" width="248" height="17" rx="5" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />
+                        <rect x="86" y="40" width="232" height="3" rx="1" fill="url(#eng-redcam)" />
+                        <rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />
+                        ${{desenharTurboSvg(146.0, 211.0, 1.32)}}
+                        ${{desenharTurboSvg(282.0, 211.0, 1.32)}}
+                    `;
+                }} else {{
+                    admissaoSvg = `
+                        <path d="M 24,190 L 24,37 L 84,37" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />
+                        <path d="M 68,210 L 194,210" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" />
+                        ${{desenharIntercoolerSvg(14.0, 192.0, 50.0, 30.0)}}
+                        <rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />
+                        ${{desenharTurboSvg(224.0, 211.0, 1.38)}}
+                        ${{desenharSuperchargerSvg(92.0, 28.0, 212.0, 28.0, 48.0, 42.0, 48.0, 123.0)}}
+                    `;
+                }}
+
                 corpo = `
-                    <rect x="65" y="22" width="230" height="20" rx="6" fill="rgba(15, 23, 42, 0.72)" stroke="#CBD5E1" stroke-width="1.8" />
-                    <rect x="44" y="42" width="272" height="106" rx="12" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
+                    ${{coletores}}
+                    ${{admissaoSvg}}
+                    <rect x="40" y="83" width="18" height="54" rx="6" fill="#0f1218" stroke="#475569" stroke-width="1.3" />
+                    ${{desenharPoliaSvg(48.0, 93.0, 6.8)}}
+                    ${{desenharPoliaSvg(48.0, 123.0, 12.2)}}
+                    <rect x="340" y="91" width="14" height="64" rx="3" fill="url(#eng-metal)" stroke="#475569" stroke-width="1.3" />
+                    <rect x="64" y="70" width="276" height="106" rx="9" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.6" />
                     ${{circs}}
-                    <path d="M 75,148 L 285,148 L 268,172 L 92,172 Z" fill="rgba(15, 23, 42, 0.65)" stroke="#94A3B8" stroke-width="1.8" stroke-linejoin="round" />
                 `;
             }} else {{
                 const nSup = Math.floor((n + 1) / 2);
                 const nInf = Math.floor(n / 2);
                 const cols = Math.max(1, nSup, nInf);
-                const espacoSup = 244.0 / Math.max(1, nSup);
-                const espacoInf = 244.0 / Math.max(1, nInf);
-                const raio = Math.min(12.0, Math.max(7.0, (244.0 / cols) * 0.35));
+                const largura = 244.0;
+                const inicioX = 80.0;
+                const espacoSup = largura / Math.max(1, nSup);
+                const espacoInf = largura / Math.max(1, nInf);
+
+                const raio = fmt === 'V'
+                    ? Math.min(15.5, Math.max(5.8, (largura / cols - 6.0) / 2.0))
+                    : Math.min(10.8, Math.max(6.6, (largura / cols) * 0.34));
+                const bankSupY = fmt === 'V' ? 55.0 : 47.0;
+                const bankSupH = fmt === 'V' ? 50.0 : 58.0;
+                const bankInfY = 141.0;
+                const bankInfH = fmt === 'V' ? 50.0 : 58.0;
+                const yExhSup = fmt === 'V' ? 38.0 : 31.0;
+                const yExhInf = fmt === 'V' ? 193.0 : 200.0;
+                const yColSup = fmt === 'V' ? 38.0 : 31.0;
+                const yColInf = fmt === 'V' ? 200.0 : 207.0;
+
+                const wRunner = Math.max(3.5, Math.min(10.5, raio * 0.65));
                 let circs = '';
-                for (let i = 0; i < nSup; i++) circs += desenharCilindroSvg(58.0 + i * espacoSup + espacoSup / 2.0, i % 2 === 0 ? 43.0 : 63.0, raio);
-                for (let i = 0; i < nInf; i++) circs += desenharCilindroSvg(58.0 + i * espacoInf + espacoInf / 2.0, i % 2 === 0 ? 127.0 : 147.0, raio);
+                let escapes = '';
+                let trombetas = '';
+
+                for (let i = 0; i < nSup; i++) {{
+                    const cx = inicioX + i * espacoSup + espacoSup / 2.0;
+                    const cy = fmt === 'V' ? 80.0 : (i % 2 === 0 ? 64.0 : 87.0);
+                    circs += desenharCilindroSvg(cx, cy, raio);
+                    escapes += `<rect x="${{(cx - wRunner / 2).toFixed(1)}}" y="${{yExhSup.toFixed(1)}}" width="${{wRunner.toFixed(1)}}" height="17" rx="1.5" fill="url(#eng-exhaust)" stroke="#1e293b" stroke-width="0.8" />`;
+                    trombetas += `<circle cx="${{cx.toFixed(1)}}" cy="115" r="${{Math.max(2.6, Math.min(4.2, wRunner * 0.42)).toFixed(1)}}" fill="#090b10" stroke="#cbd5e1" stroke-width="1" />`;
+                }}
+                for (let i = 0; i < nInf; i++) {{
+                    const cx = inicioX + i * espacoInf + espacoInf / 2.0;
+                    const cy = fmt === 'V' ? 166.0 : (i % 2 === 0 ? 159.0 : 182.0);
+                    circs += desenharCilindroSvg(cx, cy, raio);
+                    escapes += `<rect x="${{(cx - wRunner / 2).toFixed(1)}}" y="${{yExhInf.toFixed(1)}}" width="${{wRunner.toFixed(1)}}" height="17" rx="1.5" fill="url(#eng-exhaust)" stroke="#1e293b" stroke-width="0.8" />`;
+                    trombetas += `<circle cx="${{cx.toFixed(1)}}" cy="131" r="${{Math.max(2.6, Math.min(4.2, wRunner * 0.42)).toFixed(1)}}" fill="#090b10" stroke="#cbd5e1" stroke-width="1" />`;
+                }}
+
+                let admissaoVw = '';
+                if (adm === 'Atmosférico') {{
+                    admissaoVw = `
+                        <rect x="78" y="108" width="250" height="30" rx="6" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.3" />
+                        ${{trombetas}}
+                        <rect x="328" y="117" width="24" height="12" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />
+                        ${{desenharFiltroConicoSvg(352.0, 112.0, 32.0, 22.0)}}
+                    `;
+                }} else if (adm === 'Turbo') {{
+                    admissaoVw = `
+                        <path d="M 185,24 L 24,24 L 24,87" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />
+                        <path d="M 24,159 L 24,123 L 82,123" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />
+                        ${{desenharIntercoolerSvg(12.0, 85.0, 24.0, 76.0, true)}}
+                        <rect x="78" y="108" width="250" height="30" rx="6" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.3" />
+                        <rect x="92" y="120.5" width="222" height="5" rx="2" fill="url(#eng-redcam)" />
+                        ${{desenharTurboSvg(212.0, 24.0, 1.34)}}
+                    `;
+                }} else if (adm === 'Supercompressor') {{
+                    admissaoVw = `
+                        <rect x="318" y="117" width="24" height="12" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />
+                        ${{desenharFiltroConicoSvg(342.0, 112.0, 32.0, 22.0)}}
+                        ${{desenharSuperchargerSvg(84.0, 106.0, 236.0, 34.0, 48.0, 123.0, 48.0, 123.0)}}
+                        <line x1="48" y1="80" x2="48" y2="166" stroke="#334155" stroke-width="3.6" />
+                    `;
+                }} else if (adm === 'Biturbo') {{
+                    admissaoVw = `
+                        <path d="M 185,24 L 24,24 L 24,83" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />
+                        <path d="M 185,222 L 24,222 L 24,163" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />
+                        <path d="M 36,123 L 82,123" fill="none" stroke="url(#eng-metal)" stroke-width="7" />
+                        ${{desenharIntercoolerSvg(12.0, 85.0, 24.0, 76.0, true)}}
+                        <rect x="78" y="108" width="250" height="30" rx="6" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.3" />
+                        <rect x="92" y="120.5" width="222" height="5" rx="2" fill="url(#eng-redcam)" />
+                        ${{desenharTurboSvg(212.0, 24.0, 1.32)}}
+                        ${{desenharTurboSvg(212.0, 222.0, 1.32)}}
+                    `;
+                }} else {{
+                    admissaoVw = `
+                        <path d="M 185,24 L 24,24 L 24,83" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />
+                        <path d="M 24,161 L 24,226 L 348,226 L 348,123 L 318,123" fill="none" stroke="url(#eng-metal)" stroke-width="6" stroke-linejoin="round" />
+                        ${{desenharIntercoolerSvg(12.0, 85.0, 24.0, 76.0, true)}}
+                        ${{desenharTurboSvg(212.0, 24.0, 1.32)}}
+                        ${{desenharSuperchargerSvg(84.0, 106.0, 236.0, 34.0, 48.0, 123.0, 48.0, 123.0)}}
+                    `;
+                }}
+
                 corpo = `
-                    <rect x="44" y="20" width="272" height="66" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
-                    <rect x="44" y="104" width="272" height="66" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
-                    <rect x="24" y="78" width="14" height="34" rx="4" fill="rgba(129, 140, 248, 0.22)" stroke="#818CF8" stroke-width="1.8" />
-                    <line x1="38" y1="95" x2="326" y2="95" stroke="#818CF8" stroke-width="2" stroke-dasharray="6,4" />
+                    ${{escapes}}
+                    <rect x="82" y="${{yColSup.toFixed(1)}}" width="240" height="8" rx="3" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1" />
+                    <rect x="82" y="${{yColInf.toFixed(1)}}" width="240" height="8" rx="3" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1" />
+                    <path d="M 38,75 L 64,59 L 64,187 L 38,171 Z" fill="#0f1218" stroke="#475569" stroke-width="1.3" />
+                    ${{desenharPoliaSvg(48.0, 80.0, 9.0)}}
+                    ${{desenharPoliaSvg(48.0, 166.0, 9.0)}}
+                    <rect x="340" y="89" width="14" height="68" rx="3" fill="url(#eng-metal)" stroke="#475569" stroke-width="1.3" />
+                    <rect x="64" y="${{bankSupY.toFixed(1)}}" width="276" height="${{bankSupH.toFixed(1)}}" rx="8" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.6" />
+                    <rect x="64" y="${{bankInfY.toFixed(1)}}" width="276" height="${{bankInfH.toFixed(1)}}" rx="8" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.6" />
+                    <rect x="72" y="${{(bankSupY - 4).toFixed(1)}}" width="260" height="5" rx="2" fill="url(#eng-redcam)" />
+                    <rect x="72" y="${{(bankInfY + bankInfH - 1).toFixed(1)}}" width="260" height="5" rx="2" fill="url(#eng-redcam)" />
+                    <rect x="64" y="105" width="276" height="36" fill="#090b10" stroke="rgba(255,255,255,0.08)" stroke-width="0.9" />
+                    <rect x="54" y="119.5" width="288" height="7" rx="2" fill="url(#eng-metal)" stroke="#334155" stroke-width="0.9" />
                     ${{circs}}
+                    ${{admissaoVw}}
+                    ${{desenharPoliaSvg(48.0, 123.0, 10.5, (adm === 'Supercompressor' || adm === 'Twincharge') ? '#ff9f1c' : '#ff1e38')}}
                 `;
             }}
-            return `<svg class="motor-svg" viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg" aria-label="Motor ${{fmt}} 2D">${{guiaCad}}${{corpo}}</svg>`;
+            return `<svg class="motor-svg" viewBox="0 0 400 246" xmlns="http://www.w3.org/2000/svg" aria-label="Motor ${{fmt}} ${{adm}} 2D">${{SVG_MOTOR_DEFS}}${{corpo}}</svg>`;
         }}
 
         async function atualizarWidget3() {{
@@ -1818,7 +2508,7 @@ def gerar_dashboard_html(
                 'Turbo': {{ pressao: '+1.5 bar', mp: 1.55, mb: 1.60 }},
                 'Supercompressor': {{ pressao: '+0.8 bar', mp: 1.35, mb: 1.45 }},
                 'Biturbo': {{ pressao: '+2.0 bar', mp: 1.80, mb: 1.85 }},
-                'Bicarregado': {{ pressao: '+2.0 bar', mp: 1.90, mb: 1.95 }}
+                'Twincharge': {{ pressao: '+2.0 bar', mp: 1.90, mb: 1.95 }}
             }};
             const fatorComb = fatoresComb[payload.combustivel] || 1.00;
             const admKey = perfisAdm[payload.admissao] ? payload.admissao : 'Atmosférico';
@@ -1861,12 +2551,13 @@ def gerar_dashboard_html(
         async function atualizarDados() {{
             const cilindros = parseInt(selectCilindros.value, 10) || 4;
             const formato = selectFormato.value || 'I';
+            const admissao = selectAdmissao.value || 'Atmosférico';
 
             try {{
                 const res = await fetch('/api/ficha', {{
                     method: 'POST',
                     headers: {{ 'Content-Type': 'application/json' }},
-                    body: JSON.stringify({{ cilindros, formato }})
+                    body: JSON.stringify({{ cilindros, formato, admissao }})
                 }});
                 if (res.ok) {{
                     const data = await res.json();
@@ -1877,7 +2568,7 @@ def gerar_dashboard_html(
                 }}
             }} catch (_) {{}}
 
-            motorSvgContainer.innerHTML = gerarSvgMotorLocal(cilindros, formato);
+            motorSvgContainer.innerHTML = gerarSvgMotorLocal(cilindros, formato, admissao);
             motorNumCilindros.textContent = cilindros;
             atualizarWidget3();
         }}
@@ -1973,7 +2664,10 @@ def gerar_dashboard_html(
 
                 return `
                     <div class="quiz-pergunta-box" id="quiz-q-${{q.id}}">
-                        <p class="quiz-pergunta-texto">${{numeroIdx + 1}}. ${{escaparHtmlQuiz(q.pergunta)}}</p>
+                        <div class="quiz-pergunta-topo">
+                            <span class="quiz-num-badge">Q0${{numeroIdx + 1}}</span>
+                            <p class="quiz-pergunta-texto">${{escaparHtmlQuiz(q.pergunta)}}</p>
+                        </div>
                         <div class="quiz-opcoes-grid">
                             ${{opcoesHtml}}
                         </div>
@@ -2015,14 +2709,14 @@ def gerar_dashboard_html(
         }}
 
         function aplicarResultadoQuiz(resultado) {{
-            let corBanner = '#FF3B5C';
-            let fundoBanner = 'rgba(255, 59, 92, 0.14)';
+            let corBanner = '#FF1E38';
+            let fundoBanner = 'rgba(255, 30, 56, 0.16)';
             if (resultado.percentagem >= 70) {{
-                corBanner = '#34D399';
-                fundoBanner = 'rgba(52, 211, 153, 0.14)';
+                corBanner = '#00E676';
+                fundoBanner = 'rgba(0, 230, 118, 0.14)';
             }} else if (resultado.percentagem >= 50) {{
-                corBanner = '#FBBF24';
-                fundoBanner = 'rgba(251, 191, 36, 0.14)';
+                corBanner = '#FFB800';
+                fundoBanner = 'rgba(255, 184, 0, 0.15)';
             }}
             const classificacao = resultado.classificacao || obterClassificacaoQuiz(resultado.percentagem);
 
@@ -2195,11 +2889,13 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         if caminho == "/api/ficha":
             cil = max(1, min(16, int(dados.get("cilindros", 4))))
             fmt = str(dados.get("formato", "I")).upper()
+            adm = str(dados.get("admissao", "Atmosférico"))
 
             resposta = json.dumps({
                 "cilindros": cil,
                 "formato": fmt,
-                "motor_svg": gerar_svg_motor_inline(cil, fmt),
+                "admissao": adm,
+                "motor_svg": gerar_svg_motor_inline(cil, fmt, adm),
             }).encode("utf-8")
 
             self.send_response(200)
