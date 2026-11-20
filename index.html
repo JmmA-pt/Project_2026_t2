@@ -4,73 +4,311 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Motor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            color-scheme: dark;
+            --bg-base: #070a12;
+            --bg-elevated: rgba(15, 22, 38, 0.78);
+            --bg-surface: rgba(11, 16, 29, 0.9);
+            --bg-surface-hover: rgba(25, 36, 60, 0.92);
+            --border-subtle: rgba(148, 163, 184, 0.16);
+            --border-cyan: rgba(34, 211, 238, 0.45);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-cyan: #22d3ee;
+            --accent-indigo: #818cf8;
+            --accent-lime: #a3e635;
+            --accent-emerald: #34d399;
+            --accent-amber: #fbbf24;
+            --accent-danger: #ff3b5c;
+            --radius-xl: 20px;
+            --radius-lg: 14px;
+            --radius-md: 10px;
+            --shadow-card: 0 22px 48px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            --font-sans: 'Space Grotesk', 'Segoe UI Variable', 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
-        /* Base do site: Fundo Preto e texto WhiteSmoke */
+        /* Base do site: Dark Motorsport Glass */
         body {
-            background-color: #000000;
-            color: WhiteSmoke;
-            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: var(--bg-base);
+            background-image:
+                radial-gradient(circle at 12% 10%, rgba(34, 211, 238, 0.14), transparent 36%),
+                radial-gradient(circle at 88% 12%, rgba(99, 102, 241, 0.15), transparent 38%),
+                radial-gradient(circle at 50% 95%, rgba(163, 230, 53, 0.07), transparent 42%);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 24px;
+            padding: 28px 24px;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        /* Grelha simples para os 3 widgets */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+            background-size: 38px 38px;
+            mask-image: radial-gradient(ellipse at center, black 35%, transparent 85%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 35%, transparent 85%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Barra Superior & Botão de Acesso ao Quiz */
+        .dashboard-topbar {
+            width: 100%;
+            max-width: 1240px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            padding: 14px 20px;
+            background: var(--bg-elevated);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-card);
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.22), rgba(129, 140, 248, 0.24));
+            border: 1px solid rgba(34, 211, 238, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-cyan);
+            flex-shrink: 0;
+        }
+
+        .topbar-textos {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .topbar-titulo {
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .topbar-subtitulo {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+        }
+
+        .btn-cyber-acao {
+            background: rgba(15, 23, 42, 0.85);
+            color: var(--text-primary);
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+        }
+
+        .btn-cyber-acao:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(30, 41, 59, 0.95);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px -8px rgba(34, 211, 238, 0.45);
+        }
+
+        .btn-cyber-acao:active {
+            transform: translateY(0);
+        }
+
+        .btn-quiz-cta,
+        .btn-destaque {
+            background: linear-gradient(135deg, #22d3ee 0%, #6366f1 100%);
+            color: #060911;
+            border: none;
+            font-weight: 700;
+            box-shadow: 0 10px 26px -10px rgba(34, 211, 238, 0.65);
+        }
+
+        .btn-quiz-cta:hover,
+        .btn-destaque:hover {
+            background: linear-gradient(135deg, #67e8f9 0%, #818cf8 100%);
+            color: #060911;
+            box-shadow: 0 12px 30px -8px rgba(34, 211, 238, 0.8);
+        }
+
+        /* Grelha principal para os 3 widgets */
         .dashboard-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 20px;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1240px;
         }
 
-        /* Cartão de cada widget com contorno de 2pt em WhiteSmoke */
+        /* Cartão de cada widget com estilo glassmorphism moderno */
         .widget-card {
-            background-color: #000000;
-            border: 2pt solid WhiteSmoke;
+            background: var(--bg-elevated);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
             padding: 22px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            min-height: 360px;
+            min-height: 390px;
             gap: 16px;
+            box-shadow: var(--shadow-card);
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .widget-card:hover {
+            border-color: rgba(148, 163, 184, 0.28);
+        }
+
+        .widget-header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .ficha-titulo {
+            font-size: 0.84rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--text-primary);
+            text-transform: uppercase;
+        }
+
+        .widget-badge {
+            font-family: var(--font-mono);
+            font-size: 0.66rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.12);
+            color: var(--text-secondary);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            white-space: nowrap;
+        }
+
+        .widget-badge.badge-live {
+            color: var(--accent-lime);
+            background: rgba(163, 230, 53, 0.1);
+            border-color: rgba(163, 230, 53, 0.3);
+        }
+
+        /* Widget 1: Stage Blueprint + Contador Exclusivo de Cilindros */
+        .widget-visual {
+            justify-content: space-between;
+        }
+
+        .motor-stage {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 12px;
+            border-radius: 16px;
+            background-color: rgba(6, 9, 17, 0.86);
+            background-image: radial-gradient(rgba(34, 211, 238, 0.14) 1px, transparent 1px);
+            background-size: 16px 16px;
+            border: 1px solid rgba(34, 211, 238, 0.18);
+            box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.65);
         }
 
         .motor-svg {
             width: 100%;
             max-width: 320px;
             height: auto;
+            filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.16));
+            transition: transform 0.25s ease;
         }
 
         /* Exibição exclusiva do número de cilindros (Widget 1) */
         .cilindros-box {
-            border: 2pt solid WhiteSmoke;
-            padding: 10px 28px;
+            width: 100%;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.65));
+            border: 1px solid rgba(34, 211, 238, 0.28);
+            border-radius: 14px;
+            padding: 12px 24px;
             text-align: center;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 12px;
         }
 
         .cilindros-numero {
-            display: block;
-            font-size: 2.6rem;
-            font-weight: bold;
-            color: WhiteSmoke;
-            line-height: 1.1;
+            font-family: var(--font-mono);
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            background: linear-gradient(135deg, #f8fafc 25%, #22d3ee 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
         .cilindros-texto {
-            font-size: 0.85rem;
-            letter-spacing: 0.15em;
-            color: WhiteSmoke;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            color: var(--text-secondary);
         }
 
         /* Formulários e Tabelas (Widgets 2 e 3) */
@@ -84,13 +322,13 @@
         .grid-2-col {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 10px;
         }
 
         .campo-grupo {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 5px;
         }
 
         .campo-largura-total {
@@ -98,200 +336,258 @@
         }
 
         .campo-grupo label {
-            font-size: 0.72rem;
+            font-size: 0.68rem;
+            font-weight: 600;
             letter-spacing: 0.08em;
-            color: WhiteSmoke;
+            color: var(--text-secondary);
+            text-transform: uppercase;
         }
 
         .input-cyber {
-            background-color: #000000;
-            color: WhiteSmoke;
-            border: 1.5pt solid WhiteSmoke;
-            padding: 7px 8px;
-            font-family: inherit;
-            font-size: 0.85rem;
+            background-color: rgba(7, 10, 18, 0.85);
+            color: var(--text-primary);
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            border-radius: var(--radius-md);
+            padding: 9px 11px;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
             outline: none;
             width: 100%;
-            transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+        }
+
+        select.input-cyber {
+            font-family: var(--font-sans);
+            font-weight: 500;
+            appearance: none;
+            -webkit-appearance: none;
+            padding-right: 30px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            cursor: pointer;
+        }
+
+        select.input-cyber option {
+            background-color: #0b101d;
+            color: #f8fafc;
+        }
+
+        .btn-cyber-acao:focus-visible,
+        .btn-preset-motor:focus-visible,
+        .quiz-opcao:focus-within {
+            outline: 2px solid var(--accent-cyan);
+            outline-offset: 2px;
+        }
+
+        .input-cyber:hover {
+            border-color: rgba(148, 163, 184, 0.42);
+        }
+
+        .input-cyber:focus {
+            border-color: var(--accent-cyan);
+            background-color: rgba(11, 16, 29, 0.98);
+            box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.16);
         }
 
         .input-cyber.input-alerta {
-            border-color: #FF2A4B;
-            background-color: rgba(255, 42, 75, 0.22);
-            color: #FF5C77;
-            font-weight: bold;
+            border-color: var(--accent-danger);
+            background-color: rgba(255, 59, 92, 0.14);
+            color: #ff99ab;
+            font-weight: 700;
+            box-shadow: 0 0 0 3px rgba(255, 59, 92, 0.16);
         }
 
         .rpm-alerta-msg {
-            color: #FF2A4B;
             font-size: 0.72rem;
-            min-height: 1em;
-            line-height: 1.3;
+            line-height: 1.35;
+            min-height: 0;
         }
 
-        .ficha-tecnica {
-            width: 100%;
-            border: 1.5pt solid WhiteSmoke;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .ficha-titulo {
-            font-size: 0.82rem;
-            font-weight: bold;
-            letter-spacing: 0.12em;
-            border-bottom: 1pt solid WhiteSmoke;
-            padding-bottom: 5px;
-            margin-bottom: 2px;
+        .rpm-alerta-msg:not(:empty) {
+            margin-top: 2px;
+            padding: 8px 11px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 59, 92, 0.12);
+            border: 1px solid rgba(255, 59, 92, 0.38);
+            color: #ff99ab;
+            font-weight: 500;
         }
 
         /* Widget 2: Motores Predefinidos */
         .widget-presets {
             justify-content: flex-start;
-            gap: 12px;
+            gap: 14px;
         }
 
         .presets-lista {
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 9px;
         }
 
         .btn-preset-motor {
-            background-color: #000000;
-            color: WhiteSmoke;
-            border: 1.5pt solid rgba(245, 245, 245, 0.55);
-            padding: 9px 11px;
+            position: relative;
+            background: rgba(7, 10, 18, 0.65);
+            color: var(--text-primary);
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 12px;
+            padding: 11px 14px 11px 17px;
             text-align: left;
-            font-family: inherit;
+            font-family: var(--font-sans);
             cursor: pointer;
             display: flex;
             flex-direction: column;
             gap: 3px;
-            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+            overflow: hidden;
+            transition: transform 0.16s ease, border-color 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        .btn-preset-motor::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            bottom: 8px;
+            width: 3px;
+            border-radius: 99px;
+            background: rgba(148, 163, 184, 0.25);
+            transition: background-color 0.16s ease, box-shadow 0.16s ease;
         }
 
         .btn-preset-motor:hover {
-            border-color: WhiteSmoke;
-            background-color: #141414;
+            border-color: rgba(34, 211, 238, 0.45);
+            background: var(--bg-surface-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-preset-motor:hover::before {
+            background: var(--accent-cyan);
         }
 
         .btn-preset-motor.ativo {
-            background-color: WhiteSmoke;
-            color: #000000;
-            border-color: WhiteSmoke;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.18), rgba(99, 102, 241, 0.2));
+            border-color: var(--accent-cyan);
+            box-shadow: 0 10px 24px -14px rgba(34, 211, 238, 0.75);
+        }
+
+        .btn-preset-motor.ativo::before {
+            background: var(--accent-lime);
+            box-shadow: 0 0 10px rgba(163, 230, 53, 0.8);
         }
 
         .preset-nome {
-            font-size: 0.82rem;
-            font-weight: bold;
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
         .preset-resumo {
-            font-size: 0.7rem;
-            opacity: 0.8;
+            font-family: var(--font-mono);
+            font-size: 0.69rem;
+            color: var(--text-secondary);
+        }
+
+        .btn-preset-motor.ativo .preset-resumo {
+            color: #bae6fd;
         }
 
         /* Widget 3: Todas as Configurações */
         .widget-configs {
             justify-content: flex-start;
-            gap: 12px;
+            gap: 14px;
         }
 
         /* Painel Inferior: Ficha Técnica a ocupar toda a largura inferior */
         .ficha-painel-inferior {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1240px;
             margin-top: 20px;
-            background-color: #000000;
-            border: 2pt solid WhiteSmoke;
-            padding: 18px 22px;
+            background: var(--bg-elevated);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 20px 24px;
+            box-shadow: var(--shadow-card);
         }
 
         .ficha-tecnica-inferior {
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
+        }
+
+        .ficha-tecnica-inferior .ficha-titulo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ficha-tecnica-inferior .ficha-titulo::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 99px;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan);
         }
 
         .ficha-itens-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 12px;
         }
 
         .ficha-item {
-            border: 1pt solid rgba(245, 245, 245, 0.4);
-            padding: 10px 12px;
+            background: rgba(7, 10, 18, 0.72);
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            border-radius: var(--radius-lg);
+            padding: 13px 15px;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 5px;
+            transition: border-color 0.18s ease, transform 0.18s ease;
+        }
+
+        .ficha-item:hover {
+            border-color: rgba(34, 211, 238, 0.35);
+            transform: translateY(-1px);
         }
 
         .ficha-item span {
-            font-size: 0.7rem;
-            color: #b5b5b5;
-            letter-spacing: 0.08em;
+            font-size: 0.67rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
         }
 
         .ficha-item strong {
-            font-size: 0.95rem;
-            color: WhiteSmoke;
-        }
-
-        /* Barra Superior & Botão de Acesso ao Quiz */
-        .dashboard-topbar {
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 2pt solid WhiteSmoke;
-        }
-
-        .topbar-titulo {
+            font-family: var(--font-mono);
             font-size: 1rem;
-            font-weight: bold;
-            letter-spacing: 0.12em;
-            color: WhiteSmoke;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
         }
 
-        .btn-cyber-acao {
-            background-color: #000000;
-            color: WhiteSmoke;
-            border: 2pt solid WhiteSmoke;
-            padding: 9px 16px;
-            font-family: inherit;
-            font-size: 0.82rem;
-            font-weight: bold;
-            letter-spacing: 0.08em;
-            cursor: pointer;
-            transition: background-color 0.15s ease, color 0.15s ease;
+        .ficha-item:nth-child(4) strong {
+            color: var(--accent-cyan);
         }
 
-        .btn-cyber-acao:hover,
-        .btn-destaque {
-            background-color: WhiteSmoke;
-            color: #000000;
+        .ficha-item:nth-child(5) strong {
+            color: var(--accent-lime);
         }
 
-        .btn-destaque:hover {
-            background-color: #d9d9d9;
-        }
-
-        /* Modal do Quiz (10 Escolhas Múltiplas) */
+        /* Modal do Quiz (5 Perguntas Aleatórias) */
         .quiz-modal {
             position: fixed;
             inset: 0;
-            background-color: rgba(0, 0, 0, 0.92);
+            background-color: rgba(4, 6, 12, 0.82);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -304,16 +600,44 @@
         }
 
         .quiz-container {
-            background-color: #000000;
-            border: 2pt solid WhiteSmoke;
+            background: #0c1220;
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            border-radius: 22px;
             width: 100%;
-            max-width: 840px;
+            max-width: 860px;
             max-height: 90vh;
             overflow-y: auto;
-            padding: 24px;
+            padding: 26px;
             display: flex;
             flex-direction: column;
             gap: 18px;
+            box-shadow: 0 32px 70px -15px rgba(0, 0, 0, 0.9);
+            animation: modalEntrar 0.22s ease-out;
+        }
+
+        @keyframes modalEntrar {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.985);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .quiz-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .quiz-container::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 99px;
+        }
+
+        .quiz-container::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 99px;
         }
 
         .quiz-header {
@@ -321,35 +645,68 @@
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1.5pt solid WhiteSmoke;
+            gap: 14px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .quiz-header-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            min-width: 240px;
         }
 
         .quiz-header h2 {
             font-size: 1.05rem;
-            letter-spacing: 0.1em;
-            color: WhiteSmoke;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--text-primary);
+        }
+
+        .quiz-progresso-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .quiz-progresso {
-            display: inline-block;
-            margin-top: 4px;
-            font-size: 0.78rem;
-            color: #b5b5b5;
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .quiz-progresso-barra {
+            flex: 1;
+            max-width: 200px;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.16);
+            overflow: hidden;
+        }
+
+        .quiz-progresso-fill {
+            width: 0%;
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-lime));
+            transition: width 0.25s ease;
         }
 
         .quiz-resultado-banner {
-            border: 2pt solid WhiteSmoke;
-            background-color: #0a0a0a;
-            padding: 14px 16px;
+            border: 1px solid var(--border-cyan);
+            border-radius: var(--radius-lg);
+            background-color: rgba(15, 23, 42, 0.85);
+            padding: 14px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 10px;
-            font-size: 0.95rem;
-            font-weight: bold;
+            font-size: 0.92rem;
+            font-weight: 700;
         }
 
         .quiz-lista {
@@ -359,81 +716,117 @@
         }
 
         .quiz-pergunta-box {
-            border: 1.5pt solid rgba(245, 245, 245, 0.45);
-            background-color: #050505;
-            padding: 14px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            background: rgba(7, 10, 18, 0.65);
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .quiz-pergunta-texto {
-            font-size: 0.88rem;
-            line-height: 1.45;
-            color: WhiteSmoke;
-            font-weight: bold;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            color: var(--text-primary);
+            font-weight: 600;
         }
 
         .quiz-opcoes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 8px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
         }
 
         .quiz-opcao {
             display: flex;
             align-items: center;
-            gap: 8px;
-            border: 1pt solid rgba(245, 245, 245, 0.45);
-            background-color: #000000;
-            color: WhiteSmoke;
-            padding: 9px 11px;
+            gap: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.65);
+            color: var(--text-primary);
+            padding: 10px 12px;
             font-size: 0.82rem;
+            line-height: 1.35;
             cursor: pointer;
-            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+            transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
         }
 
         .quiz-opcao input[type="radio"] {
             display: none;
         }
 
+        .quiz-letra {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            background: rgba(148, 163, 184, 0.14);
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background-color 0.16s ease, color 0.16s ease;
+        }
+
         .quiz-opcao:hover {
-            border-color: WhiteSmoke;
-            background-color: #141414;
+            border-color: rgba(34, 211, 238, 0.5);
+            background: rgba(30, 41, 59, 0.85);
+            transform: translateY(-1px);
         }
 
         .quiz-opcao.selecionada {
-            background-color: WhiteSmoke;
-            color: #000000;
-            border-color: WhiteSmoke;
-            font-weight: bold;
+            background: rgba(34, 211, 238, 0.16);
+            border-color: var(--accent-cyan);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .quiz-opcao.selecionada .quiz-letra {
+            background: var(--accent-cyan);
+            color: #060911;
         }
 
         .quiz-opcao.correta {
-            border-color: #39FF14;
-            color: #39FF14;
-            background-color: rgba(57, 255, 20, 0.1);
-            font-weight: bold;
+            border-color: var(--accent-emerald);
+            color: var(--accent-emerald);
+            background: rgba(52, 211, 153, 0.14);
+            font-weight: 600;
+        }
+
+        .quiz-opcao.correta .quiz-letra {
+            background: var(--accent-emerald);
+            color: #060911;
         }
 
         .quiz-opcao.errada {
-            border-color: #FF2A4B;
-            color: #FF2A4B;
-            background-color: rgba(255, 42, 75, 0.12);
-            font-weight: bold;
+            border-color: var(--accent-danger);
+            color: #ff99ab;
+            background: rgba(255, 59, 92, 0.14);
+            font-weight: 600;
+        }
+
+        .quiz-opcao.errada .quiz-letra {
+            background: var(--accent-danger);
+            color: #ffffff;
         }
 
         .quiz-feedback {
-            font-size: 0.76rem;
+            font-size: 0.78rem;
+            font-weight: 500;
             min-height: 1em;
         }
 
         .quiz-feedback.ok {
-            color: #39FF14;
+            color: var(--accent-emerald);
         }
 
         .quiz-feedback.erro {
-            color: #FF2A4B;
+            color: #ff99ab;
         }
 
         .quiz-acoes-footer {
@@ -442,36 +835,86 @@
             gap: 12px;
             padding-top: 6px;
         }
+
+        @media (max-width: 1080px) {
+            .dashboard-container {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .widget-visual {
+                grid-column: 1 / -1;
+                min-height: 320px;
+            }
+            .ficha-itens-grid {
+                grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+            }
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: 16px 14px;
+            }
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            .widget-card {
+                min-height: auto;
+                padding: 18px;
+            }
+            .quiz-container {
+                padding: 18px;
+            }
+            .quiz-opcoes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <header class="dashboard-topbar">
-        <span class="topbar-titulo">PAINEL DO MOTOR // CONTROLO AUTOMÓVEL</span>
-        <button type="button" class="btn-cyber-acao" id="btn-abrir-quiz">
-            QUIZ AUTOMÓVEL (5 PERGUNTAS)
+        <div class="topbar-brand">
+            <div class="topbar-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2v4M5 6l2.5 2.5M19 6l-2.5 2.5M4 14h3M17 14h3M6 19h12a2 2 0 0 0 2-2v-3a8 8 0 1 0-16 0v3a2 2 0 0 0 2 2Z" />
+                    <path d="M12 14l3-3" />
+                </svg>
+            </div>
+            <div class="topbar-textos">
+                <span class="topbar-titulo">PAINEL DO MOTOR</span>
+                <span class="topbar-subtitulo">CONTROLO AUTOMÓVEL · CUSTOM ENGINE</span>
+            </div>
+        </div>
+        <button type="button" class="btn-cyber-acao btn-quiz-cta" id="btn-abrir-quiz">
+            <span>QUIZ AUTOMÓVEL</span>
+            <span>(5 PERGUNTAS)</span>
         </button>
     </header>
 
     <main class="dashboard-container">
         
-    <section class="widget-card" id="widget-1">
-        <div id="motor-svg-container" style="width: 100%; display: flex; justify-content: center;">
+    <section class="widget-card widget-visual" id="widget-1">
+        <div id="motor-svg-container" class="motor-stage">
             
     <svg class="motor-svg" viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg"
          aria-label="Motor I 2D">
-        
-        <rect x="60" y="20" width="240" height="25" rx="4" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-        <rect x="40" y="45" width="280" height="100" rx="8" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-        <circle cx="82.5" cy="95.0" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="82.5" cy="95.0" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="147.5" cy="95.0" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="147.5" cy="95.0" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="212.5" cy="95.0" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="212.5" cy="95.0" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="277.5" cy="95.0" r="22.0" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-<circle cx="277.5" cy="95.0" r="9.9" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+        <path d="M 14,24 L 14,12 L 26,12 M 346,24 L 346,12 L 334,12 M 14,166 L 14,178 L 26,178 M 346,166 L 346,178 L 334,178" fill="none" stroke="rgba(34, 211, 238, 0.28)" stroke-width="1.2" stroke-linecap="round" />
 
-        <path d="M 70,145 L 290,145 L 270,172 L 90,172 Z" fill="none" stroke="WhiteSmoke" stroke-width="2pt" stroke-linejoin="round" />
+        
+        <rect x="60" y="20" width="240" height="25" rx="6" fill="rgba(15, 23, 42, 0.72)" stroke="#CBD5E1" stroke-width="1.8" />
+        <rect x="40" y="45" width="280" height="100" rx="12" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
+        <circle cx="82.5" cy="95.0" r="22.0" fill="rgba(34, 211, 238, 0.08)" stroke="#22D3EE" stroke-width="2" />
+<circle cx="82.5" cy="95.0" r="10.6" fill="rgba(129, 140, 248, 0.18)" stroke="#F8FAFC" stroke-width="1.7" />
+<circle cx="82.5" cy="95.0" r="3.5" fill="#22D3EE" />
+<circle cx="147.5" cy="95.0" r="22.0" fill="rgba(34, 211, 238, 0.08)" stroke="#22D3EE" stroke-width="2" />
+<circle cx="147.5" cy="95.0" r="10.6" fill="rgba(129, 140, 248, 0.18)" stroke="#F8FAFC" stroke-width="1.7" />
+<circle cx="147.5" cy="95.0" r="3.5" fill="#22D3EE" />
+<circle cx="212.5" cy="95.0" r="22.0" fill="rgba(34, 211, 238, 0.08)" stroke="#22D3EE" stroke-width="2" />
+<circle cx="212.5" cy="95.0" r="10.6" fill="rgba(129, 140, 248, 0.18)" stroke="#F8FAFC" stroke-width="1.7" />
+<circle cx="212.5" cy="95.0" r="3.5" fill="#22D3EE" />
+<circle cx="277.5" cy="95.0" r="22.0" fill="rgba(34, 211, 238, 0.08)" stroke="#22D3EE" stroke-width="2" />
+<circle cx="277.5" cy="95.0" r="10.6" fill="rgba(129, 140, 248, 0.18)" stroke="#F8FAFC" stroke-width="1.7" />
+<circle cx="277.5" cy="95.0" r="3.5" fill="#22D3EE" />
+
+        <path d="M 70,145 L 290,145 L 270,172 L 90,172 Z" fill="rgba(15, 23, 42, 0.65)" stroke="#94A3B8" stroke-width="1.8" stroke-linejoin="round" />
         
     </svg>
     
@@ -486,7 +929,10 @@
     
         
     <section class="widget-card widget-presets" id="widget-2">
-        <div class="ficha-titulo" style="width: 100%; text-align: center;">MOTORES PREDEFINIDOS</div>
+        <div class="widget-header">
+            <span class="ficha-titulo">MOTORES PREDEFINIDOS</span>
+            <span class="widget-badge">5 ÍCONES</span>
+        </div>
         <div class="presets-lista" id="presets-lista">
             
         <button type="button" class="btn-preset-motor" data-preset-id="koenigsegg_jesko">
@@ -523,7 +969,10 @@
     
         
     <section class="widget-card widget-configs" id="widget-3">
-        <div class="ficha-titulo" style="width: 100%; text-align: center;">CONFIGURAÇÕES DO MOTOR</div>
+        <div class="widget-header">
+            <span class="ficha-titulo">CONFIGURAÇÕES DO MOTOR</span>
+            <span class="widget-badge badge-live">TEMPO REAL</span>
+        </div>
         <div class="widget-form">
             <div class="grid-2-col">
                 <div class="campo-grupo">
@@ -616,9 +1065,14 @@
     <div class="quiz-modal" id="quiz-modal" aria-hidden="true">
         <div class="quiz-container" role="dialog" aria-modal="true" aria-labelledby="quiz-titulo">
             <header class="quiz-header">
-                <div>
-                    <h2 id="quiz-titulo">QUIZ AUTOMÓVEL // 5 PERGUNTAS ALEATÓRIAS</h2>
-                    <span class="quiz-progresso" id="quiz-progresso">Respondidas: 0 / 5</span>
+                <div class="quiz-header-info">
+                    <h2 id="quiz-titulo">QUIZ AUTOMÓVEL · 5 PERGUNTAS ALEATÓRIAS</h2>
+                    <div class="quiz-progresso-wrap">
+                        <span class="quiz-progresso" id="quiz-progresso">Respondidas: 0 / 5</span>
+                        <div class="quiz-progresso-barra">
+                            <div class="quiz-progresso-fill" id="quiz-progresso-fill"></div>
+                        </div>
+                    </div>
                 </div>
                 <button type="button" class="btn-cyber-acao" id="btn-fechar-quiz">VOLTAR AO PAINEL</button>
             </header>
@@ -684,10 +1138,12 @@
         }
 
         function desenharCilindroSvg(cx, cy, r) {
-            const rPistao = Math.max(2.8, r * 0.45);
+            const rPistao = Math.max(2.8, r * 0.48);
+            const rPino = Math.max(1.4, r * 0.16);
             return `
-                <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-                <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${rPistao.toFixed(1)}" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="rgba(34, 211, 238, 0.08)" stroke="#22D3EE" stroke-width="2" />
+                <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${rPistao.toFixed(1)}" fill="rgba(129, 140, 248, 0.18)" stroke="#F8FAFC" stroke-width="1.7" />
+                <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${rPino.toFixed(1)}" fill="#22D3EE" />
             `;
         }
 
@@ -695,6 +1151,7 @@
             const n = Math.max(1, Math.min(16, cilindros));
             const fmt = ['I', 'V', 'VR', 'W'].includes(formato) ? formato : 'I';
             let corpo = '';
+            const guiaCad = '<path d="M 14,24 L 14,12 L 26,12 M 346,24 L 346,12 L 334,12 M 14,166 L 14,178 L 26,178 M 346,166 L 346,178 L 334,178" fill="none" stroke="rgba(34, 211, 238, 0.28)" stroke-width="1.2" stroke-linecap="round" />';
 
             if (fmt === 'I') {
                 const espaco = 260.0 / n;
@@ -704,10 +1161,10 @@
                     circs += desenharCilindroSvg(50.0 + i * espaco + espaco / 2.0, 95.0, raio);
                 }
                 corpo = `
-                    <rect x="60" y="20" width="240" height="25" rx="4" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-                    <rect x="40" y="45" width="280" height="100" rx="8" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    <rect x="60" y="20" width="240" height="25" rx="6" fill="rgba(15, 23, 42, 0.72)" stroke="#CBD5E1" stroke-width="1.8" />
+                    <rect x="40" y="45" width="280" height="100" rx="12" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
                     ${circs}
-                    <path d="M 70,145 L 290,145 L 270,172 L 90,172 Z" fill="none" stroke="WhiteSmoke" stroke-width="2pt" stroke-linejoin="round" />
+                    <path d="M 70,145 L 290,145 L 270,172 L 90,172 Z" fill="rgba(15, 23, 42, 0.65)" stroke="#94A3B8" stroke-width="1.8" stroke-linejoin="round" />
                 `;
             } else if (fmt === 'V') {
                 const nSup = Math.floor((n + 1) / 2);
@@ -719,10 +1176,10 @@
                 for (let i = 0; i < nSup; i++) circs += desenharCilindroSvg(60.0 + i * espaco + espaco / 2.0, 57.0, raio);
                 for (let i = 0; i < nInf; i++) circs += desenharCilindroSvg(60.0 + i * espaco + espaco / 2.0, 133.0, raio);
                 corpo = `
-                    <rect x="50" y="28" width="260" height="58" rx="6" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-                    <rect x="50" y="104" width="260" height="58" rx="6" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-                    <rect x="28" y="76" width="16" height="38" rx="2" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-                    <line x1="44" y1="95" x2="322" y2="95" stroke="WhiteSmoke" stroke-width="2pt" stroke-dasharray="6,4" />
+                    <rect x="50" y="28" width="260" height="58" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
+                    <rect x="50" y="104" width="260" height="58" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
+                    <rect x="28" y="76" width="16" height="38" rx="4" fill="rgba(129, 140, 248, 0.22)" stroke="#818CF8" stroke-width="1.8" />
+                    <line x1="44" y1="95" x2="322" y2="95" stroke="#818CF8" stroke-width="2" stroke-dasharray="6,4" />
                     ${circs}
                 `;
             } else if (fmt === 'VR') {
@@ -736,10 +1193,10 @@
                     circs += desenharCilindroSvg(cx, cy, raio);
                 }
                 corpo = `
-                    <rect x="65" y="22" width="230" height="20" rx="4" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-                    <rect x="44" y="42" width="272" height="106" rx="8" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
+                    <rect x="65" y="22" width="230" height="20" rx="6" fill="rgba(15, 23, 42, 0.72)" stroke="#CBD5E1" stroke-width="1.8" />
+                    <rect x="44" y="42" width="272" height="106" rx="12" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
                     ${circs}
-                    <path d="M 75,148 L 285,148 L 268,172 L 92,172 Z" fill="none" stroke="WhiteSmoke" stroke-width="2pt" stroke-linejoin="round" />
+                    <path d="M 75,148 L 285,148 L 268,172 L 92,172 Z" fill="rgba(15, 23, 42, 0.65)" stroke="#94A3B8" stroke-width="1.8" stroke-linejoin="round" />
                 `;
             } else {
                 const nSup = Math.floor((n + 1) / 2);
@@ -752,14 +1209,14 @@
                 for (let i = 0; i < nSup; i++) circs += desenharCilindroSvg(58.0 + i * espacoSup + espacoSup / 2.0, i % 2 === 0 ? 43.0 : 63.0, raio);
                 for (let i = 0; i < nInf; i++) circs += desenharCilindroSvg(58.0 + i * espacoInf + espacoInf / 2.0, i % 2 === 0 ? 127.0 : 147.0, raio);
                 corpo = `
-                    <rect x="44" y="20" width="272" height="66" rx="6" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-                    <rect x="44" y="104" width="272" height="66" rx="6" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-                    <rect x="24" y="78" width="14" height="34" rx="2" fill="none" stroke="WhiteSmoke" stroke-width="2pt" />
-                    <line x1="38" y1="95" x2="326" y2="95" stroke="WhiteSmoke" stroke-width="2pt" stroke-dasharray="6,4" />
+                    <rect x="44" y="20" width="272" height="66" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
+                    <rect x="44" y="104" width="272" height="66" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#E2E8F0" stroke-width="2" />
+                    <rect x="24" y="78" width="14" height="34" rx="4" fill="rgba(129, 140, 248, 0.22)" stroke="#818CF8" stroke-width="1.8" />
+                    <line x1="38" y1="95" x2="326" y2="95" stroke="#818CF8" stroke-width="2" stroke-dasharray="6,4" />
                     ${circs}
                 `;
             }
-            return `<svg class="motor-svg" viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg">${corpo}</svg>`;
+            return `<svg class="motor-svg" viewBox="0 0 360 190" xmlns="http://www.w3.org/2000/svg" aria-label="Motor ${fmt} 2D">${guiaCad}${corpo}</svg>`;
         }
 
         async function atualizarWidget3() {
@@ -919,6 +1376,7 @@
         const quizForm = document.getElementById('quiz-form');
         const quizPerguntasContainer = document.getElementById('quiz-perguntas-container');
         const quizProgresso = document.getElementById('quiz-progresso');
+        const quizProgressoFill = document.getElementById('quiz-progresso-fill');
         const quizBanner = document.getElementById('quiz-resultado-banner');
         const quizContainer = quizModal ? quizModal.querySelector('.quiz-container') : null;
 
@@ -947,7 +1405,7 @@
                 const opcoesHtml = q.opcoes.map((texto, idx) => `
                     <label class="quiz-opcao" data-qid="${q.id}" data-idx="${idx}">
                         <input type="radio" name="q_${q.id}" value="${idx}">
-                        <span class="quiz-letra">${QUIZ_LETRAS[idx]})</span>
+                        <span class="quiz-letra">${QUIZ_LETRAS[idx]}</span>
                         <span class="quiz-texto">${escaparHtmlQuiz(texto)}</span>
                     </label>
                 `).join('');
@@ -983,6 +1441,10 @@
                 }
             });
             quizProgresso.textContent = `Respondidas: ${respondidas} / ${quizAtual.length}`;
+            if (quizProgressoFill) {
+                const pct = quizAtual.length ? (respondidas / quizAtual.length) * 100 : 0;
+                quizProgressoFill.style.width = `${pct}%`;
+            }
         }
 
         function obterClassificacaoQuiz(percentagem) {
@@ -992,14 +1454,14 @@
         }
 
         function aplicarResultadoQuiz(resultado) {
-            let corBanner = '#FF2A4B';
-            let fundoBanner = 'rgba(255, 42, 75, 0.16)';
+            let corBanner = '#FF3B5C';
+            let fundoBanner = 'rgba(255, 59, 92, 0.14)';
             if (resultado.percentagem >= 70) {
-                corBanner = '#39FF14';
-                fundoBanner = 'rgba(57, 255, 20, 0.14)';
+                corBanner = '#34D399';
+                fundoBanner = 'rgba(52, 211, 153, 0.14)';
             } else if (resultado.percentagem >= 50) {
-                corBanner = '#FFBE0B';
-                fundoBanner = 'rgba(255, 190, 11, 0.16)';
+                corBanner = '#FBBF24';
+                fundoBanner = 'rgba(251, 191, 36, 0.14)';
             }
             const classificacao = resultado.classificacao || obterClassificacaoQuiz(resultado.percentagem);
 
@@ -1027,13 +1489,13 @@
 
                 if (item.acertou) {
                     fb.className = 'quiz-feedback ok';
-                    fb.textContent = '[CORRETA] Resposta certa!';
+                    fb.textContent = '✓ Resposta certa!';
                 } else if (!item.respondida) {
                     fb.className = 'quiz-feedback erro';
-                    fb.textContent = `[SEM RESPOSTA] Correta: ${item.texto_correto}`;
+                    fb.textContent = `Sem resposta · Correta: ${item.texto_correto}`;
                 } else {
                     fb.className = 'quiz-feedback erro';
-                    fb.textContent = `[INCORRETA] Resposta correta: ${item.texto_correto}`;
+                    fb.textContent = `✗ Incorreta · Resposta correta: ${item.texto_correto}`;
                 }
             });
 
