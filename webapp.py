@@ -470,91 +470,158 @@ def widget_3_modular(
 
 
 # ==============================================================================
-# MÓDULO QUIZ AUTOMÓVEL (10 Perguntas de Escolha Múltipla)
+# MÓDULO QUIZ AUTOMÓVEL (11 Perguntas no Banco, 5 Aleatórias por Sessão)
 # ==============================================================================
+QUIZ_NUM_PERGUNTAS = 5
+
 QUIZ_PERGUNTAS = [
     {
         "id": 1,
-        "pergunta": "1. De que país é a marca Bugatti?",
-        "opcoes": ["França", "Itália", "Alemanha", "EUA"],
-        "correta": 0,
-    },
-    {
-        "id": 2,
-        "pergunta": "2. Qual destas marcas é sueca?",
-        "opcoes": ["Pagani", "Koenigsegg", "Ferrari", "McLaren"],
-        "correta": 1,
-    },
-    {
-        "id": 3,
-        "pergunta": "3. Qual destas marcas produz o hipercarro Chiron?",
-        "opcoes": ["Bugatti", "Rimac", "Aston Martin", "Hennessey"],
-        "correta": 0,
-    },
-    {
-        "id": 4,
-        "pergunta": "4. Qual destas marcas é britânica?",
-        "opcoes": ["Corvette", "Volvo", "Lotus", "Cupra"],
+        "pergunta": "Qual é a função principal do radiador num automóvel com motor de combustão interna?",
+        "opcoes": [
+            "Aquecer o habitáculo do veículo.",
+            "Filtrar o ar que entra para o motor.",
+            "Arrefecer o líquido de refrigeração do motor.",
+            "Armazenar energia para o arranque.",
+        ],
         "correta": 2,
     },
     {
-        "id": 5,
-        "pergunta": "5. Qual destes carros bateu o recorde mundial de velocidade numa estrada pública ao atingir 447,19 km/h em 2017?",
-        "opcoes": ["Rimac Nevera", "Mazda RX-7", "Pagani Huayra", "Koenigsegg Agera RS"],
+        "id": 2,
+        "pergunta": 'O que significa a sigla "ABS" nos sistemas de travagem?',
+        "opcoes": [
+            "Sistema de Travagem Antibloqueio (Anti-lock Braking System).",
+            "Suporte Automático de Travagem (Automatic Brake Support).",
+            "Segurança Avançada de Travões (Advanced Brake Security).",
+            "Sistema de Equilíbrio Assistido (Assisted Balance System).",
+        ],
+        "correta": 0,
+    },
+    {
+        "id": 3,
+        "pergunta": "Qual destes componentes é responsável por converter o movimento linear dos pistões em movimento rotativo?",
+        "opcoes": [
+            "Árvore de cames.",
+            "Volante do motor.",
+            "Caixa de velocidades.",
+            "Cambota.",
+        ],
         "correta": 3,
+    },
+    {
+        "id": 4,
+        "pergunta": "Qual é a função do alternador num veículo?",
+        "opcoes": [
+            "Alternar entre tração dianteira e traseira.",
+            "Gerar energia elétrica para carregar a bateria e alimentar o carro.",
+            "Regular a mistura de ar e combustível.",
+            "Enviar corrente contínua diretamente para as velas.",
+        ],
+        "correta": 1,
+    },
+    {
+        "id": 5,
+        "pergunta": "Para que serve o diferencial num automóvel?",
+        "opcoes": [
+            "Aumentar a potência do motor em subidas.",
+            "Permitir que as rodas do mesmo eixo girem a velocidades diferentes em curva.",
+            "Equilibrar o peso entre a frente e a traseira.",
+            "Desligar o motor da transmissão quando o carro para.",
+        ],
+        "correta": 1,
     },
     {
         "id": 6,
-        "pergunta": "6. Qual destas marcas fabrica o Valkyrie?",
-        "opcoes": ["Aston Martin", "Lamborghini", "Pagani", "Honda"],
-        "correta": 0,
-    },
-    {
-        "id": 7,
-        "pergunta": "7. Qual destas marcas nasceu numa garagem em 2009 a partir da conversão elétrica de um BMW Série 3 (E30)?",
-        "opcoes": ["Lada", "Lancia", "Lincoln", "Rimac"],
+        "pergunta": "Num sistema de suspensão, qual é a função exata do amortecedor?",
+        "opcoes": [
+            "Suportar o peso total do veículo.",
+            "Ajustar automaticamente a altura ao solo.",
+            "Impedir a inclinação da carroçaria em curva.",
+            "Controlar as oscilações das molas, mantendo o pneu no solo.",
+        ],
         "correta": 3,
     },
     {
-        "id": 8,
-        "pergunta": "8. Qual foi o primeiro automóvel de produção em série a combinar tração integral permanente e motor turbo?",
+        "id": 7,
+        "pergunta": 'O que define a "taxa de compressão" de um motor de combustão interna?',
         "opcoes": [
-            "Lancia Delta HF integrale",
-            "Audi Quattro (Ur-Quattro)",
-            "Subaru Impreza WRX STI",
-            "Porsche 959",
+            "A relação entre o volume total do cilindro e o volume da câmara de combustão.",
+            "A pressão máxima atingida no cilindro durante a explosão.",
+            "A força dos segmentos contra as paredes do cilindro.",
+            "A relação entre a pressão atmosférica e a pressão do turbo.",
         ],
-        "correta": 1,
+        "correta": 0,
+    },
+    {
+        "id": 8,
+        "pergunta": 'Qual é a vantagem técnica de utilizar um "Intercooler" num motor sobrealimentado (turbo ou compressor)?',
+        "opcoes": [
+            "Arrefece o óleo que lubrifica a turbina.",
+            "Reduz a temperatura dos gases de escape.",
+            "Elimina o atraso do turbo (turbo lag).",
+            "Arrefece o ar comprimido, aumentando a sua densidade e oxigénio.",
+        ],
+        "correta": 3,
     },
     {
         "id": 9,
-        "pergunta": '9. O que significa "twin-turbo" num motor?',
+        "pergunta": 'O que é o fenómeno da "detonação" (ou "grilar" / knocking) num motor a gasolina?',
         "opcoes": [
-            "Dois motores elétricos",
-            "Dois turbocompressores",
-            "Dois intercoolers",
-            "Duas caixas de velocidades",
+            "Explosão de combustível não queimado no escape.",
+            "Falha completa da bobina de ignição.",
+            "Ignição prematura e descontrolada da mistura antes da faísca da vela.",
+            "Bater das válvulas por falta de pressão de óleo.",
         ],
-        "correta": 1,
+        "correta": 2,
     },
     {
         "id": 10,
-        "pergunta": "10. Num motor 4 tempos, quantas vezes ocorre a combustão por cilindro a cada 2 rotações da cambota?",
-        "opcoes": ["1 vez", "2 vezes", "4 vezes", "Depende do combustível"],
+        "pergunta": 'O que é um sistema de lubrificação por "cárter seco" (dry sump), comum em automóveis desportivos de alta performance?',
+        "opcoes": [
+            "Armazena o óleo num depósito externo para baixar o motor e manter a lubrificação em curva.",
+            "Usa rolamentos selados e dispensa óleo lubrificante.",
+            "Pulveriza óleo em estado gasoso sobre as bielas.",
+            "Usa um cárter em fibra de carbono para dissipar calor.",
+        ],
         "correta": 0,
+    },
+    {
+        "id": 11,
+        "pergunta": 'Qual é a função da "Waste-gate" num sistema de turbocompressor?',
+        "opcoes": [
+            "Libertar pressão da admissão ao tirar o pé do acelerador.",
+            "Desviar gases de escape da turbina para limitar a pressão e velocidade do turbo.",
+            "Filtrar partículas antes de atingirem a turbina.",
+            "Injetar combustível no escape para manter o turbo a girar.",
+        ],
+        "correta": 1,
     },
 ]
 
 
-def avaliar_quiz(respostas: dict) -> dict:
+def avaliar_quiz(respostas: dict, ids: list | None = None) -> dict:
     """
-    Avalia em Python as respostas submetidas pelo utilizador para o quiz de 10 perguntas.
+    Avalia em Python as respostas submetidas pelo utilizador para o quiz.
     `respostas` mapeia id da pergunta (str ou int) para índice da opção escolhida (int).
+    `ids` indica a lista ordenada de IDs das perguntas apresentadas na sessão atual.
     """
     pontuacao = 0
     detalhes = []
 
-    for q in QUIZ_PERGUNTAS:
+    mapa_perguntas = {q["id"]: q for q in QUIZ_PERGUNTAS}
+    if ids:
+        perguntas_avaliar = []
+        for qid_raw in ids:
+            try:
+                qid_int = int(qid_raw)
+            except (TypeError, ValueError):
+                continue
+            if qid_int in mapa_perguntas:
+                perguntas_avaliar.append(mapa_perguntas[qid_int])
+    else:
+        perguntas_avaliar = QUIZ_PERGUNTAS
+
+    for q in perguntas_avaliar:
         qid = str(q["id"])
         escolha_raw = respostas.get(qid)
         if escolha_raw is None:
@@ -579,7 +646,7 @@ def avaliar_quiz(respostas: dict) -> dict:
             "texto_correto": q["opcoes"][correta_idx],
         })
 
-    total = len(QUIZ_PERGUNTAS)
+    total = len(perguntas_avaliar)
     percentagem = int(round((pontuacao / total) * 100)) if total else 0
 
     if percentagem >= 70:
@@ -600,41 +667,15 @@ def avaliar_quiz(respostas: dict) -> dict:
 
 def widget_quiz_modular() -> str:
     """
-    Gera o HTML do modal/painel interativo do Quiz automóvel com 10 escolhas múltiplas.
+    Gera o HTML do modal/painel interativo do Quiz automóvel (5 perguntas aleatórias).
     """
-    blocos_perguntas = []
-    letras = ["A", "B", "C", "D"]
-
-    for q in QUIZ_PERGUNTAS:
-        opcoes_html = ""
-        for idx, texto in enumerate(q["opcoes"]):
-            opcoes_html += f"""
-            <label class="quiz-opcao" data-qid="{q['id']}" data-idx="{idx}">
-                <input type="radio" name="q_{q['id']}" value="{idx}">
-                <span class="quiz-letra">{letras[idx]})</span>
-                <span class="quiz-texto">{texto}</span>
-            </label>
-            """
-
-        blocos_perguntas.append(f"""
-        <div class="quiz-pergunta-box" id="quiz-q-{q['id']}">
-            <p class="quiz-pergunta-texto">{q['pergunta']}</p>
-            <div class="quiz-opcoes-grid">
-                {opcoes_html}
-            </div>
-            <div class="quiz-feedback" id="quiz-fb-{q['id']}"></div>
-        </div>
-        """)
-
-    perguntas_html = "\n".join(blocos_perguntas)
-
     return f"""
     <div class="quiz-modal" id="quiz-modal" aria-hidden="true">
         <div class="quiz-container" role="dialog" aria-modal="true" aria-labelledby="quiz-titulo">
             <header class="quiz-header">
                 <div>
-                    <h2 id="quiz-titulo">QUIZ AUTOMÓVEL // 10 ESCOLHAS MÚLTIPLAS</h2>
-                    <span class="quiz-progresso" id="quiz-progresso">Respondidas: 0 / {len(QUIZ_PERGUNTAS)}</span>
+                    <h2 id="quiz-titulo">QUIZ AUTOMÓVEL // {QUIZ_NUM_PERGUNTAS} PERGUNTAS ALEATÓRIAS</h2>
+                    <span class="quiz-progresso" id="quiz-progresso">Respondidas: 0 / {QUIZ_NUM_PERGUNTAS}</span>
                 </div>
                 <button type="button" class="btn-cyber-acao" id="btn-fechar-quiz">VOLTAR AO PAINEL</button>
             </header>
@@ -642,7 +683,7 @@ def widget_quiz_modular() -> str:
             <div class="quiz-resultado-banner" id="quiz-resultado-banner" style="display: none;"></div>
 
             <form id="quiz-form" class="quiz-lista" onsubmit="return false;">
-                {perguntas_html}
+                <div id="quiz-perguntas-container" class="quiz-lista"></div>
 
                 <div class="quiz-acoes-footer">
                     <button type="submit" class="btn-cyber-acao btn-destaque" id="btn-submeter-quiz">
@@ -678,7 +719,15 @@ def gerar_dashboard_html(
     )
     quiz_html = widget_quiz_modular()
     quiz_json = json.dumps(
-        [{"id": q["id"], "opcoes": q["opcoes"], "correta": q["correta"]} for q in QUIZ_PERGUNTAS],
+        [
+            {
+                "id": q["id"],
+                "pergunta": q["pergunta"],
+                "opcoes": q["opcoes"],
+                "correta": q["correta"],
+            }
+            for q in QUIZ_PERGUNTAS
+        ],
         ensure_ascii=False,
     )
     presets_json = json.dumps(MOTORES_PREDEFINIDOS, ensure_ascii=False)
@@ -1133,7 +1182,7 @@ def gerar_dashboard_html(
     <header class="dashboard-topbar">
         <span class="topbar-titulo">PAINEL DO MOTOR // CONTROLO AUTOMÓVEL</span>
         <button type="button" class="btn-cyber-acao" id="btn-abrir-quiz">
-            QUIZ AUTOMÓVEL (10 PERGUNTAS)
+            QUIZ AUTOMÓVEL ({QUIZ_NUM_PERGUNTAS} PERGUNTAS)
         </button>
     </header>
 
@@ -1404,17 +1453,65 @@ def gerar_dashboard_html(
         }});
 
         /* ----------------------------------------------------------------------
-           MÓDULO QUIZ AUTOMÓVEL (10 Escolhas Múltiplas)
+           MÓDULO QUIZ AUTOMÓVEL ({QUIZ_NUM_PERGUNTAS} Perguntas Aleatórias)
            ---------------------------------------------------------------------- */
         const QUIZ_DATA = {quiz_json};
+        const QUIZ_TOTAL_PERGUNTAS = {QUIZ_NUM_PERGUNTAS};
+        const QUIZ_LETRAS = ['A', 'B', 'C', 'D'];
+        let quizAtual = [];
+
         const quizModal = document.getElementById('quiz-modal');
         const btnAbrirQuiz = document.getElementById('btn-abrir-quiz');
         const btnFecharQuiz = document.getElementById('btn-fechar-quiz');
         const btnReiniciarQuiz = document.getElementById('btn-reiniciar-quiz');
         const quizForm = document.getElementById('quiz-form');
+        const quizPerguntasContainer = document.getElementById('quiz-perguntas-container');
         const quizProgresso = document.getElementById('quiz-progresso');
         const quizBanner = document.getElementById('quiz-resultado-banner');
         const quizContainer = quizModal ? quizModal.querySelector('.quiz-container') : null;
+
+        function escaparHtmlQuiz(texto) {{
+            return String(texto)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }}
+
+        function sortearPerguntasQuiz() {{
+            const copia = [...QUIZ_DATA];
+            for (let i = copia.length - 1; i > 0; i--) {{
+                const j = Math.floor(Math.random() * (i + 1));
+                [copia[i], copia[j]] = [copia[j], copia[i]];
+            }}
+            return copia.slice(0, Math.min(QUIZ_TOTAL_PERGUNTAS, copia.length));
+        }}
+
+        function renderizarQuizAleatorio() {{
+            if (!quizPerguntasContainer) return;
+            quizAtual = sortearPerguntasQuiz();
+            quizPerguntasContainer.innerHTML = quizAtual.map((q, numeroIdx) => {{
+                const opcoesHtml = q.opcoes.map((texto, idx) => `
+                    <label class="quiz-opcao" data-qid="${{q.id}}" data-idx="${{idx}}">
+                        <input type="radio" name="q_${{q.id}}" value="${{idx}}">
+                        <span class="quiz-letra">${{QUIZ_LETRAS[idx]}})</span>
+                        <span class="quiz-texto">${{escaparHtmlQuiz(texto)}}</span>
+                    </label>
+                `).join('');
+
+                return `
+                    <div class="quiz-pergunta-box" id="quiz-q-${{q.id}}">
+                        <p class="quiz-pergunta-texto">${{numeroIdx + 1}}. ${{escaparHtmlQuiz(q.pergunta)}}</p>
+                        <div class="quiz-opcoes-grid">
+                            ${{opcoesHtml}}
+                        </div>
+                        <div class="quiz-feedback" id="quiz-fb-${{q.id}}"></div>
+                    </div>
+                `;
+            }}).join('');
+            atualizarProgressoQuiz();
+        }}
 
         function abrirQuiz() {{
             quizModal.classList.add('ativo');
@@ -1428,12 +1525,12 @@ def gerar_dashboard_html(
 
         function atualizarProgressoQuiz() {{
             let respondidas = 0;
-            QUIZ_DATA.forEach(q => {{
+            quizAtual.forEach(q => {{
                 if (quizForm.querySelector(`input[name="q_${{q.id}}"]:checked`)) {{
                     respondidas += 1;
                 }}
             }});
-            quizProgresso.textContent = `Respondidas: ${{respondidas}} / ${{QUIZ_DATA.length}}`;
+            quizProgresso.textContent = `Respondidas: ${{respondidas}} / ${{quizAtual.length}}`;
         }}
 
         function obterClassificacaoQuiz(percentagem) {{
@@ -1493,7 +1590,8 @@ def gerar_dashboard_html(
 
         async function submeterQuiz() {{
             const respostas = {{}};
-            QUIZ_DATA.forEach(q => {{
+            const ids = quizAtual.map(q => q.id);
+            quizAtual.forEach(q => {{
                 const checked = quizForm.querySelector(`input[name="q_${{q.id}}"]:checked`);
                 if (checked) {{
                     respostas[String(q.id)] = parseInt(checked.value, 10);
@@ -1504,7 +1602,7 @@ def gerar_dashboard_html(
                 const res = await fetch('/api/quiz', {{
                     method: 'POST',
                     headers: {{ 'Content-Type': 'application/json' }},
-                    body: JSON.stringify({{ respostas }})
+                    body: JSON.stringify({{ respostas, ids }})
                 }});
                 if (res.ok) {{
                     const resultado = await res.json();
@@ -1515,7 +1613,7 @@ def gerar_dashboard_html(
 
             // Fallback local idêntico à função avaliar_quiz() do Python
             let pontuacao = 0;
-            const detalhes = QUIZ_DATA.map(q => {{
+            const detalhes = quizAtual.map(q => {{
                 const raw = respostas[String(q.id)];
                 const escolha = raw !== undefined ? raw : -1;
                 const acertou = escolha === q.correta;
@@ -1529,10 +1627,10 @@ def gerar_dashboard_html(
                     texto_correto: q.opcoes[q.correta]
                 }};
             }});
-            const percentagem = Math.round((pontuacao / QUIZ_DATA.length) * 100);
+            const percentagem = quizAtual.length ? Math.round((pontuacao / quizAtual.length) * 100) : 0;
             aplicarResultadoQuiz({{
                 pontuacao,
-                total: QUIZ_DATA.length,
+                total: quizAtual.length,
                 percentagem,
                 classificacao: obterClassificacaoQuiz(percentagem),
                 detalhes
@@ -1540,23 +1638,16 @@ def gerar_dashboard_html(
         }}
 
         function reiniciarQuiz() {{
-            quizForm.reset();
-            quizForm.querySelectorAll('.quiz-opcao').forEach(op => {{
-                op.classList.remove('selecionada', 'correta', 'errada');
-            }});
-            quizForm.querySelectorAll('.quiz-feedback').forEach(fb => {{
-                fb.className = 'quiz-feedback';
-                fb.textContent = '';
-            }});
             quizBanner.style.display = 'none';
             quizBanner.style.borderColor = '';
             quizBanner.style.backgroundColor = '';
             quizBanner.innerHTML = '';
-            atualizarProgressoQuiz();
+            renderizarQuizAleatorio();
             if (quizContainer) quizContainer.scrollTo({{ top: 0, behavior: 'smooth' }});
         }}
 
         if (btnAbrirQuiz && quizModal) {{
+            renderizarQuizAleatorio();
             btnAbrirQuiz.addEventListener('click', abrirQuiz);
             btnFecharQuiz.addEventListener('click', fecharQuiz);
             btnReiniciarQuiz.addEventListener('click', reiniciarQuiz);
@@ -1570,15 +1661,16 @@ def gerar_dashboard_html(
                 if (e.key === 'Escape' && quizModal.classList.contains('ativo')) fecharQuiz();
             }});
 
-            quizForm.querySelectorAll('.quiz-opcao input[type="radio"]').forEach(radio => {{
-                radio.addEventListener('change', () => {{
-                    const qid = radio.name.replace('q_', '');
-                    quizForm.querySelectorAll(`.quiz-opcao[data-qid="${{qid}}"]`).forEach(op => {{
-                        op.classList.remove('selecionada', 'correta', 'errada');
-                    }});
-                    radio.closest('.quiz-opcao').classList.add('selecionada');
-                    atualizarProgressoQuiz();
+            quizForm.addEventListener('change', (e) => {{
+                const radio = e.target;
+                if (!radio || radio.type !== 'radio') return;
+                const qid = radio.name.replace('q_', '');
+                quizForm.querySelectorAll(`.quiz-opcao[data-qid="${{qid}}"]`).forEach(op => {{
+                    op.classList.remove('selecionada', 'correta', 'errada');
                 }});
+                const label = radio.closest('.quiz-opcao');
+                if (label) label.classList.add('selecionada');
+                atualizarProgressoQuiz();
             }});
         }}
     </script>
@@ -1653,7 +1745,7 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             return
 
         if self.path == "/api/quiz":
-            resultado = avaliar_quiz(dados.get("respostas", {}))
+            resultado = avaliar_quiz(dados.get("respostas", {}), dados.get("ids"))
             resposta = json.dumps(resultado, ensure_ascii=False).encode("utf-8")
 
             self.send_response(200)

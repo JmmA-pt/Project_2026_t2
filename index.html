@@ -448,7 +448,7 @@
     <header class="dashboard-topbar">
         <span class="topbar-titulo">PAINEL DO MOTOR // CONTROLO AUTOMÓVEL</span>
         <button type="button" class="btn-cyber-acao" id="btn-abrir-quiz">
-            QUIZ AUTOMÓVEL (10 PERGUNTAS)
+            QUIZ AUTOMÓVEL (5 PERGUNTAS)
         </button>
     </header>
 
@@ -617,8 +617,8 @@
         <div class="quiz-container" role="dialog" aria-modal="true" aria-labelledby="quiz-titulo">
             <header class="quiz-header">
                 <div>
-                    <h2 id="quiz-titulo">QUIZ AUTOMÓVEL // 10 ESCOLHAS MÚLTIPLAS</h2>
-                    <span class="quiz-progresso" id="quiz-progresso">Respondidas: 0 / 10</span>
+                    <h2 id="quiz-titulo">QUIZ AUTOMÓVEL // 5 PERGUNTAS ALEATÓRIAS</h2>
+                    <span class="quiz-progresso" id="quiz-progresso">Respondidas: 0 / 5</span>
                 </div>
                 <button type="button" class="btn-cyber-acao" id="btn-fechar-quiz">VOLTAR AO PAINEL</button>
             </header>
@@ -626,336 +626,7 @@
             <div class="quiz-resultado-banner" id="quiz-resultado-banner" style="display: none;"></div>
 
             <form id="quiz-form" class="quiz-lista" onsubmit="return false;">
-                
-        <div class="quiz-pergunta-box" id="quiz-q-1">
-            <p class="quiz-pergunta-texto">1. De que país é a marca Bugatti?</p>
-            <div class="quiz-opcoes-grid">
-                
-            <label class="quiz-opcao" data-qid="1" data-idx="0">
-                <input type="radio" name="q_1" value="0">
-                <span class="quiz-letra">A)</span>
-                <span class="quiz-texto">França</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="1" data-idx="1">
-                <input type="radio" name="q_1" value="1">
-                <span class="quiz-letra">B)</span>
-                <span class="quiz-texto">Itália</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="1" data-idx="2">
-                <input type="radio" name="q_1" value="2">
-                <span class="quiz-letra">C)</span>
-                <span class="quiz-texto">Alemanha</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="1" data-idx="3">
-                <input type="radio" name="q_1" value="3">
-                <span class="quiz-letra">D)</span>
-                <span class="quiz-texto">EUA</span>
-            </label>
-            
-            </div>
-            <div class="quiz-feedback" id="quiz-fb-1"></div>
-        </div>
-        
-
-        <div class="quiz-pergunta-box" id="quiz-q-2">
-            <p class="quiz-pergunta-texto">2. Qual destas marcas é sueca?</p>
-            <div class="quiz-opcoes-grid">
-                
-            <label class="quiz-opcao" data-qid="2" data-idx="0">
-                <input type="radio" name="q_2" value="0">
-                <span class="quiz-letra">A)</span>
-                <span class="quiz-texto">Pagani</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="2" data-idx="1">
-                <input type="radio" name="q_2" value="1">
-                <span class="quiz-letra">B)</span>
-                <span class="quiz-texto">Koenigsegg</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="2" data-idx="2">
-                <input type="radio" name="q_2" value="2">
-                <span class="quiz-letra">C)</span>
-                <span class="quiz-texto">Ferrari</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="2" data-idx="3">
-                <input type="radio" name="q_2" value="3">
-                <span class="quiz-letra">D)</span>
-                <span class="quiz-texto">McLaren</span>
-            </label>
-            
-            </div>
-            <div class="quiz-feedback" id="quiz-fb-2"></div>
-        </div>
-        
-
-        <div class="quiz-pergunta-box" id="quiz-q-3">
-            <p class="quiz-pergunta-texto">3. Qual destas marcas produz o hipercarro Chiron?</p>
-            <div class="quiz-opcoes-grid">
-                
-            <label class="quiz-opcao" data-qid="3" data-idx="0">
-                <input type="radio" name="q_3" value="0">
-                <span class="quiz-letra">A)</span>
-                <span class="quiz-texto">Bugatti</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="3" data-idx="1">
-                <input type="radio" name="q_3" value="1">
-                <span class="quiz-letra">B)</span>
-                <span class="quiz-texto">Rimac</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="3" data-idx="2">
-                <input type="radio" name="q_3" value="2">
-                <span class="quiz-letra">C)</span>
-                <span class="quiz-texto">Aston Martin</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="3" data-idx="3">
-                <input type="radio" name="q_3" value="3">
-                <span class="quiz-letra">D)</span>
-                <span class="quiz-texto">Hennessey</span>
-            </label>
-            
-            </div>
-            <div class="quiz-feedback" id="quiz-fb-3"></div>
-        </div>
-        
-
-        <div class="quiz-pergunta-box" id="quiz-q-4">
-            <p class="quiz-pergunta-texto">4. Qual destas marcas é britânica?</p>
-            <div class="quiz-opcoes-grid">
-                
-            <label class="quiz-opcao" data-qid="4" data-idx="0">
-                <input type="radio" name="q_4" value="0">
-                <span class="quiz-letra">A)</span>
-                <span class="quiz-texto">Corvette</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="4" data-idx="1">
-                <input type="radio" name="q_4" value="1">
-                <span class="quiz-letra">B)</span>
-                <span class="quiz-texto">Volvo</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="4" data-idx="2">
-                <input type="radio" name="q_4" value="2">
-                <span class="quiz-letra">C)</span>
-                <span class="quiz-texto">Lotus</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="4" data-idx="3">
-                <input type="radio" name="q_4" value="3">
-                <span class="quiz-letra">D)</span>
-                <span class="quiz-texto">Cupra</span>
-            </label>
-            
-            </div>
-            <div class="quiz-feedback" id="quiz-fb-4"></div>
-        </div>
-        
-
-        <div class="quiz-pergunta-box" id="quiz-q-5">
-            <p class="quiz-pergunta-texto">5. Qual destes carros bateu o recorde mundial de velocidade numa estrada pública ao atingir 447,19 km/h em 2017?</p>
-            <div class="quiz-opcoes-grid">
-                
-            <label class="quiz-opcao" data-qid="5" data-idx="0">
-                <input type="radio" name="q_5" value="0">
-                <span class="quiz-letra">A)</span>
-                <span class="quiz-texto">Rimac Nevera</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="5" data-idx="1">
-                <input type="radio" name="q_5" value="1">
-                <span class="quiz-letra">B)</span>
-                <span class="quiz-texto">Mazda RX-7</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="5" data-idx="2">
-                <input type="radio" name="q_5" value="2">
-                <span class="quiz-letra">C)</span>
-                <span class="quiz-texto">Pagani Huayra</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="5" data-idx="3">
-                <input type="radio" name="q_5" value="3">
-                <span class="quiz-letra">D)</span>
-                <span class="quiz-texto">Koenigsegg Agera RS</span>
-            </label>
-            
-            </div>
-            <div class="quiz-feedback" id="quiz-fb-5"></div>
-        </div>
-        
-
-        <div class="quiz-pergunta-box" id="quiz-q-6">
-            <p class="quiz-pergunta-texto">6. Qual destas marcas fabrica o Valkyrie?</p>
-            <div class="quiz-opcoes-grid">
-                
-            <label class="quiz-opcao" data-qid="6" data-idx="0">
-                <input type="radio" name="q_6" value="0">
-                <span class="quiz-letra">A)</span>
-                <span class="quiz-texto">Aston Martin</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="6" data-idx="1">
-                <input type="radio" name="q_6" value="1">
-                <span class="quiz-letra">B)</span>
-                <span class="quiz-texto">Lamborghini</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="6" data-idx="2">
-                <input type="radio" name="q_6" value="2">
-                <span class="quiz-letra">C)</span>
-                <span class="quiz-texto">Pagani</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="6" data-idx="3">
-                <input type="radio" name="q_6" value="3">
-                <span class="quiz-letra">D)</span>
-                <span class="quiz-texto">Honda</span>
-            </label>
-            
-            </div>
-            <div class="quiz-feedback" id="quiz-fb-6"></div>
-        </div>
-        
-
-        <div class="quiz-pergunta-box" id="quiz-q-7">
-            <p class="quiz-pergunta-texto">7. Qual destas marcas nasceu numa garagem em 2009 a partir da conversão elétrica de um BMW Série 3 (E30)?</p>
-            <div class="quiz-opcoes-grid">
-                
-            <label class="quiz-opcao" data-qid="7" data-idx="0">
-                <input type="radio" name="q_7" value="0">
-                <span class="quiz-letra">A)</span>
-                <span class="quiz-texto">Lada</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="7" data-idx="1">
-                <input type="radio" name="q_7" value="1">
-                <span class="quiz-letra">B)</span>
-                <span class="quiz-texto">Lancia</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="7" data-idx="2">
-                <input type="radio" name="q_7" value="2">
-                <span class="quiz-letra">C)</span>
-                <span class="quiz-texto">Lincoln</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="7" data-idx="3">
-                <input type="radio" name="q_7" value="3">
-                <span class="quiz-letra">D)</span>
-                <span class="quiz-texto">Rimac</span>
-            </label>
-            
-            </div>
-            <div class="quiz-feedback" id="quiz-fb-7"></div>
-        </div>
-        
-
-        <div class="quiz-pergunta-box" id="quiz-q-8">
-            <p class="quiz-pergunta-texto">8. Qual foi o primeiro automóvel de produção em série a combinar tração integral permanente e motor turbo?</p>
-            <div class="quiz-opcoes-grid">
-                
-            <label class="quiz-opcao" data-qid="8" data-idx="0">
-                <input type="radio" name="q_8" value="0">
-                <span class="quiz-letra">A)</span>
-                <span class="quiz-texto">Lancia Delta HF integrale</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="8" data-idx="1">
-                <input type="radio" name="q_8" value="1">
-                <span class="quiz-letra">B)</span>
-                <span class="quiz-texto">Audi Quattro (Ur-Quattro)</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="8" data-idx="2">
-                <input type="radio" name="q_8" value="2">
-                <span class="quiz-letra">C)</span>
-                <span class="quiz-texto">Subaru Impreza WRX STI</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="8" data-idx="3">
-                <input type="radio" name="q_8" value="3">
-                <span class="quiz-letra">D)</span>
-                <span class="quiz-texto">Porsche 959</span>
-            </label>
-            
-            </div>
-            <div class="quiz-feedback" id="quiz-fb-8"></div>
-        </div>
-        
-
-        <div class="quiz-pergunta-box" id="quiz-q-9">
-            <p class="quiz-pergunta-texto">9. O que significa "twin-turbo" num motor?</p>
-            <div class="quiz-opcoes-grid">
-                
-            <label class="quiz-opcao" data-qid="9" data-idx="0">
-                <input type="radio" name="q_9" value="0">
-                <span class="quiz-letra">A)</span>
-                <span class="quiz-texto">Dois motores elétricos</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="9" data-idx="1">
-                <input type="radio" name="q_9" value="1">
-                <span class="quiz-letra">B)</span>
-                <span class="quiz-texto">Dois turbocompressores</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="9" data-idx="2">
-                <input type="radio" name="q_9" value="2">
-                <span class="quiz-letra">C)</span>
-                <span class="quiz-texto">Dois intercoolers</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="9" data-idx="3">
-                <input type="radio" name="q_9" value="3">
-                <span class="quiz-letra">D)</span>
-                <span class="quiz-texto">Duas caixas de velocidades</span>
-            </label>
-            
-            </div>
-            <div class="quiz-feedback" id="quiz-fb-9"></div>
-        </div>
-        
-
-        <div class="quiz-pergunta-box" id="quiz-q-10">
-            <p class="quiz-pergunta-texto">10. Num motor 4 tempos, quantas vezes ocorre a combustão por cilindro a cada 2 rotações da cambota?</p>
-            <div class="quiz-opcoes-grid">
-                
-            <label class="quiz-opcao" data-qid="10" data-idx="0">
-                <input type="radio" name="q_10" value="0">
-                <span class="quiz-letra">A)</span>
-                <span class="quiz-texto">1 vez</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="10" data-idx="1">
-                <input type="radio" name="q_10" value="1">
-                <span class="quiz-letra">B)</span>
-                <span class="quiz-texto">2 vezes</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="10" data-idx="2">
-                <input type="radio" name="q_10" value="2">
-                <span class="quiz-letra">C)</span>
-                <span class="quiz-texto">4 vezes</span>
-            </label>
-            
-            <label class="quiz-opcao" data-qid="10" data-idx="3">
-                <input type="radio" name="q_10" value="3">
-                <span class="quiz-letra">D)</span>
-                <span class="quiz-texto">Depende do combustível</span>
-            </label>
-            
-            </div>
-            <div class="quiz-feedback" id="quiz-fb-10"></div>
-        </div>
-        
+                <div id="quiz-perguntas-container" class="quiz-lista"></div>
 
                 <div class="quiz-acoes-footer">
                     <button type="submit" class="btn-cyber-acao btn-destaque" id="btn-submeter-quiz">
@@ -1224,17 +895,65 @@
         });
 
         /* ----------------------------------------------------------------------
-           MÓDULO QUIZ AUTOMÓVEL (10 Escolhas Múltiplas)
+           MÓDULO QUIZ AUTOMÓVEL (5 Perguntas Aleatórias)
            ---------------------------------------------------------------------- */
-        const QUIZ_DATA = [{"id": 1, "opcoes": ["França", "Itália", "Alemanha", "EUA"], "correta": 0}, {"id": 2, "opcoes": ["Pagani", "Koenigsegg", "Ferrari", "McLaren"], "correta": 1}, {"id": 3, "opcoes": ["Bugatti", "Rimac", "Aston Martin", "Hennessey"], "correta": 0}, {"id": 4, "opcoes": ["Corvette", "Volvo", "Lotus", "Cupra"], "correta": 2}, {"id": 5, "opcoes": ["Rimac Nevera", "Mazda RX-7", "Pagani Huayra", "Koenigsegg Agera RS"], "correta": 3}, {"id": 6, "opcoes": ["Aston Martin", "Lamborghini", "Pagani", "Honda"], "correta": 0}, {"id": 7, "opcoes": ["Lada", "Lancia", "Lincoln", "Rimac"], "correta": 3}, {"id": 8, "opcoes": ["Lancia Delta HF integrale", "Audi Quattro (Ur-Quattro)", "Subaru Impreza WRX STI", "Porsche 959"], "correta": 1}, {"id": 9, "opcoes": ["Dois motores elétricos", "Dois turbocompressores", "Dois intercoolers", "Duas caixas de velocidades"], "correta": 1}, {"id": 10, "opcoes": ["1 vez", "2 vezes", "4 vezes", "Depende do combustível"], "correta": 0}];
+        const QUIZ_DATA = [{"id": 1, "pergunta": "Qual é a função principal do radiador num automóvel com motor de combustão interna?", "opcoes": ["Aquecer o habitáculo do veículo.", "Filtrar o ar que entra para o motor.", "Arrefecer o líquido de refrigeração do motor.", "Armazenar energia para o arranque."], "correta": 2}, {"id": 2, "pergunta": "O que significa a sigla \"ABS\" nos sistemas de travagem?", "opcoes": ["Sistema de Travagem Antibloqueio (Anti-lock Braking System).", "Suporte Automático de Travagem (Automatic Brake Support).", "Segurança Avançada de Travões (Advanced Brake Security).", "Sistema de Equilíbrio Assistido (Assisted Balance System)."], "correta": 0}, {"id": 3, "pergunta": "Qual destes componentes é responsável por converter o movimento linear dos pistões em movimento rotativo?", "opcoes": ["Árvore de cames.", "Volante do motor.", "Caixa de velocidades.", "Cambota."], "correta": 3}, {"id": 4, "pergunta": "Qual é a função do alternador num veículo?", "opcoes": ["Alternar entre tração dianteira e traseira.", "Gerar energia elétrica para carregar a bateria e alimentar o carro.", "Regular a mistura de ar e combustível.", "Enviar corrente contínua diretamente para as velas."], "correta": 1}, {"id": 5, "pergunta": "Para que serve o diferencial num automóvel?", "opcoes": ["Aumentar a potência do motor em subidas.", "Permitir que as rodas do mesmo eixo girem a velocidades diferentes em curva.", "Equilibrar o peso entre a frente e a traseira.", "Desligar o motor da transmissão quando o carro para."], "correta": 1}, {"id": 6, "pergunta": "Num sistema de suspensão, qual é a função exata do amortecedor?", "opcoes": ["Suportar o peso total do veículo.", "Ajustar automaticamente a altura ao solo.", "Impedir a inclinação da carroçaria em curva.", "Controlar as oscilações das molas, mantendo o pneu no solo."], "correta": 3}, {"id": 7, "pergunta": "O que define a \"taxa de compressão\" de um motor de combustão interna?", "opcoes": ["A relação entre o volume total do cilindro e o volume da câmara de combustão.", "A pressão máxima atingida no cilindro durante a explosão.", "A força dos segmentos contra as paredes do cilindro.", "A relação entre a pressão atmosférica e a pressão do turbo."], "correta": 0}, {"id": 8, "pergunta": "Qual é a vantagem técnica de utilizar um \"Intercooler\" num motor sobrealimentado (turbo ou compressor)?", "opcoes": ["Arrefece o óleo que lubrifica a turbina.", "Reduz a temperatura dos gases de escape.", "Elimina o atraso do turbo (turbo lag).", "Arrefece o ar comprimido, aumentando a sua densidade e oxigénio."], "correta": 3}, {"id": 9, "pergunta": "O que é o fenómeno da \"detonação\" (ou \"grilar\" / knocking) num motor a gasolina?", "opcoes": ["Explosão de combustível não queimado no escape.", "Falha completa da bobina de ignição.", "Ignição prematura e descontrolada da mistura antes da faísca da vela.", "Bater das válvulas por falta de pressão de óleo."], "correta": 2}, {"id": 10, "pergunta": "O que é um sistema de lubrificação por \"cárter seco\" (dry sump), comum em automóveis desportivos de alta performance?", "opcoes": ["Armazena o óleo num depósito externo para baixar o motor e manter a lubrificação em curva.", "Usa rolamentos selados e dispensa óleo lubrificante.", "Pulveriza óleo em estado gasoso sobre as bielas.", "Usa um cárter em fibra de carbono para dissipar calor."], "correta": 0}, {"id": 11, "pergunta": "Qual é a função da \"Waste-gate\" num sistema de turbocompressor?", "opcoes": ["Libertar pressão da admissão ao tirar o pé do acelerador.", "Desviar gases de escape da turbina para limitar a pressão e velocidade do turbo.", "Filtrar partículas antes de atingirem a turbina.", "Injetar combustível no escape para manter o turbo a girar."], "correta": 1}];
+        const QUIZ_TOTAL_PERGUNTAS = 5;
+        const QUIZ_LETRAS = ['A', 'B', 'C', 'D'];
+        let quizAtual = [];
+
         const quizModal = document.getElementById('quiz-modal');
         const btnAbrirQuiz = document.getElementById('btn-abrir-quiz');
         const btnFecharQuiz = document.getElementById('btn-fechar-quiz');
         const btnReiniciarQuiz = document.getElementById('btn-reiniciar-quiz');
         const quizForm = document.getElementById('quiz-form');
+        const quizPerguntasContainer = document.getElementById('quiz-perguntas-container');
         const quizProgresso = document.getElementById('quiz-progresso');
         const quizBanner = document.getElementById('quiz-resultado-banner');
         const quizContainer = quizModal ? quizModal.querySelector('.quiz-container') : null;
+
+        function escaparHtmlQuiz(texto) {
+            return String(texto)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function sortearPerguntasQuiz() {
+            const copia = [...QUIZ_DATA];
+            for (let i = copia.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copia[i], copia[j]] = [copia[j], copia[i]];
+            }
+            return copia.slice(0, Math.min(QUIZ_TOTAL_PERGUNTAS, copia.length));
+        }
+
+        function renderizarQuizAleatorio() {
+            if (!quizPerguntasContainer) return;
+            quizAtual = sortearPerguntasQuiz();
+            quizPerguntasContainer.innerHTML = quizAtual.map((q, numeroIdx) => {
+                const opcoesHtml = q.opcoes.map((texto, idx) => `
+                    <label class="quiz-opcao" data-qid="${q.id}" data-idx="${idx}">
+                        <input type="radio" name="q_${q.id}" value="${idx}">
+                        <span class="quiz-letra">${QUIZ_LETRAS[idx]})</span>
+                        <span class="quiz-texto">${escaparHtmlQuiz(texto)}</span>
+                    </label>
+                `).join('');
+
+                return `
+                    <div class="quiz-pergunta-box" id="quiz-q-${q.id}">
+                        <p class="quiz-pergunta-texto">${numeroIdx + 1}. ${escaparHtmlQuiz(q.pergunta)}</p>
+                        <div class="quiz-opcoes-grid">
+                            ${opcoesHtml}
+                        </div>
+                        <div class="quiz-feedback" id="quiz-fb-${q.id}"></div>
+                    </div>
+                `;
+            }).join('');
+            atualizarProgressoQuiz();
+        }
 
         function abrirQuiz() {
             quizModal.classList.add('ativo');
@@ -1248,12 +967,12 @@
 
         function atualizarProgressoQuiz() {
             let respondidas = 0;
-            QUIZ_DATA.forEach(q => {
+            quizAtual.forEach(q => {
                 if (quizForm.querySelector(`input[name="q_${q.id}"]:checked`)) {
                     respondidas += 1;
                 }
             });
-            quizProgresso.textContent = `Respondidas: ${respondidas} / ${QUIZ_DATA.length}`;
+            quizProgresso.textContent = `Respondidas: ${respondidas} / ${quizAtual.length}`;
         }
 
         function obterClassificacaoQuiz(percentagem) {
@@ -1313,7 +1032,8 @@
 
         async function submeterQuiz() {
             const respostas = {};
-            QUIZ_DATA.forEach(q => {
+            const ids = quizAtual.map(q => q.id);
+            quizAtual.forEach(q => {
                 const checked = quizForm.querySelector(`input[name="q_${q.id}"]:checked`);
                 if (checked) {
                     respostas[String(q.id)] = parseInt(checked.value, 10);
@@ -1324,7 +1044,7 @@
                 const res = await fetch('/api/quiz', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ respostas })
+                    body: JSON.stringify({ respostas, ids })
                 });
                 if (res.ok) {
                     const resultado = await res.json();
@@ -1335,7 +1055,7 @@
 
             // Fallback local idêntico à função avaliar_quiz() do Python
             let pontuacao = 0;
-            const detalhes = QUIZ_DATA.map(q => {
+            const detalhes = quizAtual.map(q => {
                 const raw = respostas[String(q.id)];
                 const escolha = raw !== undefined ? raw : -1;
                 const acertou = escolha === q.correta;
@@ -1349,10 +1069,10 @@
                     texto_correto: q.opcoes[q.correta]
                 };
             });
-            const percentagem = Math.round((pontuacao / QUIZ_DATA.length) * 100);
+            const percentagem = quizAtual.length ? Math.round((pontuacao / quizAtual.length) * 100) : 0;
             aplicarResultadoQuiz({
                 pontuacao,
-                total: QUIZ_DATA.length,
+                total: quizAtual.length,
                 percentagem,
                 classificacao: obterClassificacaoQuiz(percentagem),
                 detalhes
@@ -1360,23 +1080,16 @@
         }
 
         function reiniciarQuiz() {
-            quizForm.reset();
-            quizForm.querySelectorAll('.quiz-opcao').forEach(op => {
-                op.classList.remove('selecionada', 'correta', 'errada');
-            });
-            quizForm.querySelectorAll('.quiz-feedback').forEach(fb => {
-                fb.className = 'quiz-feedback';
-                fb.textContent = '';
-            });
             quizBanner.style.display = 'none';
             quizBanner.style.borderColor = '';
             quizBanner.style.backgroundColor = '';
             quizBanner.innerHTML = '';
-            atualizarProgressoQuiz();
+            renderizarQuizAleatorio();
             if (quizContainer) quizContainer.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         if (btnAbrirQuiz && quizModal) {
+            renderizarQuizAleatorio();
             btnAbrirQuiz.addEventListener('click', abrirQuiz);
             btnFecharQuiz.addEventListener('click', fecharQuiz);
             btnReiniciarQuiz.addEventListener('click', reiniciarQuiz);
@@ -1390,15 +1103,16 @@
                 if (e.key === 'Escape' && quizModal.classList.contains('ativo')) fecharQuiz();
             });
 
-            quizForm.querySelectorAll('.quiz-opcao input[type="radio"]').forEach(radio => {
-                radio.addEventListener('change', () => {
-                    const qid = radio.name.replace('q_', '');
-                    quizForm.querySelectorAll(`.quiz-opcao[data-qid="${qid}"]`).forEach(op => {
-                        op.classList.remove('selecionada', 'correta', 'errada');
-                    });
-                    radio.closest('.quiz-opcao').classList.add('selecionada');
-                    atualizarProgressoQuiz();
+            quizForm.addEventListener('change', (e) => {
+                const radio = e.target;
+                if (!radio || radio.type !== 'radio') return;
+                const qid = radio.name.replace('q_', '');
+                quizForm.querySelectorAll(`.quiz-opcao[data-qid="${qid}"]`).forEach(op => {
+                    op.classList.remove('selecionada', 'correta', 'errada');
                 });
+                const label = radio.closest('.quiz-opcao');
+                if (label) label.classList.add('selecionada');
+                atualizarProgressoQuiz();
             });
         }
     </script>
