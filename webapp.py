@@ -1200,6 +1200,16 @@ def gerar_dashboard_html(
     {quiz_html}
 
     <script>
+        if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {{
+            const basePath = window.location.pathname.replace(/\\/index\\.html$/, '').replace(/\\/+$/, '');
+            if (!basePath.endsWith('/custom-engine')) {{
+                const novoPath = `${{basePath}}/custom-engine`;
+                try {{
+                    window.history.replaceState(null, '', novoPath + window.location.search + window.location.hash);
+                }} catch (_) {{}}
+            }}
+        }}
+
         const PRESETS_DATA = {presets_json};
         const presetButtons = document.querySelectorAll('.btn-preset-motor');
         const selectFormato = document.getElementById('select-formato');
@@ -1697,12 +1707,27 @@ def guardar_index_html(
 class DashboardHandler(SimpleHTTPRequestHandler):
     """Servidor HTTP que processa os pedidos dos Widgets 2, 3 e Quiz diretamente em Python."""
 
+    def do_GET(self):
+        caminho = self.path.split("?", 1)[0]
+        if caminho in ("/", "/index.html"):
+            self.send_response(302)
+            self.send_header("Location", "/custom-engine")
+            self.end_headers()
+            return
+        if caminho in ("/custom-engine", "/custom-engine/"):
+            self.path = "/index.html"
+        return super().do_GET()
+
     def do_POST(self):
+        caminho = self.path.split("?", 1)[0]
+        if caminho.startswith("/custom-engine/"):
+            caminho = caminho[len("/custom-engine"):]
+
         tamanho = int(self.headers.get("Content-Length", 0))
         corpo = self.rfile.read(tamanho).decode("utf-8") if tamanho > 0 else "{}"
         dados = json.loads(corpo)
 
-        if self.path == "/api/ficha":
+        if caminho == "/api/ficha":
             cil = max(1, min(16, int(dados.get("cilindros", 4))))
             fmt = str(dados.get("formato", "I")).upper()
 
@@ -1719,7 +1744,7 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             self.wfile.write(resposta)
             return
 
-        if self.path == "/api/combustao":
+        if caminho == "/api/combustao":
             resultado = processar_combustao(
                 bore=float(dados.get("bore", 86.0)),
                 stroke=float(dados.get("stroke", 86.0)),
@@ -1744,7 +1769,7 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             self.wfile.write(resposta)
             return
 
-        if self.path == "/api/quiz":
+        if caminho == "/api/quiz":
             resultado = avaliar_quiz(dados.get("respostas", {}), dados.get("ids"))
             resposta = json.dumps(resultado, ensure_ascii=False).encode("utf-8")
 
@@ -1761,7 +1786,7 @@ class DashboardHandler(SimpleHTTPRequestHandler):
 def iniciar_servidor(porta: int = 8000) -> None:
     """Gera o index.html e inicia o servidor web local em Python."""
     guardar_index_html()
-    url = f"http://localhost:{porta}"
+    url = f"http://localhost:{porta}/custom-engine"
     print(f"Servidor ativo em: {url} (Pressiona Ctrl+C para sair)")
     webbrowser.open(url)
     servidor = HTTPServer(("127.0.0.1", porta), DashboardHandler)

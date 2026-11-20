@@ -642,6 +642,16 @@
     
 
     <script>
+        if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+            const basePath = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/+$/, '');
+            if (!basePath.endsWith('/custom-engine')) {
+                const novoPath = `${basePath}/custom-engine`;
+                try {
+                    window.history.replaceState(null, '', novoPath + window.location.search + window.location.hash);
+                } catch (_) {}
+            }
+        }
+
         const PRESETS_DATA = [{"id": "koenigsegg_jesko", "nome": "Koenigsegg Jesko — Hot V8", "resumo": "V8 · 5.0L · Biturbo · Etanol (E85)", "formato": "V", "cilindros": 8, "admissao": "Biturbo", "bore": 92.0, "stroke": 95.25, "compression_ratio": 8.6, "max_rpm": 7800, "combustivel": "Etanol (E85)", "ciclo": "4T"}, {"id": "bugatti_bolide", "nome": "Bugatti Bolide — W16", "resumo": "W16 · 8.0L · Biturbo · Gasolina", "formato": "W", "cilindros": 16, "admissao": "Biturbo", "bore": 86.0, "stroke": 86.0, "compression_ratio": 9.0, "max_rpm": 7000, "combustivel": "Gasolina", "ciclo": "4T"}, {"id": "vw_vr6", "nome": "Volkswagen R32 — VR6", "resumo": "VR6 · 3.2L · Atmosférico · Gasolina", "formato": "VR", "cilindros": 6, "admissao": "Atmosférico", "bore": 84.0, "stroke": 95.9, "compression_ratio": 10.9, "max_rpm": 6800, "combustivel": "Gasolina", "ciclo": "4T"}, {"id": "dodge_hellcat", "nome": "Dodge Hellcat — V8", "resumo": "V8 · 6.2L · Supercompressor · Gasolina", "formato": "V", "cilindros": 8, "admissao": "Supercompressor", "bore": 103.9, "stroke": 90.9, "compression_ratio": 9.5, "max_rpm": 6200, "combustivel": "Gasolina", "ciclo": "4T"}, {"id": "audi_quattro", "nome": "Audi Sport Quattro — I5", "resumo": "I5 · 2.1L · Turbo · Gasolina", "formato": "I", "cilindros": 5, "admissao": "Turbo", "bore": 79.5, "stroke": 86.4, "compression_ratio": 7.5, "max_rpm": 7500, "combustivel": "Gasolina", "ciclo": "4T"}];
         const presetButtons = document.querySelectorAll('.btn-preset-motor');
         const selectFormato = document.getElementById('select-formato');
