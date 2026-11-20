@@ -2,6 +2,7 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 import json
 import math
 import sys
+from typing import Optional
 import webbrowser
 
 
@@ -599,7 +600,7 @@ QUIZ_PERGUNTAS = [
 ]
 
 
-def avaliar_quiz(respostas: dict, ids: list | None = None) -> dict:
+def avaliar_quiz(respostas: dict, ids: Optional[list] = None) -> dict:
     """
     Avalia em Python as respostas submetidas pelo utilizador para o quiz.
     `respostas` mapeia id da pergunta (str ou int) para índice da opção escolhida (int).
