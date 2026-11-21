@@ -2031,7 +2031,7 @@ def gerar_dashboard_html(
     {quiz_html}
 
     <script>
-        if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {{
+        if ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {{
             const basePath = window.location.pathname.replace(/\\/index\\.html$/, '').replace(/\\/+$/, '');
             if (!basePath.endsWith('/custom-engine')) {{
                 const novoPath = `${{basePath}}/custom-engine`;
