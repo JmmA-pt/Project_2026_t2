@@ -32,7 +32,7 @@ Estrutura de Ficheiros do Repositório
 Listagem simples dos ficheiros presentes na pasta:
 1. index.html – página principal do Dashboard / Web App
 2. app.py - Ficheiro principal da aplicação.
-5. Assets - Imagens, nuvens de palavras geradas, recursos utilizados, etc.
+3. Assets - Imagens, nuvens de palavras geradas, recursos utilizados, etc.
 
 Desenvolve um pequeno texto refletivo sobre o projeto que inclua:
 O que correu melhor durante o desenvolvimento. Qual foi a maior dificuldade. Como é
