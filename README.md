@@ -6,7 +6,7 @@ Disciplina: Oficina de Multimédia T2
 Ano Letivo: 2026/2027
 Autor: João Alves
 Turma: 12ºA3
-Link da Aplicação Web: http://custom-engine.com/
+Link da Aplicação Web: https://jmma-pt.github.io/Project_2026_t2/
 
 Descrição: uma app desenhada para cativar a criação de motores e, possivelmente, passar a saber mais sobre cada componente. No final apresenta-se um quiz sobre diversos marcas de carros que levaram cada uma, uma diferente perspectiva sobre o seu design de motor, e funções de alguns componentes e conceitos.
 
