@@ -6,68 +6,30 @@ import webbrowser
 
 
 # ==============================================================================
-# WIDGET 1: BASE DO MOTOR (Figura 2D Realista + Admissão + Cilindros Exclusivo)
+# WIDGET 1: BASE DO MOTOR (Design Simplista & Estilizado 2D + Admissão)
 # ==============================================================================
 SVG_MOTOR_DEFS = """
 <defs>
     <linearGradient id="eng-block" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#2c313d" />
-        <stop offset="45%" stop-color="#191c24" />
-        <stop offset="100%" stop-color="#232732" />
+        <stop offset="0%" stop-color="#171b24" />
+        <stop offset="100%" stop-color="#0b0e14" />
     </linearGradient>
-    <linearGradient id="eng-head" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#3c4252" />
-        <stop offset="50%" stop-color="#20242e" />
-        <stop offset="100%" stop-color="#13161c" />
-    </linearGradient>
-    <linearGradient id="eng-redcam" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#991b1b" />
-        <stop offset="50%" stop-color="#ff1e38" />
-        <stop offset="100%" stop-color="#991b1b" />
-    </linearGradient>
-    <linearGradient id="eng-metal" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#64748b" />
-        <stop offset="45%" stop-color="#cbd5e1" />
-        <stop offset="100%" stop-color="#334155" />
-    </linearGradient>
-    <linearGradient id="eng-exhaust" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#94a3b8" />
-        <stop offset="55%" stop-color="#c2410c" />
-        <stop offset="100%" stop-color="#451a03" />
-    </linearGradient>
-    <linearGradient id="eng-liner" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#f1f5f9" />
-        <stop offset="50%" stop-color="#475569" />
-        <stop offset="100%" stop-color="#cbd5e1" />
-    </linearGradient>
-    <radialGradient id="eng-bore" cx="50%" cy="50%" r="50%">
-        <stop offset="50%" stop-color="#040507" />
-        <stop offset="100%" stop-color="#181b24" />
-    </radialGradient>
     <radialGradient id="eng-piston" cx="38%" cy="35%" r="65%">
-        <stop offset="0%" stop-color="#f8fafc" />
-        <stop offset="55%" stop-color="#94a3b8" />
-        <stop offset="100%" stop-color="#334155" />
+        <stop offset="0%" stop-color="#64748b" />
+        <stop offset="65%" stop-color="#1e293b" />
+        <stop offset="100%" stop-color="#0f172a" />
     </radialGradient>
-    <radialGradient id="eng-turbo-cold" cx="42%" cy="38%" r="60%">
-        <stop offset="0%" stop-color="#f1f5f9" />
-        <stop offset="55%" stop-color="#94a3b8" />
-        <stop offset="100%" stop-color="#475569" />
-    </radialGradient>
-    <radialGradient id="eng-turbo-hot" cx="45%" cy="45%" r="60%">
-        <stop offset="0%" stop-color="#ea580c" />
-        <stop offset="50%" stop-color="#7c2d12" />
-        <stop offset="100%" stop-color="#27130d" />
-    </radialGradient>
-    <linearGradient id="eng-filter" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#7f1d1d" />
-        <stop offset="50%" stop-color="#dc2626" />
-        <stop offset="100%" stop-color="#450a0a" />
+    <linearGradient id="eng-accent" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#ff1e38" />
+        <stop offset="100%" stop-color="#ff6b00" />
     </linearGradient>
-    <linearGradient id="eng-blower" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#e2e8f0" />
-        <stop offset="40%" stop-color="#94a3b8" />
-        <stop offset="100%" stop-color="#334155" />
+    <linearGradient id="eng-amber" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#ff9f1c" />
+        <stop offset="100%" stop-color="#ff6b00" />
+    </linearGradient>
+    <linearGradient id="eng-pipe" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#94a3b8" />
+        <stop offset="100%" stop-color="#475569" />
     </linearGradient>
 </defs>
 """
@@ -79,7 +41,7 @@ def gerar_svg_motor_inline(
     admissao: str = "Atmosférico",
 ) -> str:
     """
-    Desenha o SVG 2D realista e mecânico do motor de acordo com o formato escolhido
+    Desenha o SVG 2D simplista e estilizado do motor de acordo com o formato escolhido
     (I, V, VR ou W) e tipo de admissão (Atmosférico, Turbo, Supercompressor,
     Biturbo ou Twincharge), suportando até 16 cilindros.
     """
@@ -93,60 +55,65 @@ def gerar_svg_motor_inline(
     ) else "Atmosférico"
 
     def desenhar_cilindro(cx: float, cy: float, r: float) -> str:
-        r_pistao = max(3.6, r * 0.72)
-        sw_camisa = max(1.4, min(2.4, r * 0.14))
-        r_centro = max(1.1, r * 0.17)
+        r_pistao = max(3.4, r * 0.72)
+        r_centro = max(1.3, min(3.2, r * 0.18))
         return (
-            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" fill="url(#eng-bore)" stroke="url(#eng-liner)" stroke-width="{sw_camisa:.1f}" />\n'
-            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r_pistao:.1f}" fill="url(#eng-piston)" stroke="#0f172a" stroke-width="0.9" />\n'
-            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r_centro:.1f}" fill="#0b0d12" stroke="#ff1e38" stroke-width="0.8" />\n'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" fill="#06080c" stroke="#94a3b8" stroke-width="1.35" />\n'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r_pistao:.1f}" fill="url(#eng-piston)" stroke="#334155" stroke-width="0.8" />\n'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r_centro:.1f}" fill="#ff1e38" />\n'
         )
 
     def desenhar_polia(cx: float, cy: float, r: float, cor_centro: str = "#ff1e38") -> str:
-        r_in = max(2.2, r * 0.42)
+        r_in = max(2.2, r * 0.44)
         return (
-            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />\n'
-            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r_in:.1f}" fill="#0b0d12" stroke="{cor_centro}" stroke-width="1" />\n'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" fill="#0d1017" stroke="#94a3b8" stroke-width="1.3" />\n'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r_in:.1f}" fill="none" stroke="{cor_centro}" stroke-width="1.2" />\n'
+        )
+
+    def desenhar_parafusos(x: float, y: float, w: float, h: float, pad: float = 6.5) -> str:
+        coords = [
+            (x + pad, y + pad),
+            (x + w - pad, y + pad),
+            (x + pad, y + h - pad),
+            (x + w - pad, y + h - pad),
+        ]
+        return "".join(
+            f'<circle cx="{px:.1f}" cy="{py:.1f}" r="1.3" fill="#475569" />\n'
+            for px, py in coords
         )
 
     def desenhar_turbo(cx: float, cy: float, escala: float = 1.0) -> str:
-        # Turbo simplificado mantendo o tamanho grande (Caracol Frio + Centro + Caracol Quente + Wastegate)
         return (
             f'<g transform="translate({cx:.1f},{cy:.1f}) scale({escala:.2f})">\n'
-            f'  <rect x="-4" y="-15" width="8" height="5.5" rx="1.5" fill="url(#eng-metal)" stroke="#1e293b" stroke-width="0.8" />\n'
-            f'  <line x1="0" y1="-9.5" x2="7" y2="-4.5" stroke="#cbd5e1" stroke-width="1.1" />\n'
-            f'  <rect x="-5" y="-5" width="10" height="10" rx="2" fill="#334155" stroke="#94a3b8" stroke-width="0.9" />\n'
-            f'  <line x1="-1" y1="-5" x2="-1" y2="5" stroke="#ff1e38" stroke-width="1.5" />\n'
-            f'  <circle cx="-12" cy="0" r="11.5" fill="url(#eng-turbo-cold)" stroke="#e2e8f0" stroke-width="1.1" />\n'
-            f'  <rect x="-17" y="-13.5" width="8" height="6" rx="1.5" fill="url(#eng-metal)" stroke="#475569" stroke-width="0.8" />\n'
-            f'  <circle cx="-12" cy="0" r="5.5" fill="#07090d" stroke="#475569" stroke-width="0.85" />\n'
-            f'  <path d="M -12,-4.6 L -12,4.6 M -16.6,0 L -7.4,0" stroke="#e2e8f0" stroke-width="1" />\n'
-            f'  <circle cx="-12" cy="0" r="1.7" fill="#ff1e38" />\n'
-            f'  <circle cx="12" cy="0" r="10.5" fill="url(#eng-turbo-hot)" stroke="#fb923c" stroke-width="1.1" />\n'
-            f'  <circle cx="12" cy="0" r="4.4" fill="#1a0905" stroke="#fb923c" stroke-width="0.9" />\n'
+            f'  <line x1="-10" y1="0" x2="10" y2="0" stroke="#94a3b8" stroke-width="2" />\n'
+            f'  <rect x="-4" y="-3.5" width="8" height="7" rx="2" fill="#1e293b" stroke="#64748b" stroke-width="0.9" />\n'
+            f'  <circle cx="-11" cy="0" r="10.5" fill="#0f141e" stroke="#e2e8f0" stroke-width="1.3" />\n'
+            f'  <path d="M -11,-5.5 L -11,5.5 M -16.5,0 L -5.5,0" stroke="#64748b" stroke-width="1.1" />\n'
+            f'  <circle cx="-11" cy="0" r="2.2" fill="#ff1e38" />\n'
+            f'  <circle cx="11" cy="0" r="9.5" fill="#180d0c" stroke="#ff6b00" stroke-width="1.3" />\n'
+            f'  <circle cx="11" cy="0" r="4.0" fill="#0b090a" stroke="#ff6b00" stroke-width="0.9" />\n'
             f'</g>\n'
         )
 
     def desenhar_intercooler(x: float, y: float, w: float, h: float, vertical: bool = False) -> str:
         linhas = ""
-        if vertical:
-            for k in range(1, 5):
-                ly = y + k * (h / 5.0)
-                linhas += f'<line x1="{x + 3:.1f}" y1="{ly:.1f}" x2="{x + w - 3:.1f}" y2="{ly:.1f}" stroke="#475569" stroke-width="1" />\n'
-        else:
-            for k in range(1, 5):
-                lx = x + k * (w / 5.0)
-                linhas += f'<line x1="{lx:.1f}" y1="{y + 3:.1f}" x2="{lx:.1f}" y2="{y + h - 3:.1f}" stroke="#475569" stroke-width="1" />\n'
+        for k in range(1, 4):
+            if vertical:
+                ly = y + k * (h / 4.0)
+                linhas += f'<line x1="{x + 4:.1f}" y1="{ly:.1f}" x2="{x + w - 4:.1f}" y2="{ly:.1f}" stroke="#475569" stroke-width="1" />\n'
+            else:
+                lx = x + k * (w / 4.0)
+                linhas += f'<line x1="{lx:.1f}" y1="{y + 4:.1f}" x2="{lx:.1f}" y2="{y + h - 4:.1f}" stroke="#475569" stroke-width="1" />\n'
         return (
-            f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="3" fill="#080a0f" stroke="#94a3b8" stroke-width="1.3" />\n'
+            f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="4" fill="#090c12" stroke="#94a3b8" stroke-width="1.3" />\n'
             f'{linhas}'
         )
 
     def desenhar_filtro_conico(x: float, y: float, w: float, h: float) -> str:
         return (
-            f'<polygon points="{x:.1f},{y + 2:.1f} {x + w:.1f},{y:.1f} {x + w:.1f},{y + h:.1f} {x:.1f},{y + h - 2:.1f}" '
-            f'fill="url(#eng-filter)" stroke="#ef4444" stroke-width="1.1" />\n'
-            f'<rect x="{x - 3:.1f}" y="{y + 2:.1f}" width="3.5" height="{h - 4:.1f}" rx="1" fill="#334155" stroke="#94a3b8" stroke-width="0.7" />\n'
+            f'<polygon points="{x:.1f},{y + 2.5:.1f} {x + w:.1f},{y:.1f} {x + w:.1f},{y + h:.1f} {x:.1f},{y + h - 2.5:.1f}" '
+            f'fill="#190c10" stroke="#ff1e38" stroke-width="1.2" stroke-linejoin="round" />\n'
+            f'<line x1="{x + w * 0.45:.1f}" y1="{y + 3.5:.1f}" x2="{x + w * 0.45:.1f}" y2="{y + h - 3.5:.1f}" stroke="#7f1d1d" stroke-width="1" />\n'
         )
 
     def desenhar_supercharger(
@@ -155,16 +122,11 @@ def gerar_svg_motor_inline(
     ) -> str:
         snout_y = y + h / 2.0
         return (
-            f'<!-- Correia do Supercompressor -->\n'
-            f'<line x1="{pulley_x:.1f}" y1="{pulley_y:.1f}" x2="{crank_x:.1f}" y2="{crank_y:.1f}" stroke="#334155" stroke-width="4.2" />\n'
-            f'<line x1="{pulley_x:.1f}" y1="{pulley_y:.1f}" x2="{crank_x:.1f}" y2="{crank_y:.1f}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3" />\n'
-            f'<!-- Snout e Carcaça Twin-Screw -->\n'
-            f'<rect x="{pulley_x:.1f}" y="{snout_y - 4.5:.1f}" width="{max(6.0, x - pulley_x + 2):.1f}" height="9" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />\n'
-            f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="5" fill="url(#eng-blower)" stroke="#e2e8f0" stroke-width="1.3" />\n'
-            f'<line x1="{x + 8:.1f}" y1="{y + h * 0.28:.1f}" x2="{x + w - 8:.1f}" y2="{y + h * 0.28:.1f}" stroke="#334155" stroke-width="1.1" />\n'
-            f'<line x1="{x + 8:.1f}" y1="{y + h * 0.72:.1f}" x2="{x + w - 8:.1f}" y2="{y + h * 0.72:.1f}" stroke="#334155" stroke-width="1.1" />\n'
-            f'<rect x="{x + w * 0.22:.1f}" y="{snout_y - 3:.1f}" width="{w * 0.56:.1f}" height="6" rx="2" fill="url(#eng-redcam)" />\n'
-            f'{desenhar_polia(pulley_x, pulley_y, 7.5, "#ff9f1c")}'
+            f'<line x1="{pulley_x:.1f}" y1="{pulley_y:.1f}" x2="{crank_x:.1f}" y2="{crank_y:.1f}" stroke="#475569" stroke-width="2.6" />\n'
+            f'<rect x="{pulley_x:.1f}" y="{snout_y - 3.5:.1f}" width="{max(6.0, x - pulley_x + 2):.1f}" height="7" rx="2" fill="#1e293b" stroke="#64748b" stroke-width="1" />\n'
+            f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="6" fill="#121620" stroke="#cbd5e1" stroke-width="1.3" />\n'
+            f'<rect x="{x + 14:.1f}" y="{snout_y - 2:.1f}" width="{w - 28:.1f}" height="4" rx="2" fill="url(#eng-amber)" />\n'
+            f'{desenhar_polia(pulley_x, pulley_y, 7.2, "#ff9f1c")}'
         )
 
     corpo_svg = ""
@@ -179,7 +141,7 @@ def gerar_svg_motor_inline(
             raio = min(16.0, max(7.0, (espaco * 1.15 - 4.0) / 2.0))
             if num_cilindros >= 10:
                 raio = min(raio, 10.2)
-        w_runner = max(3.6, min(12.0, raio * 0.65))
+        sw_runner = max(2.2, min(5.5, raio * 0.35))
 
         cilindros = ""
         coletores = ""
@@ -188,73 +150,66 @@ def gerar_svg_motor_inline(
             cy = 123.0 if formato == "I" else (104.0 if i % 2 == 0 else 142.0)
             cilindros += desenhar_cilindro(cx, cy, raio)
             coletores += (
-                f'<rect x="{cx - w_runner / 2:.1f}" y="54" width="{w_runner:.1f}" height="18" rx="1.5" '
-                f'fill="url(#eng-metal)" stroke="#1e293b" stroke-width="0.8" />\n'
-                f'<rect x="{cx - w_runner / 2:.1f}" y="174" width="{w_runner:.1f}" height="19" rx="1.5" '
-                f'fill="url(#eng-exhaust)" stroke="#1e293b" stroke-width="0.8" />\n'
+                f'<line x1="{cx:.1f}" y1="54" x2="{cx:.1f}" y2="72" stroke="#64748b" stroke-width="{sw_runner:.1f}" stroke-linecap="round" />\n'
+                f'<line x1="{cx:.1f}" y1="174" x2="{cx:.1f}" y2="192" stroke="#c2410c" stroke-width="{sw_runner:.1f}" stroke-linecap="round" />\n'
             )
 
-        # Admissão específica na zona superior / esquerda / inferior
         admissao_svg = ""
         if adm == "Atmosférico":
             admissao_svg = (
-                f'<rect x="78" y="38" width="248" height="17" rx="5" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />\n'
-                f'<rect x="86" y="40" width="232" height="3" rx="1" fill="url(#eng-redcam)" />\n'
-                f'<rect x="54" y="42" width="25" height="9" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />\n'
-                f'{desenhar_filtro_conico(20.0, 37.0, 34.0, 19.0)}'
-                f'<rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />\n'
+                f'<rect x="78" y="40" width="248" height="14" rx="5" fill="#121620" stroke="#94a3b8" stroke-width="1.3" />\n'
+                f'<rect x="90" y="45.5" width="224" height="3" rx="1.5" fill="url(#eng-accent)" />\n'
+                f'<line x1="54" y1="47" x2="78" y2="47" stroke="#64748b" stroke-width="5" />\n'
+                f'{desenhar_filtro_conico(22.0, 38.0, 32.0, 18.0)}'
+                f'<rect x="82" y="191" width="240" height="8" rx="4" fill="#1a100e" stroke="#ea580c" stroke-width="1.1" />\n'
             )
         elif adm == "Turbo":
             admissao_svg = (
-                f'<!-- Tubo de Pressão + Intercooler + Turbo Único Grande -->\n'
-                f'<path d="M 30,190 L 30,46 L 78,46" fill="none" stroke="url(#eng-metal)" stroke-width="7" stroke-linejoin="round" />\n'
-                f'<path d="M 68,210 L 184,210" fill="none" stroke="url(#eng-metal)" stroke-width="7" />\n'
-                f'{desenhar_intercooler(16.0, 192.0, 50.0, 30.0)}'
-                f'<rect x="78" y="38" width="248" height="17" rx="5" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />\n'
-                f'<rect x="86" y="40" width="232" height="3" rx="1" fill="url(#eng-redcam)" />\n'
-                f'<rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />\n'
-                f'{desenhar_turbo(216.0, 211.0, 1.42)}'
+                f'<path d="M 30,190 L 30,47 L 78,47" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" stroke-linejoin="round" />\n'
+                f'<path d="M 68,210 L 184,210" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" />\n'
+                f'{desenhar_intercooler(16.0, 194.0, 50.0, 26.0)}'
+                f'<rect x="78" y="40" width="248" height="14" rx="5" fill="#121620" stroke="#94a3b8" stroke-width="1.3" />\n'
+                f'<rect x="90" y="45.5" width="224" height="3" rx="1.5" fill="url(#eng-accent)" />\n'
+                f'<rect x="82" y="191" width="240" height="8" rx="4" fill="#1a100e" stroke="#ea580c" stroke-width="1.1" />\n'
+                f'{desenhar_turbo(216.0, 211.0, 1.32)}'
             )
         elif adm == "Supercompressor":
             admissao_svg = (
-                f'<rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />\n'
-                f'<rect x="304" y="39" width="24" height="11" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />\n'
-                f'{desenhar_filtro_conico(328.0, 35.0, 32.0, 19.0)}'
-                f'{desenhar_supercharger(92.0, 28.0, 212.0, 28.0, 48.0, 42.0, 48.0, 123.0)}'
+                f'<rect x="82" y="191" width="240" height="8" rx="4" fill="#1a100e" stroke="#ea580c" stroke-width="1.1" />\n'
+                f'<line x1="304" y1="43" x2="328" y2="43" stroke="#64748b" stroke-width="5" />\n'
+                f'{desenhar_filtro_conico(328.0, 34.0, 30.0, 18.0)}'
+                f'{desenhar_supercharger(92.0, 30.0, 212.0, 24.0, 48.0, 42.0, 48.0, 123.0)}'
             )
         elif adm == "Biturbo":
             admissao_svg = (
-                f'<!-- Biturbo Sequencial + Intercooler Frontal -->\n'
-                f'<path d="M 30,190 L 30,46 L 78,46" fill="none" stroke="url(#eng-metal)" stroke-width="7" stroke-linejoin="round" />\n'
-                f'<path d="M 68,210 L 266,210" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" />\n'
-                f'{desenhar_intercooler(16.0, 192.0, 50.0, 30.0)}'
-                f'<rect x="78" y="38" width="248" height="17" rx="5" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />\n'
-                f'<rect x="86" y="40" width="232" height="3" rx="1" fill="url(#eng-redcam)" />\n'
-                f'<rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />\n'
-                f'{desenhar_turbo(146.0, 211.0, 1.32)}'
-                f'{desenhar_turbo(282.0, 211.0, 1.32)}'
+                f'<path d="M 30,190 L 30,47 L 78,47" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" stroke-linejoin="round" />\n'
+                f'<path d="M 68,210 L 266,210" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" />\n'
+                f'{desenhar_intercooler(16.0, 194.0, 50.0, 26.0)}'
+                f'<rect x="78" y="40" width="248" height="14" rx="5" fill="#121620" stroke="#94a3b8" stroke-width="1.3" />\n'
+                f'<rect x="90" y="45.5" width="224" height="3" rx="1.5" fill="url(#eng-accent)" />\n'
+                f'<rect x="82" y="191" width="240" height="8" rx="4" fill="#1a100e" stroke="#ea580c" stroke-width="1.1" />\n'
+                f'{desenhar_turbo(146.0, 211.0, 1.24)}'
+                f'{desenhar_turbo(282.0, 211.0, 1.24)}'
             )
-        else:  # Twincharge (Supercompressor + Turbo + Intercooler)
+        else:  # Twincharge
             admissao_svg = (
-                f'<!-- Twincharge: Turbo + Intercooler + Supercompressor com Correia -->\n'
-                f'<path d="M 24,190 L 24,37 L 84,37" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />\n'
-                f'<path d="M 68,210 L 194,210" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" />\n'
-                f'{desenhar_intercooler(14.0, 192.0, 50.0, 30.0)}'
-                f'<rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />\n'
-                f'{desenhar_turbo(224.0, 211.0, 1.38)}'
-                f'{desenhar_supercharger(92.0, 28.0, 212.0, 28.0, 48.0, 42.0, 48.0, 123.0)}'
+                f'<path d="M 24,190 L 24,38 L 84,38" fill="none" stroke="url(#eng-pipe)" stroke-width="4.2" stroke-linejoin="round" />\n'
+                f'<path d="M 68,210 L 194,210" fill="none" stroke="url(#eng-pipe)" stroke-width="4.2" />\n'
+                f'{desenhar_intercooler(14.0, 194.0, 50.0, 26.0)}'
+                f'<rect x="82" y="191" width="240" height="8" rx="4" fill="#1a100e" stroke="#ea580c" stroke-width="1.1" />\n'
+                f'{desenhar_turbo(224.0, 211.0, 1.28)}'
+                f'{desenhar_supercharger(92.0, 30.0, 212.0, 24.0, 48.0, 42.0, 48.0, 123.0)}'
             )
 
         corpo_svg = f"""
         {coletores}
         {admissao_svg}
-        <!-- Distribuição Frontal (Polias) e Volante Traseiro -->
-        <rect x="40" y="83" width="18" height="54" rx="6" fill="#0f1218" stroke="#475569" stroke-width="1.3" />
-        {desenhar_polia(48.0, 93.0, 6.8)}
-        {desenhar_polia(48.0, 123.0, 12.2)}
-        <rect x="340" y="91" width="14" height="64" rx="3" fill="url(#eng-metal)" stroke="#475569" stroke-width="1.3" />
-        <!-- Bloco Maquinado -->
-        <rect x="64" y="70" width="276" height="106" rx="9" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.6" />
+        <rect x="41" y="84" width="15" height="52" rx="7" fill="#0d1017" stroke="#475569" stroke-width="1.2" />
+        {desenhar_polia(48.0, 93.0, 6.4)}
+        {desenhar_polia(48.0, 123.0, 11.4)}
+        <rect x="342" y="93" width="11" height="60" rx="3" fill="#1e293b" stroke="#64748b" stroke-width="1.2" />
+        <rect x="64" y="70" width="276" height="106" rx="10" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.5" />
+        {desenhar_parafusos(64.0, 70.0, 276.0, 106.0)}
         {cilindros}
         """
 
@@ -271,16 +226,16 @@ def gerar_svg_motor_inline(
             raio = min(15.5, max(5.8, (largura / cols - 6.0) / 2.0))
             bank_sup_y, bank_sup_h = 55.0, 50.0
             bank_inf_y, bank_inf_h = 141.0, 50.0
-            y_exh_sup, y_exh_inf = 38.0, 193.0
-            y_col_sup, y_col_inf = 38.0, 200.0
+            y_exh_sup, y_exh_inf = 39.0, 193.0
+            y_col_sup, y_col_inf = 38.0, 201.0
         else:
             raio = min(10.8, max(6.6, (largura / cols) * 0.34))
             bank_sup_y, bank_sup_h = 47.0, 58.0
             bank_inf_y, bank_inf_h = 141.0, 58.0
-            y_exh_sup, y_exh_inf = 31.0, 200.0
-            y_col_sup, y_col_inf = 31.0, 207.0
+            y_exh_sup, y_exh_inf = 32.0, 200.0
+            y_col_sup, y_col_inf = 31.0, 208.0
 
-        w_runner = max(3.5, min(10.5, raio * 0.65))
+        sw_runner = max(2.0, min(4.8, raio * 0.35))
         cilindros = ""
         escapes = ""
         trombetas = ""
@@ -289,98 +244,76 @@ def gerar_svg_motor_inline(
             cx = inicio_x + i * espaco_sup + espaco_sup / 2.0
             cy = 80.0 if formato == "V" else (64.0 if i % 2 == 0 else 87.0)
             cilindros += desenhar_cilindro(cx, cy, raio)
-            escapes += (
-                f'<rect x="{cx - w_runner / 2:.1f}" y="{y_exh_sup:.1f}" width="{w_runner:.1f}" height="17" rx="1.5" '
-                f'fill="url(#eng-exhaust)" stroke="#1e293b" stroke-width="0.8" />\n'
-            )
-            trombetas += (
-                f'<circle cx="{cx:.1f}" cy="115" r="{max(2.6, min(4.2, w_runner * 0.42)):.1f}" '
-                f'fill="#090b10" stroke="#cbd5e1" stroke-width="1" />\n'
-            )
+            escapes += f'<line x1="{cx:.1f}" y1="{y_exh_sup:.1f}" x2="{cx:.1f}" y2="{y_exh_sup + 16:.1f}" stroke="#c2410c" stroke-width="{sw_runner:.1f}" stroke-linecap="round" />\n'
+            trombetas += f'<circle cx="{cx:.1f}" cy="116" r="{max(2.2, min(3.4, sw_runner * 0.72)):.1f}" fill="#ff1e38" opacity="0.85" />\n'
         for i in range(n_inf):
             cx = inicio_x + i * espaco_inf + espaco_inf / 2.0
             cy = 166.0 if formato == "V" else (159.0 if i % 2 == 0 else 182.0)
             cilindros += desenhar_cilindro(cx, cy, raio)
-            escapes += (
-                f'<rect x="{cx - w_runner / 2:.1f}" y="{y_exh_inf:.1f}" width="{w_runner:.1f}" height="17" rx="1.5" '
-                f'fill="url(#eng-exhaust)" stroke="#1e293b" stroke-width="0.8" />\n'
-            )
-            trombetas += (
-                f'<circle cx="{cx:.1f}" cy="131" r="{max(2.6, min(4.2, w_runner * 0.42)):.1f}" '
-                f'fill="#090b10" stroke="#cbd5e1" stroke-width="1" />\n'
-            )
+            escapes += f'<line x1="{cx:.1f}" y1="{y_exh_inf:.1f}" x2="{cx:.1f}" y2="{y_exh_inf + 16:.1f}" stroke="#c2410c" stroke-width="{sw_runner:.1f}" stroke-linecap="round" />\n'
+            trombetas += f'<circle cx="{cx:.1f}" cy="130" r="{max(2.2, min(3.4, sw_runner * 0.72)):.1f}" fill="#ff1e38" opacity="0.85" />\n'
 
-        # Admissão específica para motores V / W
         admissao_vw = ""
         if adm == "Atmosférico":
             admissao_vw = (
-                f'<!-- Admissão Atmosférica: Plenum Central com Cornetas Individuais (ITBs) -->\n'
-                f'<rect x="78" y="108" width="250" height="30" rx="6" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.3" />\n'
+                f'<rect x="78" y="109" width="250" height="28" rx="6" fill="#121620" stroke="#94a3b8" stroke-width="1.3" />\n'
                 f'{trombetas}'
-                f'<rect x="328" y="117" width="24" height="12" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />\n'
-                f'{desenhar_filtro_conico(352.0, 112.0, 32.0, 22.0)}'
+                f'<line x1="328" y1="123" x2="352" y2="123" stroke="#64748b" stroke-width="5" />\n'
+                f'{desenhar_filtro_conico(352.0, 113.0, 30.0, 20.0)}'
             )
         elif adm == "Turbo":
             admissao_vw = (
-                f'<!-- Turbo Único + Intercooler Frontal + Tubo Boost para o Vale -->\n'
-                f'<path d="M 185,24 L 24,24 L 24,87" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />\n'
-                f'<path d="M 24,159 L 24,123 L 82,123" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />\n'
-                f'{desenhar_intercooler(12.0, 85.0, 24.0, 76.0, True)}'
-                f'<rect x="78" y="108" width="250" height="30" rx="6" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.3" />\n'
-                f'<rect x="92" y="120.5" width="222" height="5" rx="2" fill="url(#eng-redcam)" />\n'
-                f'{desenhar_turbo(212.0, 24.0, 1.34)}'
+                f'<path d="M 185,24 L 24,24 L 24,87" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" stroke-linejoin="round" />\n'
+                f'<path d="M 24,159 L 24,123 L 82,123" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" stroke-linejoin="round" />\n'
+                f'{desenhar_intercooler(14.0, 86.0, 20.0, 74.0, True)}'
+                f'<rect x="78" y="109" width="250" height="28" rx="6" fill="#121620" stroke="#94a3b8" stroke-width="1.3" />\n'
+                f'<rect x="94" y="121.5" width="218" height="3" rx="1.5" fill="url(#eng-accent)" />\n'
+                f'{desenhar_turbo(212.0, 24.0, 1.24)}'
             )
         elif adm == "Supercompressor":
             admissao_vw = (
-                f'<!-- Supercompressor Twin-Screw no Vale Central + Correia à Cambota -->\n'
-                f'<rect x="318" y="117" width="24" height="12" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />\n'
-                f'{desenhar_filtro_conico(342.0, 112.0, 32.0, 22.0)}'
-                f'{desenhar_supercharger(84.0, 106.0, 236.0, 34.0, 48.0, 123.0, 48.0, 123.0)}'
-                f'<line x1="48" y1="80" x2="48" y2="166" stroke="#334155" stroke-width="3.6" />\n'
+                f'<line x1="318" y1="123" x2="342" y2="123" stroke="#64748b" stroke-width="5" />\n'
+                f'{desenhar_filtro_conico(342.0, 113.0, 30.0, 20.0)}'
+                f'<line x1="48" y1="80" x2="48" y2="166" stroke="#475569" stroke-width="2.6" />\n'
+                f'{desenhar_supercharger(84.0, 108.0, 236.0, 30.0, 48.0, 123.0, 48.0, 123.0)}'
             )
         elif adm == "Biturbo":
             admissao_vw = (
-                f'<!-- Biturbo Simétrico (Bancada Sup + Inf) + Intercooler Frontal -->\n'
-                f'<path d="M 185,24 L 24,24 L 24,83" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />\n'
-                f'<path d="M 185,222 L 24,222 L 24,163" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />\n'
-                f'<path d="M 36,123 L 82,123" fill="none" stroke="url(#eng-metal)" stroke-width="7" />\n'
-                f'{desenhar_intercooler(12.0, 85.0, 24.0, 76.0, True)}'
-                f'<rect x="78" y="108" width="250" height="30" rx="6" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.3" />\n'
-                f'<rect x="92" y="120.5" width="222" height="5" rx="2" fill="url(#eng-redcam)" />\n'
-                f'{desenhar_turbo(212.0, 24.0, 1.32)}'
-                f'{desenhar_turbo(212.0, 222.0, 1.32)}'
+                f'<path d="M 185,24 L 24,24 L 24,86" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" stroke-linejoin="round" />\n'
+                f'<path d="M 185,222 L 24,222 L 24,160" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" stroke-linejoin="round" />\n'
+                f'<line x1="34" y1="123" x2="82" y2="123" stroke="url(#eng-pipe)" stroke-width="4.5" />\n'
+                f'{desenhar_intercooler(14.0, 86.0, 20.0, 74.0, True)}'
+                f'<rect x="78" y="109" width="250" height="28" rx="6" fill="#121620" stroke="#94a3b8" stroke-width="1.3" />\n'
+                f'<rect x="94" y="121.5" width="218" height="3" rx="1.5" fill="url(#eng-accent)" />\n'
+                f'{desenhar_turbo(212.0, 24.0, 1.22)}'
+                f'{desenhar_turbo(212.0, 222.0, 1.22)}'
             )
         else:  # Twincharge
             admissao_vw = (
-                f'<!-- Twincharge: Turbo Superior + Intercooler + Supercompressor no Vale -->\n'
-                f'<path d="M 185,24 L 24,24 L 24,83" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />\n'
-                f'<path d="M 24,161 L 24,226 L 348,226 L 348,123 L 318,123" fill="none" stroke="url(#eng-metal)" stroke-width="6" stroke-linejoin="round" />\n'
-                f'{desenhar_intercooler(12.0, 85.0, 24.0, 76.0, True)}'
-                f'{desenhar_turbo(212.0, 24.0, 1.32)}'
-                f'{desenhar_supercharger(84.0, 106.0, 236.0, 34.0, 48.0, 123.0, 48.0, 123.0)}'
+                f'<path d="M 185,24 L 24,24 L 24,86" fill="none" stroke="url(#eng-pipe)" stroke-width="4.2" stroke-linejoin="round" />\n'
+                f'<path d="M 24,160 L 24,226 L 348,226 L 348,123 L 318,123" fill="none" stroke="url(#eng-pipe)" stroke-width="4.2" stroke-linejoin="round" />\n'
+                f'{desenhar_intercooler(14.0, 86.0, 20.0, 74.0, True)}'
+                f'{desenhar_turbo(212.0, 24.0, 1.22)}'
+                f'{desenhar_supercharger(84.0, 108.0, 236.0, 30.0, 48.0, 123.0, 48.0, 123.0)}'
             )
 
         corpo_svg = f"""
         {escapes}
-        <!-- Colectores de Escape Exteriores -->
-        <rect x="82" y="{y_col_sup:.1f}" width="240" height="8" rx="3" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1" />
-        <rect x="82" y="{y_col_inf:.1f}" width="240" height="8" rx="3" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1" />
-        <!-- Distribuição Dupla e Volante -->
-        <path d="M 38,75 L 64,59 L 64,187 L 38,171 Z" fill="#0f1218" stroke="#475569" stroke-width="1.3" />
-        {desenhar_polia(48.0, 80.0, 9.0)}
-        {desenhar_polia(48.0, 166.0, 9.0)}
-        <rect x="340" y="89" width="14" height="68" rx="3" fill="url(#eng-metal)" stroke="#475569" stroke-width="1.3" />
-        <!-- Bancadas Superior e Inferior -->
-        <rect x="64" y="{bank_sup_y:.1f}" width="276" height="{bank_sup_h:.1f}" rx="8" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.6" />
-        <rect x="64" y="{bank_inf_y:.1f}" width="276" height="{bank_inf_h:.1f}" rx="8" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.6" />
-        <rect x="72" y="{bank_sup_y - 4:.1f}" width="260" height="5" rx="2" fill="url(#eng-redcam)" />
-        <rect x="72" y="{bank_inf_y + bank_inf_h - 1:.1f}" width="260" height="5" rx="2" fill="url(#eng-redcam)" />
-        <!-- Vale Central e Cambota -->
-        <rect x="64" y="105" width="276" height="36" fill="#090b10" stroke="rgba(255,255,255,0.08)" stroke-width="0.9" />
-        <rect x="54" y="119.5" width="288" height="7" rx="2" fill="url(#eng-metal)" stroke="#334155" stroke-width="0.9" />
+        <rect x="82" y="{y_col_sup:.1f}" width="240" height="6.5" rx="3" fill="#1a100e" stroke="#ea580c" stroke-width="1" />
+        <rect x="82" y="{y_col_inf:.1f}" width="240" height="6.5" rx="3" fill="#1a100e" stroke="#ea580c" stroke-width="1" />
+        <path d="M 39,77 L 64,61 L 64,185 L 39,169 Z" fill="#0d1017" stroke="#475569" stroke-width="1.2" />
+        {desenhar_polia(48.0, 80.0, 8.2)}
+        {desenhar_polia(48.0, 166.0, 8.2)}
+        <rect x="342" y="91" width="11" height="64" rx="3" fill="#1e293b" stroke="#64748b" stroke-width="1.2" />
+        <rect x="64" y="{bank_sup_y:.1f}" width="276" height="{bank_sup_h:.1f}" rx="9" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.5" />
+        <rect x="64" y="{bank_inf_y:.1f}" width="276" height="{bank_inf_h:.1f}" rx="9" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.5" />
+        <rect x="76" y="{bank_sup_y - 2.5:.1f}" width="252" height="3" rx="1.5" fill="url(#eng-accent)" />
+        <rect x="76" y="{bank_inf_y + bank_inf_h - 0.5:.1f}" width="252" height="3" rx="1.5" fill="url(#eng-accent)" />
+        <rect x="64" y="105" width="276" height="36" fill="#080a0f" stroke="rgba(255,255,255,0.06)" stroke-width="0.9" />
+        <line x1="54" y1="123" x2="342" y2="123" stroke="#475569" stroke-width="4" stroke-linecap="round" />
         {cilindros}
         {admissao_vw}
-        {desenhar_polia(48.0, 123.0, 10.5, "#ff9f1c" if adm in ("Supercompressor", "Twincharge") else "#ff1e38")}
+        {desenhar_polia(48.0, 123.0, 9.8, "#ff9f1c" if adm in ("Supercompressor", "Twincharge") else "#ff1e38")}
         """
 
     return f"""
@@ -2141,126 +2074,93 @@ def gerar_dashboard_html(
         const SVG_MOTOR_DEFS = `
         <defs>
             <linearGradient id="eng-block" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#2c313d" />
-                <stop offset="45%" stop-color="#191c24" />
-                <stop offset="100%" stop-color="#232732" />
+                <stop offset="0%" stop-color="#171b24" />
+                <stop offset="100%" stop-color="#0b0e14" />
             </linearGradient>
-            <linearGradient id="eng-head" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#3c4252" />
-                <stop offset="50%" stop-color="#20242e" />
-                <stop offset="100%" stop-color="#13161c" />
-            </linearGradient>
-            <linearGradient id="eng-redcam" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#991b1b" />
-                <stop offset="50%" stop-color="#ff1e38" />
-                <stop offset="100%" stop-color="#991b1b" />
-            </linearGradient>
-            <linearGradient id="eng-metal" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#64748b" />
-                <stop offset="45%" stop-color="#cbd5e1" />
-                <stop offset="100%" stop-color="#334155" />
-            </linearGradient>
-            <linearGradient id="eng-exhaust" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#94a3b8" />
-                <stop offset="55%" stop-color="#c2410c" />
-                <stop offset="100%" stop-color="#451a03" />
-            </linearGradient>
-            <linearGradient id="eng-liner" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#f1f5f9" />
-                <stop offset="50%" stop-color="#475569" />
-                <stop offset="100%" stop-color="#cbd5e1" />
-            </linearGradient>
-            <radialGradient id="eng-bore" cx="50%" cy="50%" r="50%">
-                <stop offset="50%" stop-color="#040507" />
-                <stop offset="100%" stop-color="#181b24" />
-            </radialGradient>
             <radialGradient id="eng-piston" cx="38%" cy="35%" r="65%">
-                <stop offset="0%" stop-color="#f8fafc" />
-                <stop offset="55%" stop-color="#94a3b8" />
-                <stop offset="100%" stop-color="#334155" />
+                <stop offset="0%" stop-color="#64748b" />
+                <stop offset="65%" stop-color="#1e293b" />
+                <stop offset="100%" stop-color="#0f172a" />
             </radialGradient>
-            <radialGradient id="eng-turbo-cold" cx="42%" cy="38%" r="60%">
-                <stop offset="0%" stop-color="#f1f5f9" />
-                <stop offset="55%" stop-color="#94a3b8" />
-                <stop offset="100%" stop-color="#475569" />
-            </radialGradient>
-            <radialGradient id="eng-turbo-hot" cx="45%" cy="45%" r="60%">
-                <stop offset="0%" stop-color="#ea580c" />
-                <stop offset="50%" stop-color="#7c2d12" />
-                <stop offset="100%" stop-color="#27130d" />
-            </radialGradient>
-            <linearGradient id="eng-filter" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#7f1d1d" />
-                <stop offset="50%" stop-color="#dc2626" />
-                <stop offset="100%" stop-color="#450a0a" />
+            <linearGradient id="eng-accent" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#ff1e38" />
+                <stop offset="100%" stop-color="#ff6b00" />
             </linearGradient>
-            <linearGradient id="eng-blower" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#e2e8f0" />
-                <stop offset="40%" stop-color="#94a3b8" />
-                <stop offset="100%" stop-color="#334155" />
+            <linearGradient id="eng-amber" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#ff9f1c" />
+                <stop offset="100%" stop-color="#ff6b00" />
+            </linearGradient>
+            <linearGradient id="eng-pipe" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#94a3b8" />
+                <stop offset="100%" stop-color="#475569" />
             </linearGradient>
         </defs>`;
 
         function desenharCilindroSvg(cx, cy, r) {{
-            const rPistao = Math.max(3.6, r * 0.72);
-            const swCamisa = Math.max(1.4, Math.min(2.4, r * 0.14));
-            const rCentro = Math.max(1.1, r * 0.17);
+            const rPistao = Math.max(3.4, r * 0.72);
+            const rCentro = Math.max(1.3, Math.min(3.2, r * 0.18));
             return `
-                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{r.toFixed(1)}}" fill="url(#eng-bore)" stroke="url(#eng-liner)" stroke-width="${{swCamisa.toFixed(1)}}" />
-                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{rPistao.toFixed(1)}}" fill="url(#eng-piston)" stroke="#0f172a" stroke-width="0.9" />
-                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{rCentro.toFixed(1)}}" fill="#0b0d12" stroke="#ff1e38" stroke-width="0.8" />
+                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{r.toFixed(1)}}" fill="#06080c" stroke="#94a3b8" stroke-width="1.35" />
+                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{rPistao.toFixed(1)}}" fill="url(#eng-piston)" stroke="#334155" stroke-width="0.8" />
+                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{rCentro.toFixed(1)}}" fill="#ff1e38" />
             `;
         }}
 
         function desenharPoliaSvg(cx, cy, r, corCentro = '#ff1e38') {{
-            const rIn = Math.max(2.2, r * 0.42);
+            const rIn = Math.max(2.2, r * 0.44);
             return `
-                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{r.toFixed(1)}}" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />
-                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{rIn.toFixed(1)}}" fill="#0b0d12" stroke="${{corCentro}}" stroke-width="1" />
+                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{r.toFixed(1)}}" fill="#0d1017" stroke="#94a3b8" stroke-width="1.3" />
+                <circle cx="${{cx.toFixed(1)}}" cy="${{cy.toFixed(1)}}" r="${{rIn.toFixed(1)}}" fill="none" stroke="${{corCentro}}" stroke-width="1.2" />
             `;
+        }}
+
+        function desenharParafusosSvg(x, y, w, h, pad = 6.5) {{
+            const coords = [
+                [x + pad, y + pad],
+                [x + w - pad, y + pad],
+                [x + pad, y + h - pad],
+                [x + w - pad, y + h - pad],
+            ];
+            return coords
+                .map(([px, py]) => `<circle cx="${{px.toFixed(1)}}" cy="${{py.toFixed(1)}}" r="1.3" fill="#475569" />`)
+                .join('');
         }}
 
         function desenharTurboSvg(cx, cy, escala = 1.0) {{
             return `
                 <g transform="translate(${{cx.toFixed(1)}},${{cy.toFixed(1)}}) scale(${{escala.toFixed(2)}})">
-                    <rect x="-4" y="-15" width="8" height="5.5" rx="1.5" fill="url(#eng-metal)" stroke="#1e293b" stroke-width="0.8" />
-                    <line x1="0" y1="-9.5" x2="7" y2="-4.5" stroke="#cbd5e1" stroke-width="1.1" />
-                    <rect x="-5" y="-5" width="10" height="10" rx="2" fill="#334155" stroke="#94a3b8" stroke-width="0.9" />
-                    <line x1="-1" y1="-5" x2="-1" y2="5" stroke="#ff1e38" stroke-width="1.5" />
-                    <circle cx="-12" cy="0" r="11.5" fill="url(#eng-turbo-cold)" stroke="#e2e8f0" stroke-width="1.1" />
-                    <rect x="-17" y="-13.5" width="8" height="6" rx="1.5" fill="url(#eng-metal)" stroke="#475569" stroke-width="0.8" />
-                    <circle cx="-12" cy="0" r="5.5" fill="#07090d" stroke="#475569" stroke-width="0.85" />
-                    <path d="M -12,-4.6 L -12,4.6 M -16.6,0 L -7.4,0" stroke="#e2e8f0" stroke-width="1" />
-                    <circle cx="-12" cy="0" r="1.7" fill="#ff1e38" />
-                    <circle cx="12" cy="0" r="10.5" fill="url(#eng-turbo-hot)" stroke="#fb923c" stroke-width="1.1" />
-                    <circle cx="12" cy="0" r="4.4" fill="#1a0905" stroke="#fb923c" stroke-width="0.9" />
+                    <line x1="-10" y1="0" x2="10" y2="0" stroke="#94a3b8" stroke-width="2" />
+                    <rect x="-4" y="-3.5" width="8" height="7" rx="2" fill="#1e293b" stroke="#64748b" stroke-width="0.9" />
+                    <circle cx="-11" cy="0" r="10.5" fill="#0f141e" stroke="#e2e8f0" stroke-width="1.3" />
+                    <path d="M -11,-5.5 L -11,5.5 M -16.5,0 L -5.5,0" stroke="#64748b" stroke-width="1.1" />
+                    <circle cx="-11" cy="0" r="2.2" fill="#ff1e38" />
+                    <circle cx="11" cy="0" r="9.5" fill="#180d0c" stroke="#ff6b00" stroke-width="1.3" />
+                    <circle cx="11" cy="0" r="4.0" fill="#0b090a" stroke="#ff6b00" stroke-width="0.9" />
                 </g>
             `;
         }}
 
         function desenharIntercoolerSvg(x, y, w, h, vertical = false) {{
             let linhas = '';
-            if (vertical) {{
-                for (let k = 1; k < 5; k++) {{
-                    const ly = y + k * (h / 5.0);
-                    linhas += `<line x1="${{(x + 3).toFixed(1)}}" y1="${{ly.toFixed(1)}}" x2="${{(x + w - 3).toFixed(1)}}" y2="${{ly.toFixed(1)}}" stroke="#475569" stroke-width="1" />`;
-                }}
-            }} else {{
-                for (let k = 1; k < 5; k++) {{
-                    const lx = x + k * (w / 5.0);
-                    linhas += `<line x1="${{lx.toFixed(1)}}" y1="${{(y + 3).toFixed(1)}}" x2="${{lx.toFixed(1)}}" y2="${{(y + h - 3).toFixed(1)}}" stroke="#475569" stroke-width="1" />`;
+            for (let k = 1; k < 4; k++) {{
+                if (vertical) {{
+                    const ly = y + k * (h / 4.0);
+                    linhas += `<line x1="${{(x + 4).toFixed(1)}}" y1="${{ly.toFixed(1)}}" x2="${{(x + w - 4).toFixed(1)}}" y2="${{ly.toFixed(1)}}" stroke="#475569" stroke-width="1" />`;
+                }} else {{
+                    const lx = x + k * (w / 4.0);
+                    linhas += `<line x1="${{lx.toFixed(1)}}" y1="${{(y + 4).toFixed(1)}}" x2="${{lx.toFixed(1)}}" y2="${{(y + h - 4).toFixed(1)}}" stroke="#475569" stroke-width="1" />`;
                 }}
             }}
             return `
-                <rect x="${{x.toFixed(1)}}" y="${{y.toFixed(1)}}" width="${{w.toFixed(1)}}" height="${{h.toFixed(1)}}" rx="3" fill="#080a0f" stroke="#94a3b8" stroke-width="1.3" />
+                <rect x="${{x.toFixed(1)}}" y="${{y.toFixed(1)}}" width="${{w.toFixed(1)}}" height="${{h.toFixed(1)}}" rx="4" fill="#090c12" stroke="#94a3b8" stroke-width="1.3" />
                 ${{linhas}}
             `;
         }}
 
         function desenharFiltroConicoSvg(x, y, w, h) {{
             return `
-                <polygon points="${{x.toFixed(1)}},${{(y + 2).toFixed(1)}} ${{(x + w).toFixed(1)}},${{y.toFixed(1)}} ${{(x + w).toFixed(1)}},${{(y + h).toFixed(1)}} ${{x.toFixed(1)}},${{(y + h - 2).toFixed(1)}}" fill="url(#eng-filter)" stroke="#ef4444" stroke-width="1.1" />
-                <rect x="${{(x - 3).toFixed(1)}}" y="${{(y + 2).toFixed(1)}}" width="3.5" height="${{(h - 4).toFixed(1)}}" rx="1" fill="#334155" stroke="#94a3b8" stroke-width="0.7" />
+                <polygon points="${{x.toFixed(1)}},${{(y + 2.5).toFixed(1)}} ${{(x + w).toFixed(1)}},${{y.toFixed(1)}} ${{(x + w).toFixed(1)}},${{(y + h).toFixed(1)}} ${{x.toFixed(1)}},${{(y + h - 2.5).toFixed(1)}}" fill="#190c10" stroke="#ff1e38" stroke-width="1.2" stroke-linejoin="round" />
+                <line x1="${{(x + w * 0.45).toFixed(1)}}" y1="${{(y + 3.5).toFixed(1)}}" x2="${{(x + w * 0.45).toFixed(1)}}" y2="${{(y + h - 3.5).toFixed(1)}}" stroke="#7f1d1d" stroke-width="1" />
             `;
         }}
 
@@ -2268,14 +2168,11 @@ def gerar_dashboard_html(
             const snoutY = y + h / 2.0;
             const snoutW = Math.max(6.0, x - pulleyX + 2);
             return `
-                <line x1="${{pulleyX.toFixed(1)}}" y1="${{pulleyY.toFixed(1)}}" x2="${{crankX.toFixed(1)}}" y2="${{crankY.toFixed(1)}}" stroke="#334155" stroke-width="4.2" />
-                <line x1="${{pulleyX.toFixed(1)}}" y1="${{pulleyY.toFixed(1)}}" x2="${{crankX.toFixed(1)}}" y2="${{crankY.toFixed(1)}}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3" />
-                <rect x="${{pulleyX.toFixed(1)}}" y="${{(snoutY - 4.5).toFixed(1)}}" width="${{snoutW.toFixed(1)}}" height="9" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />
-                <rect x="${{x.toFixed(1)}}" y="${{y.toFixed(1)}}" width="${{w.toFixed(1)}}" height="${{h.toFixed(1)}}" rx="5" fill="url(#eng-blower)" stroke="#e2e8f0" stroke-width="1.3" />
-                <line x1="${{(x + 8).toFixed(1)}}" y1="${{(y + h * 0.28).toFixed(1)}}" x2="${{(x + w - 8).toFixed(1)}}" y2="${{(y + h * 0.28).toFixed(1)}}" stroke="#334155" stroke-width="1.1" />
-                <line x1="${{(x + 8).toFixed(1)}}" y1="${{(y + h * 0.72).toFixed(1)}}" x2="${{(x + w - 8).toFixed(1)}}" y2="${{(y + h * 0.72).toFixed(1)}}" stroke="#334155" stroke-width="1.1" />
-                <rect x="${{(x + w * 0.22).toFixed(1)}}" y="${{(snoutY - 3).toFixed(1)}}" width="${{(w * 0.56).toFixed(1)}}" height="6" rx="2" fill="url(#eng-redcam)" />
-                ${{desenharPoliaSvg(pulleyX, pulleyY, 7.5, '#ff9f1c')}}
+                <line x1="${{pulleyX.toFixed(1)}}" y1="${{pulleyY.toFixed(1)}}" x2="${{crankX.toFixed(1)}}" y2="${{crankY.toFixed(1)}}" stroke="#475569" stroke-width="2.6" />
+                <rect x="${{pulleyX.toFixed(1)}}" y="${{(snoutY - 3.5).toFixed(1)}}" width="${{snoutW.toFixed(1)}}" height="7" rx="2" fill="#1e293b" stroke="#64748b" stroke-width="1" />
+                <rect x="${{x.toFixed(1)}}" y="${{y.toFixed(1)}}" width="${{w.toFixed(1)}}" height="${{h.toFixed(1)}}" rx="6" fill="#121620" stroke="#cbd5e1" stroke-width="1.3" />
+                <rect x="${{(x + 14).toFixed(1)}}" y="${{(snoutY - 2).toFixed(1)}}" width="${{(w - 28).toFixed(1)}}" height="4" rx="2" fill="url(#eng-amber)" />
+                ${{desenharPoliaSvg(pulleyX, pulleyY, 7.2, '#ff9f1c')}}
             `;
         }}
 
@@ -2293,73 +2190,74 @@ def gerar_dashboard_html(
                     ? Math.min(21.0, Math.max(5.2, (espaco - 4.5) / 2.0))
                     : Math.min(16.0, Math.max(7.0, (espaco * 1.15 - 4.0) / 2.0));
                 if (fmt === 'VR' && n >= 10) raio = Math.min(raio, 10.2);
-                const wRunner = Math.max(3.6, Math.min(12.0, raio * 0.65));
+                const swRunner = Math.max(2.2, Math.min(5.5, raio * 0.35));
                 let circs = '';
                 let coletores = '';
                 for (let i = 0; i < n; i++) {{
                     const cx = inicioX + i * espaco + espaco / 2.0;
                     const cy = fmt === 'I' ? 123.0 : (i % 2 === 0 ? 104.0 : 142.0);
                     circs += desenharCilindroSvg(cx, cy, raio);
-                    coletores += `<rect x="${{(cx - wRunner / 2).toFixed(1)}}" y="54" width="${{wRunner.toFixed(1)}}" height="18" rx="1.5" fill="url(#eng-metal)" stroke="#1e293b" stroke-width="0.8" />`;
-                    coletores += `<rect x="${{(cx - wRunner / 2).toFixed(1)}}" y="174" width="${{wRunner.toFixed(1)}}" height="19" rx="1.5" fill="url(#eng-exhaust)" stroke="#1e293b" stroke-width="0.8" />`;
+                    coletores += `<line x1="${{cx.toFixed(1)}}" y1="54" x2="${{cx.toFixed(1)}}" y2="72" stroke="#64748b" stroke-width="${{swRunner.toFixed(1)}}" stroke-linecap="round" />`;
+                    coletores += `<line x1="${{cx.toFixed(1)}}" y1="174" x2="${{cx.toFixed(1)}}" y2="192" stroke="#c2410c" stroke-width="${{swRunner.toFixed(1)}}" stroke-linecap="round" />`;
                 }}
 
                 let admissaoSvg = '';
                 if (adm === 'Atmosférico') {{
                     admissaoSvg = `
-                        <rect x="78" y="38" width="248" height="17" rx="5" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />
-                        <rect x="86" y="40" width="232" height="3" rx="1" fill="url(#eng-redcam)" />
-                        <rect x="54" y="42" width="25" height="9" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />
-                        ${{desenharFiltroConicoSvg(20.0, 37.0, 34.0, 19.0)}}
-                        <rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />
+                        <rect x="78" y="40" width="248" height="14" rx="5" fill="#121620" stroke="#94a3b8" stroke-width="1.3" />
+                        <rect x="90" y="45.5" width="224" height="3" rx="1.5" fill="url(#eng-accent)" />
+                        <line x1="54" y1="47" x2="78" y2="47" stroke="#64748b" stroke-width="5" />
+                        ${{desenharFiltroConicoSvg(22.0, 38.0, 32.0, 18.0)}}
+                        <rect x="82" y="191" width="240" height="8" rx="4" fill="#1a100e" stroke="#ea580c" stroke-width="1.1" />
                     `;
                 }} else if (adm === 'Turbo') {{
                     admissaoSvg = `
-                        <path d="M 30,190 L 30,46 L 78,46" fill="none" stroke="url(#eng-metal)" stroke-width="7" stroke-linejoin="round" />
-                        <path d="M 68,210 L 184,210" fill="none" stroke="url(#eng-metal)" stroke-width="7" />
-                        ${{desenharIntercoolerSvg(16.0, 192.0, 50.0, 30.0)}}
-                        <rect x="78" y="38" width="248" height="17" rx="5" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />
-                        <rect x="86" y="40" width="232" height="3" rx="1" fill="url(#eng-redcam)" />
-                        <rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />
-                        ${{desenharTurboSvg(216.0, 211.0, 1.42)}}
+                        <path d="M 30,190 L 30,47 L 78,47" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" stroke-linejoin="round" />
+                        <path d="M 68,210 L 184,210" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" />
+                        ${{desenharIntercoolerSvg(16.0, 194.0, 50.0, 26.0)}}
+                        <rect x="78" y="40" width="248" height="14" rx="5" fill="#121620" stroke="#94a3b8" stroke-width="1.3" />
+                        <rect x="90" y="45.5" width="224" height="3" rx="1.5" fill="url(#eng-accent)" />
+                        <rect x="82" y="191" width="240" height="8" rx="4" fill="#1a100e" stroke="#ea580c" stroke-width="1.1" />
+                        ${{desenharTurboSvg(216.0, 211.0, 1.32)}}
                     `;
                 }} else if (adm === 'Supercompressor') {{
                     admissaoSvg = `
-                        <rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />
-                        <rect x="304" y="39" width="24" height="11" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />
-                        ${{desenharFiltroConicoSvg(328.0, 35.0, 32.0, 19.0)}}
-                        ${{desenharSuperchargerSvg(92.0, 28.0, 212.0, 28.0, 48.0, 42.0, 48.0, 123.0)}}
+                        <rect x="82" y="191" width="240" height="8" rx="4" fill="#1a100e" stroke="#ea580c" stroke-width="1.1" />
+                        <line x1="304" y1="43" x2="328" y2="43" stroke="#64748b" stroke-width="5" />
+                        ${{desenharFiltroConicoSvg(328.0, 34.0, 30.0, 18.0)}}
+                        ${{desenharSuperchargerSvg(92.0, 30.0, 212.0, 24.0, 48.0, 42.0, 48.0, 123.0)}}
                     `;
                 }} else if (adm === 'Biturbo') {{
                     admissaoSvg = `
-                        <path d="M 30,190 L 30,46 L 78,46" fill="none" stroke="url(#eng-metal)" stroke-width="7" stroke-linejoin="round" />
-                        <path d="M 68,210 L 266,210" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" />
-                        ${{desenharIntercoolerSvg(16.0, 192.0, 50.0, 30.0)}}
-                        <rect x="78" y="38" width="248" height="17" rx="5" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.4" />
-                        <rect x="86" y="40" width="232" height="3" rx="1" fill="url(#eng-redcam)" />
-                        <rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />
-                        ${{desenharTurboSvg(146.0, 211.0, 1.32)}}
-                        ${{desenharTurboSvg(282.0, 211.0, 1.32)}}
+                        <path d="M 30,190 L 30,47 L 78,47" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" stroke-linejoin="round" />
+                        <path d="M 68,210 L 266,210" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" />
+                        ${{desenharIntercoolerSvg(16.0, 194.0, 50.0, 26.0)}}
+                        <rect x="78" y="40" width="248" height="14" rx="5" fill="#121620" stroke="#94a3b8" stroke-width="1.3" />
+                        <rect x="90" y="45.5" width="224" height="3" rx="1.5" fill="url(#eng-accent)" />
+                        <rect x="82" y="191" width="240" height="8" rx="4" fill="#1a100e" stroke="#ea580c" stroke-width="1.1" />
+                        ${{desenharTurboSvg(146.0, 211.0, 1.24)}}
+                        ${{desenharTurboSvg(282.0, 211.0, 1.24)}}
                     `;
                 }} else {{
                     admissaoSvg = `
-                        <path d="M 24,190 L 24,37 L 84,37" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />
-                        <path d="M 68,210 L 194,210" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" />
-                        ${{desenharIntercoolerSvg(14.0, 192.0, 50.0, 30.0)}}
-                        <rect x="82" y="191" width="240" height="11" rx="4" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1.1" />
-                        ${{desenharTurboSvg(224.0, 211.0, 1.38)}}
-                        ${{desenharSuperchargerSvg(92.0, 28.0, 212.0, 28.0, 48.0, 42.0, 48.0, 123.0)}}
+                        <path d="M 24,190 L 24,38 L 84,38" fill="none" stroke="url(#eng-pipe)" stroke-width="4.2" stroke-linejoin="round" />
+                        <path d="M 68,210 L 194,210" fill="none" stroke="url(#eng-pipe)" stroke-width="4.2" />
+                        ${{desenharIntercoolerSvg(14.0, 194.0, 50.0, 26.0)}}
+                        <rect x="82" y="191" width="240" height="8" rx="4" fill="#1a100e" stroke="#ea580c" stroke-width="1.1" />
+                        ${{desenharTurboSvg(224.0, 211.0, 1.28)}}
+                        ${{desenharSuperchargerSvg(92.0, 30.0, 212.0, 24.0, 48.0, 42.0, 48.0, 123.0)}}
                     `;
                 }}
 
                 corpo = `
                     ${{coletores}}
                     ${{admissaoSvg}}
-                    <rect x="40" y="83" width="18" height="54" rx="6" fill="#0f1218" stroke="#475569" stroke-width="1.3" />
-                    ${{desenharPoliaSvg(48.0, 93.0, 6.8)}}
-                    ${{desenharPoliaSvg(48.0, 123.0, 12.2)}}
-                    <rect x="340" y="91" width="14" height="64" rx="3" fill="url(#eng-metal)" stroke="#475569" stroke-width="1.3" />
-                    <rect x="64" y="70" width="276" height="106" rx="9" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.6" />
+                    <rect x="41" y="84" width="15" height="52" rx="7" fill="#0d1017" stroke="#475569" stroke-width="1.2" />
+                    ${{desenharPoliaSvg(48.0, 93.0, 6.4)}}
+                    ${{desenharPoliaSvg(48.0, 123.0, 11.4)}}
+                    <rect x="342" y="93" width="11" height="60" rx="3" fill="#1e293b" stroke="#64748b" stroke-width="1.2" />
+                    <rect x="64" y="70" width="276" height="106" rx="10" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.5" />
+                    ${{desenharParafusosSvg(64.0, 70.0, 276.0, 106.0)}}
                     ${{circs}}
                 `;
             }} else {{
@@ -2378,12 +2276,12 @@ def gerar_dashboard_html(
                 const bankSupH = fmt === 'V' ? 50.0 : 58.0;
                 const bankInfY = 141.0;
                 const bankInfH = fmt === 'V' ? 50.0 : 58.0;
-                const yExhSup = fmt === 'V' ? 38.0 : 31.0;
+                const yExhSup = fmt === 'V' ? 39.0 : 32.0;
                 const yExhInf = fmt === 'V' ? 193.0 : 200.0;
                 const yColSup = fmt === 'V' ? 38.0 : 31.0;
-                const yColInf = fmt === 'V' ? 200.0 : 207.0;
+                const yColInf = fmt === 'V' ? 201.0 : 208.0;
 
-                const wRunner = Math.max(3.5, Math.min(10.5, raio * 0.65));
+                const swRunner = Math.max(2.0, Math.min(4.8, raio * 0.35));
                 let circs = '';
                 let escapes = '';
                 let trombetas = '';
@@ -2392,79 +2290,79 @@ def gerar_dashboard_html(
                     const cx = inicioX + i * espacoSup + espacoSup / 2.0;
                     const cy = fmt === 'V' ? 80.0 : (i % 2 === 0 ? 64.0 : 87.0);
                     circs += desenharCilindroSvg(cx, cy, raio);
-                    escapes += `<rect x="${{(cx - wRunner / 2).toFixed(1)}}" y="${{yExhSup.toFixed(1)}}" width="${{wRunner.toFixed(1)}}" height="17" rx="1.5" fill="url(#eng-exhaust)" stroke="#1e293b" stroke-width="0.8" />`;
-                    trombetas += `<circle cx="${{cx.toFixed(1)}}" cy="115" r="${{Math.max(2.6, Math.min(4.2, wRunner * 0.42)).toFixed(1)}}" fill="#090b10" stroke="#cbd5e1" stroke-width="1" />`;
+                    escapes += `<line x1="${{cx.toFixed(1)}}" y1="${{yExhSup.toFixed(1)}}" x2="${{cx.toFixed(1)}}" y2="${{(yExhSup + 16).toFixed(1)}}" stroke="#c2410c" stroke-width="${{swRunner.toFixed(1)}}" stroke-linecap="round" />`;
+                    trombetas += `<circle cx="${{cx.toFixed(1)}}" cy="116" r="${{Math.max(2.2, Math.min(3.4, swRunner * 0.72)).toFixed(1)}}" fill="#ff1e38" opacity="0.85" />`;
                 }}
                 for (let i = 0; i < nInf; i++) {{
                     const cx = inicioX + i * espacoInf + espacoInf / 2.0;
                     const cy = fmt === 'V' ? 166.0 : (i % 2 === 0 ? 159.0 : 182.0);
                     circs += desenharCilindroSvg(cx, cy, raio);
-                    escapes += `<rect x="${{(cx - wRunner / 2).toFixed(1)}}" y="${{yExhInf.toFixed(1)}}" width="${{wRunner.toFixed(1)}}" height="17" rx="1.5" fill="url(#eng-exhaust)" stroke="#1e293b" stroke-width="0.8" />`;
-                    trombetas += `<circle cx="${{cx.toFixed(1)}}" cy="131" r="${{Math.max(2.6, Math.min(4.2, wRunner * 0.42)).toFixed(1)}}" fill="#090b10" stroke="#cbd5e1" stroke-width="1" />`;
+                    escapes += `<line x1="${{cx.toFixed(1)}}" y1="${{yExhInf.toFixed(1)}}" x2="${{cx.toFixed(1)}}" y2="${{(yExhInf + 16).toFixed(1)}}" stroke="#c2410c" stroke-width="${{swRunner.toFixed(1)}}" stroke-linecap="round" />`;
+                    trombetas += `<circle cx="${{cx.toFixed(1)}}" cy="130" r="${{Math.max(2.2, Math.min(3.4, swRunner * 0.72)).toFixed(1)}}" fill="#ff1e38" opacity="0.85" />`;
                 }}
 
                 let admissaoVw = '';
                 if (adm === 'Atmosférico') {{
                     admissaoVw = `
-                        <rect x="78" y="108" width="250" height="30" rx="6" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.3" />
+                        <rect x="78" y="109" width="250" height="28" rx="6" fill="#121620" stroke="#94a3b8" stroke-width="1.3" />
                         ${{trombetas}}
-                        <rect x="328" y="117" width="24" height="12" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />
-                        ${{desenharFiltroConicoSvg(352.0, 112.0, 32.0, 22.0)}}
+                        <line x1="328" y1="123" x2="352" y2="123" stroke="#64748b" stroke-width="5" />
+                        ${{desenharFiltroConicoSvg(352.0, 113.0, 30.0, 20.0)}}
                     `;
                 }} else if (adm === 'Turbo') {{
                     admissaoVw = `
-                        <path d="M 185,24 L 24,24 L 24,87" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />
-                        <path d="M 24,159 L 24,123 L 82,123" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />
-                        ${{desenharIntercoolerSvg(12.0, 85.0, 24.0, 76.0, true)}}
-                        <rect x="78" y="108" width="250" height="30" rx="6" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.3" />
-                        <rect x="92" y="120.5" width="222" height="5" rx="2" fill="url(#eng-redcam)" />
-                        ${{desenharTurboSvg(212.0, 24.0, 1.34)}}
+                        <path d="M 185,24 L 24,24 L 24,87" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" stroke-linejoin="round" />
+                        <path d="M 24,159 L 24,123 L 82,123" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" stroke-linejoin="round" />
+                        ${{desenharIntercoolerSvg(14.0, 86.0, 20.0, 74.0, true)}}
+                        <rect x="78" y="109" width="250" height="28" rx="6" fill="#121620" stroke="#94a3b8" stroke-width="1.3" />
+                        <rect x="94" y="121.5" width="218" height="3" rx="1.5" fill="url(#eng-accent)" />
+                        ${{desenharTurboSvg(212.0, 24.0, 1.24)}}
                     `;
                 }} else if (adm === 'Supercompressor') {{
                     admissaoVw = `
-                        <rect x="318" y="117" width="24" height="12" rx="2" fill="url(#eng-metal)" stroke="#475569" stroke-width="1" />
-                        ${{desenharFiltroConicoSvg(342.0, 112.0, 32.0, 22.0)}}
-                        ${{desenharSuperchargerSvg(84.0, 106.0, 236.0, 34.0, 48.0, 123.0, 48.0, 123.0)}}
-                        <line x1="48" y1="80" x2="48" y2="166" stroke="#334155" stroke-width="3.6" />
+                        <line x1="318" y1="123" x2="342" y2="123" stroke="#64748b" stroke-width="5" />
+                        ${{desenharFiltroConicoSvg(342.0, 113.0, 30.0, 20.0)}}
+                        <line x1="48" y1="80" x2="48" y2="166" stroke="#475569" stroke-width="2.6" />
+                        ${{desenharSuperchargerSvg(84.0, 108.0, 236.0, 30.0, 48.0, 123.0, 48.0, 123.0)}}
                     `;
                 }} else if (adm === 'Biturbo') {{
                     admissaoVw = `
-                        <path d="M 185,24 L 24,24 L 24,83" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />
-                        <path d="M 185,222 L 24,222 L 24,163" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />
-                        <path d="M 36,123 L 82,123" fill="none" stroke="url(#eng-metal)" stroke-width="7" />
-                        ${{desenharIntercoolerSvg(12.0, 85.0, 24.0, 76.0, true)}}
-                        <rect x="78" y="108" width="250" height="30" rx="6" fill="url(#eng-head)" stroke="#94a3b8" stroke-width="1.3" />
-                        <rect x="92" y="120.5" width="222" height="5" rx="2" fill="url(#eng-redcam)" />
-                        ${{desenharTurboSvg(212.0, 24.0, 1.32)}}
-                        ${{desenharTurboSvg(212.0, 222.0, 1.32)}}
+                        <path d="M 185,24 L 24,24 L 24,86" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" stroke-linejoin="round" />
+                        <path d="M 185,222 L 24,222 L 24,160" fill="none" stroke="url(#eng-pipe)" stroke-width="4.5" stroke-linejoin="round" />
+                        <line x1="34" y1="123" x2="82" y2="123" stroke="url(#eng-pipe)" stroke-width="4.5" />
+                        ${{desenharIntercoolerSvg(14.0, 86.0, 20.0, 74.0, true)}}
+                        <rect x="78" y="109" width="250" height="28" rx="6" fill="#121620" stroke="#94a3b8" stroke-width="1.3" />
+                        <rect x="94" y="121.5" width="218" height="3" rx="1.5" fill="url(#eng-accent)" />
+                        ${{desenharTurboSvg(212.0, 24.0, 1.22)}}
+                        ${{desenharTurboSvg(212.0, 222.0, 1.22)}}
                     `;
                 }} else {{
                     admissaoVw = `
-                        <path d="M 185,24 L 24,24 L 24,83" fill="none" stroke="url(#eng-metal)" stroke-width="6.5" stroke-linejoin="round" />
-                        <path d="M 24,161 L 24,226 L 348,226 L 348,123 L 318,123" fill="none" stroke="url(#eng-metal)" stroke-width="6" stroke-linejoin="round" />
-                        ${{desenharIntercoolerSvg(12.0, 85.0, 24.0, 76.0, true)}}
-                        ${{desenharTurboSvg(212.0, 24.0, 1.32)}}
-                        ${{desenharSuperchargerSvg(84.0, 106.0, 236.0, 34.0, 48.0, 123.0, 48.0, 123.0)}}
+                        <path d="M 185,24 L 24,24 L 24,86" fill="none" stroke="url(#eng-pipe)" stroke-width="4.2" stroke-linejoin="round" />
+                        <path d="M 24,160 L 24,226 L 348,226 L 348,123 L 318,123" fill="none" stroke="url(#eng-pipe)" stroke-width="4.2" stroke-linejoin="round" />
+                        ${{desenharIntercoolerSvg(14.0, 86.0, 20.0, 74.0, true)}}
+                        ${{desenharTurboSvg(212.0, 24.0, 1.22)}}
+                        ${{desenharSuperchargerSvg(84.0, 108.0, 236.0, 30.0, 48.0, 123.0, 48.0, 123.0)}}
                     `;
                 }}
 
                 corpo = `
                     ${{escapes}}
-                    <rect x="82" y="${{yColSup.toFixed(1)}}" width="240" height="8" rx="3" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1" />
-                    <rect x="82" y="${{yColInf.toFixed(1)}}" width="240" height="8" rx="3" fill="url(#eng-exhaust)" stroke="#64748b" stroke-width="1" />
-                    <path d="M 38,75 L 64,59 L 64,187 L 38,171 Z" fill="#0f1218" stroke="#475569" stroke-width="1.3" />
-                    ${{desenharPoliaSvg(48.0, 80.0, 9.0)}}
-                    ${{desenharPoliaSvg(48.0, 166.0, 9.0)}}
-                    <rect x="340" y="89" width="14" height="68" rx="3" fill="url(#eng-metal)" stroke="#475569" stroke-width="1.3" />
-                    <rect x="64" y="${{bankSupY.toFixed(1)}}" width="276" height="${{bankSupH.toFixed(1)}}" rx="8" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.6" />
-                    <rect x="64" y="${{bankInfY.toFixed(1)}}" width="276" height="${{bankInfH.toFixed(1)}}" rx="8" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.6" />
-                    <rect x="72" y="${{(bankSupY - 4).toFixed(1)}}" width="260" height="5" rx="2" fill="url(#eng-redcam)" />
-                    <rect x="72" y="${{(bankInfY + bankInfH - 1).toFixed(1)}}" width="260" height="5" rx="2" fill="url(#eng-redcam)" />
-                    <rect x="64" y="105" width="276" height="36" fill="#090b10" stroke="rgba(255,255,255,0.08)" stroke-width="0.9" />
-                    <rect x="54" y="119.5" width="288" height="7" rx="2" fill="url(#eng-metal)" stroke="#334155" stroke-width="0.9" />
+                    <rect x="82" y="${{yColSup.toFixed(1)}}" width="240" height="6.5" rx="3" fill="#1a100e" stroke="#ea580c" stroke-width="1" />
+                    <rect x="82" y="${{yColInf.toFixed(1)}}" width="240" height="6.5" rx="3" fill="#1a100e" stroke="#ea580c" stroke-width="1" />
+                    <path d="M 39,77 L 64,61 L 64,185 L 39,169 Z" fill="#0d1017" stroke="#475569" stroke-width="1.2" />
+                    ${{desenharPoliaSvg(48.0, 80.0, 8.2)}}
+                    ${{desenharPoliaSvg(48.0, 166.0, 8.2)}}
+                    <rect x="342" y="91" width="11" height="64" rx="3" fill="#1e293b" stroke="#64748b" stroke-width="1.2" />
+                    <rect x="64" y="${{bankSupY.toFixed(1)}}" width="276" height="${{bankSupH.toFixed(1)}}" rx="9" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.5" />
+                    <rect x="64" y="${{bankInfY.toFixed(1)}}" width="276" height="${{bankInfH.toFixed(1)}}" rx="9" fill="url(#eng-block)" stroke="#64748b" stroke-width="1.5" />
+                    <rect x="76" y="${{(bankSupY - 2.5).toFixed(1)}}" width="252" height="3" rx="1.5" fill="url(#eng-accent)" />
+                    <rect x="76" y="${{(bankInfY + bankInfH - 0.5).toFixed(1)}}" width="252" height="3" rx="1.5" fill="url(#eng-accent)" />
+                    <rect x="64" y="105" width="276" height="36" fill="#080a0f" stroke="rgba(255,255,255,0.06)" stroke-width="0.9" />
+                    <line x1="54" y1="123" x2="342" y2="123" stroke="#475569" stroke-width="4" stroke-linecap="round" />
                     ${{circs}}
                     ${{admissaoVw}}
-                    ${{desenharPoliaSvg(48.0, 123.0, 10.5, (adm === 'Supercompressor' || adm === 'Twincharge') ? '#ff9f1c' : '#ff1e38')}}
+                    ${{desenharPoliaSvg(48.0, 123.0, 9.8, (adm === 'Supercompressor' || adm === 'Twincharge') ? '#ff9f1c' : '#ff1e38')}}
                 `;
             }}
             return `<svg class="motor-svg" viewBox="0 0 400 246" xmlns="http://www.w3.org/2000/svg" aria-label="Motor ${{fmt}} ${{adm}} 2D">${{SVG_MOTOR_DEFS}}${{corpo}}</svg>`;
