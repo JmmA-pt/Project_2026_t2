@@ -26,7 +26,7 @@ Registo de Utilização da IA
 margens, fontes, botões?:
    - "faz com que a caixa de RPM máx. mude para vermelho quando a as rotaçoes sao demasiado altas para o curso do pistao (utlizando a formula para calcular a velocidade média do pistao) e quando a taxa de compressao for maior que 15."
    - "acrescenta 11 perguntas ao quis, e faz com que sejam aleatórias."
-   - "Altera o desing da página para ser mais agressivo, e o SVG do motor com mais detalhe."
+   - "Altera o desing da página para ser mais agressivo, e o SVG do motor com algum detalhe."
 
 Estrutura de Ficheiros do Repositório
 Listagem simples dos ficheiros presentes na pasta:
