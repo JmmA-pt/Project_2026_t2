@@ -12,7 +12,6 @@ Descrição: uma app desenhada para cativar a criação de motores e, possivelme
 
 Proposta Escolhida: 1
 
-
 Estrutura do Código e Funcionalidades Integradas: 
 
 Registo de Utilização da IA
@@ -28,12 +27,5 @@ margens, fontes, botões?:
    - "acrescenta 11 perguntas ao quis, e faz com que sejam aleatórias."
    - "Altera o desing da página para ser mais agressivo, e o SVG do motor com algum detalhe."
 
-Estrutura de Ficheiros do Repositório
-Listagem simples dos ficheiros presentes na pasta:
-1. index.html – página principal do Dashboard / Web App
-2. app.py - Ficheiro principal da aplicação.
-3. Assets - Imagens, nuvens de palavras geradas, recursos utilizados, etc.
-
-Desenvolve um pequeno texto refletivo sobre o projeto que inclua:
-O que correu melhor durante o desenvolvimento. Qual foi a maior dificuldade. Como é
-que a Inteligência Artificial mudou a tua forma de programar?
+um pequeno texto refletivo sobre o projeto:
+Desenvolver uma web app como o gosto que tenho é algo que ajuda a mostrar ás pessoas o que gosto, e talvez, chega a pessoas que também possam gostar. Tive algumas dificuldades principalmente a validar o código; quando surgem pequenos erros e tive de procurar nas centenas de linhas. A IA não pode ser vista como algo inovador, mas como uma ferramenta. Uma ferramenta muito poderosa, que pode mudar a forma como encaramos problemas, ou até como resolvemos os problemas. Mas não pode dominar a nossa vida por completo, é apenas uma ferramenta poderosa. Neste projeto a IA ajudou muito a ter um codigo organizado, e foi um ponto fundamnetal no desenvolvimento.
