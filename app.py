@@ -603,7 +603,7 @@ def widget_3_modular(
     texto_alerta = " | ".join(dados_iniciais["motivos_alerta"])
 
     opcoes_cilindros = [3, 4, 5, 6, 8, 10, 12, 16]
-    options_fmt_html = "\n".join(
+    options_fmt_html = "\n".join( 
         f'<option value="{cod}" {"selected" if cod == formato else ""}>{rotulo}</option>'
         for cod, rotulo in FORMATOS_MOTOR.items()
     )
