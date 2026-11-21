@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Motor</title>
+    <script>
+        (function () {
+            const path = window.location.pathname;
+            if (/\/custom-engine\/?$/i.test(path)) {
+                const destino = path.replace(/\/custom-engine\/?$/i, '/') + window.location.search + window.location.hash;
+                window.location.replace(destino);
+            }
+        })();
+    </script>
+    <style>
+        :root { color-scheme: dark; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #050608;
+            color: #f8fafc;
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .box {
+            max-width: 440px;
+            width: 100%;
+            background: rgba(12, 13, 18, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-top: 3px solid #ff1e38;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0 0 10px;
+            font-size: 1.25rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        p {
+            margin: 0 0 18px;
+            color: #9ca3af;
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+        a {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff1e38 0%, #ff6b00 100%);
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 11px 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <main class="box">
+        <h1>Página não encontrada</h1>
+        <p>Esta rota não existe. Podes voltar ao painel principal do motor.</p>
+        <a id="voltar-link" href="./">Voltar ao Painel</a>
+    </main>
+    <script>
+        (function () {
+            const link = document.getElementById('voltar-link');
+            if (!link) return;
+            if (window.location.hostname.endsWith('.github.io')) {
+                const segs = window.location.pathname.split('/').filter(Boolean);
+                link.href = segs.length > 0 ? '/' + segs[0] + '/' : '/';
+            } else {
+                link.href = '/';
+            }
+        })();
+    </script>
+</body>
+</html>

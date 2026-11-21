@@ -1,9 +1,12 @@
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import json
 import math
+import os
 import sys
 from typing import Optional
 import webbrowser
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 # ==============================================================================
@@ -2031,16 +2034,6 @@ def gerar_dashboard_html(
     {quiz_html}
 
     <script>
-        if ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {{
-            const basePath = window.location.pathname.replace(/\\/index\\.html$/, '').replace(/\\/+$/, '');
-            if (!basePath.endsWith('/custom-engine')) {{
-                const novoPath = `${{basePath}}/custom-engine`;
-                try {{
-                    window.history.replaceState(null, '', novoPath + window.location.search + window.location.hash);
-                }} catch (_) {{}}
-            }}
-        }}
-
         const PRESETS_DATA = {presets_json};
         const presetButtons = document.querySelectorAll('.btn-preset-motor');
         const selectFormato = document.getElementById('select-formato');
@@ -2757,7 +2750,8 @@ def guardar_index_html(
     (evita que o index.html fique vazio/0 bytes caso ocorra algum erro).
     """
     conteudo_html = gerar_dashboard_html(num_cilindros, admissao, formato)
-    with open("index.html", "w", encoding="utf-8") as f:
+    caminho_index = os.path.join(BASE_DIR, "index.html")
+    with open(caminho_index, "w", encoding="utf-8") as f:
         f.write(conteudo_html)
     print("[OK] Ficheiro index.html gerado com sucesso.")
 
@@ -2765,15 +2759,20 @@ def guardar_index_html(
 class DashboardHandler(SimpleHTTPRequestHandler):
     """Servidor HTTP que processa os pedidos dos Widgets 2, 3 e Quiz diretamente em Python."""
 
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("directory", BASE_DIR)
+        super().__init__(*args, **kwargs)
+
     def do_GET(self):
-        caminho = self.path.split("?", 1)[0]
-        if caminho in ("/", "/index.html"):
+        caminho, _, query = self.path.partition("?")
+        if caminho in ("/", "/index.html", "/custom-engine/index.html"):
+            destino = f"/custom-engine?{query}" if query else "/custom-engine"
             self.send_response(302)
-            self.send_header("Location", "/custom-engine")
+            self.send_header("Location", destino)
             self.end_headers()
             return
         if caminho in ("/custom-engine", "/custom-engine/"):
-            self.path = "/index.html"
+            self.path = f"/index.html?{query}" if query else "/index.html"
         return super().do_GET()
 
     def do_POST(self):
